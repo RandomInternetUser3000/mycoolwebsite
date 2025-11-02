@@ -5,5 +5,5 @@ document.getElementById("btn").addEventListener("click", () => {
 const subscribeBtn = document.getElementById("btn2");
 if (subscribeBtn)
   subscribeBtn.addEventListener("click", () => {
-    window.location.href = "https://www.youtube.com/@COOLmanGamer";
+    window.location.href = "https://www.youtube.com/@COOLmanGamer?sub_confirmation=1";
   });
