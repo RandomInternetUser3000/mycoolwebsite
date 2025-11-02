@@ -1,7 +1,11 @@
 body {
-  background: linear-gradient(to bottom, #ff6969, #ffeaea);
+  /* fallback color + smoother multi-stop gradient */
+  background: #ffeaea;
+  background: linear-gradient(180deg, #ff9a9e 0%, #ffdde1 45%, #fff7f7 100%);
+  min-height: 100vh;
+  margin: 0;
   text-align: center;
-  font-family: Arial;
+  font-family: Arial, sans-serif;
   padding-top: 100px;
 }
 button {
