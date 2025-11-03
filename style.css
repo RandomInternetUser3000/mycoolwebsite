@@ -1,7 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Funnel+Sans:ital,wght@0,300..800;1,300..800&display=swap');
 
 body {
-  /* fallback color + smoother multi-stop gradient */
   background: #ffeaea;
   background: linear-gradient(180deg, #ff9a9e 0%, #ffdde1 45%, #fff7f7 100%);
   min-height: 100vh;
@@ -12,6 +11,11 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
+}
+
+h1 {
+  font-size: 7rem;
 }
 
 p {
