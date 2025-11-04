@@ -7,80 +7,80 @@
     <title>Contact - COOLmanYT</title>
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
-    <main>
-  <h1>Contact Me</h1>
-  <p>Want to get in touch? Here's how you can reach me!</p>
-        
-        <div class="contact-links">
-            <a href="mailto:your-email@example.com" class="social-button">
-                <img src="images/email.svg" alt="Email">
-                <span>Email</span>
-            </a>
-            <a href="https://t.me/YOUR_TELEGRAM" target="_blank" class="social-button">
-                <img src="images/telegram.svg" alt="Telegram">
-                <span>Telegram</span>
-            </a>
-        </div>
-        
-<section class="contact-section">
-  <h2>Send a Message</h2>
-  <p>Have a question or just want to say hi? Fill out the form below!</p>
-  
-  <form class="contact-form" action="https://formspree.io/f/xldoypbj" method="post" id="contactForm">
-    <input type="text" name="name" placeholder="Your Name" required>
-    <input type="email" name="email" placeholder="Your Email" required>
-    <textarea name="message" rows="5" placeholder="Your Message" required></textarea>
-    <button type="submit">Send Message</button>
-    <div id="formStatus"></div>
-  </form>
-</section>
+<body class="contact-page">
+  <div class="top-banner">
+    <span>🛠️ <strong>Public Beta</strong> version of the website.</span>
+    <a class="banner-button" href="https://github.com/RandomInternetUser3000/mycoolwebsite" target="_blank" rel="noopener noreferrer">Open Source GitHub Repository</a>
+  </div>
 
+  <header class="site-header">
+    <a href="index.html" class="site-logo">COOLmanYT</a>
+    <div class="social-links">
+      <a href="https://github.com/RandomInternetUser3000" target="_blank" rel="noopener noreferrer" class="social-button">
+        <img src="images/github.png" alt="Github">
+      </a>
+      <a href="https://www.youtube.com/@COOLmanGamer?sub_confirmation=1" target="_blank" rel="noopener noreferrer" class="social-button">
+        <img src="images/youtube.png" alt="YouTube">
+      </a>
+      <a href="https://discord.com/users/YOUR_DISCORD_ID" target="_blank" rel="noopener noreferrer" class="social-button">
+        <img src="images/discord.svg" alt="Discord">
+      </a>
+      <a href="https://www.roblox.com/users/YOUR_ROBLOX_ID/profile" target="_blank" rel="noopener noreferrer" class="social-button">
+        <img src="images/roblox.svg" alt="Roblox">
+      </a>
+      <a href="#" target="_blank" rel="noopener noreferrer" class="social-button">
+        <img src="images/placeholder1.svg" alt="Social Link">
+      </a>
+      <a href="#" target="_blank" rel="noopener noreferrer" class="social-button">
+        <img src="images/placeholder2.svg" alt="Social Link">
+      </a>
+    </div>
+    <nav class="nav-links">
+      <a href="index.html" class="nav-pill">Home</a>
+      <a href="about.html" class="nav-pill">About</a>
+      <a href="projects.html" class="nav-pill">Projects</a>
+      <a href="contact.html" class="nav-pill active">Contact</a>
+      <a href="gallery.html" class="nav-pill">Gallery</a>
+      <a href="blog.html" class="nav-pill">Blog</a>
+      <a href="forum.html" class="nav-pill">Forum</a>
+    </nav>
+  </header>
 
-        <div class="nav-links">
-            <a href="index.html" class="button">Home</a>
-            <a href="about.html" class="button">About</a>
-            <a href="projects.html" class="button">Projects</a>
-        </div>
-    </main>
-    
-    <footer>
-        Made with ♥️ by <strong>COOLmanYT</strong><br>
-    Website <a id="github-repo" href="https://github.com/RandomInternetUser3000/mycoolwebsite">Version 0.8.5 Public Beta</a> <br>
-        Credits to <a href="https://zinheere.vercel.app">Zinheere</a> <br>
-    </footer>
-    
-    <script>
-      // Form submission handling with feedback
-      document.addEventListener('DOMContentLoaded', function() {
-        const contactForm = document.getElementById('contactForm');
+  <main>
+    <h1>Contact Me</h1>
+    <p>Want to get in touch? Here's how you can reach me!</p>
         
-        if (contactForm) {
-          contactForm.addEventListener('submit', function(e) {
-            const formStatus = document.getElementById('formStatus');
-            const submitButton = contactForm.querySelector('button[type="submit"]');
+    <div class="contact-links">
+      <a href="mailto:your-email@example.com" class="social-button">
+        <img src="images/email.svg" alt="Email">
+        <span>Email</span>
+      </a>
+      <a href="https://t.me/YOUR_TELEGRAM" target="_blank" rel="noopener noreferrer" class="social-button">
+        <img src="images/telegram.svg" alt="Telegram">
+        <span>Telegram</span>
+      </a>
+    </div>
+        
+    <section class="contact-section">
+      <h2>Send a Message</h2>
+      <p>Have a question or just want to say hi? Fill out the form below!</p>
             
-            // Show loading state
-            submitButton.disabled = true;
-            submitButton.textContent = 'Sending...';
-            formStatus.textContent = '';
-            formStatus.className = '';
-            
-            // The form will submit naturally to Formspree
-            // We'll use a timeout to show feedback after submission
-            setTimeout(function() {
-              // Check if we're still on the same page (form didn't redirect)
-              if (window.location.hash !== '#success') {
-                formStatus.textContent = 'Message sent successfully! I\'ll get back to you soon.';
-                formStatus.className = 'success';
-                contactForm.reset();
-              }
-              submitButton.disabled = false;
-              submitButton.textContent = 'Send Message';
-            }, 2000);
-          });
-        }
-      });
-    </script>
+      <form class="contact-form" action="https://formspree.io/f/xldoypbj" method="post" id="contactForm">
+        <input type="text" name="name" placeholder="Your Name" required>
+        <input type="email" name="email" placeholder="Your Email" required>
+        <textarea name="message" rows="5" placeholder="Your Message" required></textarea>
+        <button type="submit">Send Message</button>
+        <div id="formStatus"></div>
+      </form>
+    </section>
+  </main>
+    
+  <footer>
+    Made with ♥️ by <strong>COOLmanYT</strong><br>
+    Website <a id="github-repo" href="https://github.com/RandomInternetUser3000/mycoolwebsite">Version 0.8.7 Public Beta</a> <br>
+    Credits to <a href="https://zinheere.vercel.app">Zinheere</a> <br>
+  </footer>
+
+  <script src="script.js"></script>
 </body>
 </html>

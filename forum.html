@@ -4,10 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" href="images/avatar.png" />
-    <title>Projects - COOLmanYT</title>
+    <title>Forum - COOLmanYT</title>
     <link rel="stylesheet" href="style.css">
 </head>
-<body class="projects-page">
+<body class="forum-page">
     <div class="top-banner">
         <span>🛠️ <strong>Public Beta</strong> version of the website.</span>
         <a class="banner-button" href="https://github.com/RandomInternetUser3000/mycoolwebsite" target="_blank" rel="noopener noreferrer">Open Source GitHub Repository</a>
@@ -38,38 +38,34 @@
         <nav class="nav-links">
             <a href="index.html" class="nav-pill">Home</a>
             <a href="about.html" class="nav-pill">About</a>
-            <a href="projects.html" class="nav-pill active">Projects</a>
+            <a href="projects.html" class="nav-pill">Projects</a>
             <a href="contact.html" class="nav-pill">Contact</a>
             <a href="gallery.html" class="nav-pill">Gallery</a>
             <a href="blog.html" class="nav-pill">Blog</a>
-            <a href="forum.html" class="nav-pill">Forum</a>
+            <a href="forum.html" class="nav-pill active">Forum</a>
         </nav>
     </header>
 
     <main>
-        <h1>My Projects</h1>
-        <p>I'm currently working on some exciting projects.<br>Check back soon! <br>
-        And yes, this website counts as one.</p>
+    <h1>Community Forum</h1>
+    <p>Share ideas, ask questions, and I'll reply as soon as I can. Posts stay in your browser so you can revisit them later.</p>
 
-        <section class="highlight-cards">
-            <article>
-                <h2>Featured Build</h2>
-                <p>A Roblox world I am polishing with new mechanics, particle effects, and narrative quests.</p>
-                <a href="gallery.html" class="button">View Screenshots</a>
-            </article>
-            <article>
-                <h2>Open Source Tools</h2>
-                <p>Small utilities and experiments I publish as GitHub repos for others to remix and learn from.</p>
-                <a href="https://github.com/RandomInternetUser3000" target="_blank" rel="noopener noreferrer" class="button">See GitHub</a>
-            </article>
-            <article>
-                <h2>Learning Series</h2>
-                <p>Weekly blog entries sharing what I'm learning in coding, design, and content creation.</p>
-                <a href="blog.html" class="button">Read the Blog</a>
-            </article>
+        <section class="forum-section">
+            <form id="forumForm" class="forum-form">
+                <h2>Start a new discussion</h2>
+                <input type="text" id="forumName" name="name" placeholder="Display name" required>
+                <input type="text" id="forumTopic" name="topic" placeholder="Topic or headline" required>
+                <textarea id="forumMessage" name="message" rows="5" placeholder="Share your thoughts or question" required></textarea>
+                <button type="submit">Post to Forum</button>
+                <small>Tip: Keep it friendly and constructive. I read every post!</small>
+            </form>
+
+            <div id="forumList" class="forum-list" aria-live="polite">
+                <!-- Forum posts render here -->
+            </div>
         </section>
     </main>
-    
+
     <footer>
         Made with ♥️ by <strong>COOLmanYT</strong><br>
         Website <a id="github-repo" href="https://github.com/RandomInternetUser3000/mycoolwebsite">Version 0.8.7 Public Beta</a> <br>
