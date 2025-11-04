@@ -25,6 +25,10 @@ body {
   justify-content: flex-start;
 }
 
+.home-page {
+  justify-content: center;
+}
+
 main {
   flex: 1;
   width: 100%;
@@ -243,7 +247,7 @@ footer a:hover {
   max-width: 1000px;
   width: 100%;
   margin: 2rem auto;
-  gap: 2rem;
+  gap: 3rem;
 }
 
 .main-content img {
@@ -257,6 +261,11 @@ footer a:hover {
   max-width: 500px;
   text-align: left;
   padding: 1rem;
+}
+
+.text-section ul {
+  margin-top: 1rem;
+  margin-left: 1.5rem;
 }
 
 /* Responsive design */
