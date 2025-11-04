@@ -2,40 +2,38 @@
 
 :root {
   color-scheme: dark;
-  --background-gradient: linear-gradient(180deg, #131321 0%, #1c1f3f 45%, #0b0c18 100%);
-  --surface: rgba(28, 31, 63, 0.75);
-  --surface-strong: rgba(32, 36, 74, 0.9);
-  --surface-soft: rgba(32, 36, 74, 0.6);
-  --text-primary: #f4f5ff;
-  --text-secondary: #c5cae9;
-  --text-muted: #8f96c4;
-  --accent: #ff4b82;
-  --accent-hover: #ff6a9d;
-  --outline: rgba(255, 255, 255, 0.1);
-  --shadow-strong: 0 25px 50px rgba(0, 0, 0, 0.35);
-  --shadow-soft: 0 15px 35px rgba(0, 0, 0, 0.25);
-  --banner-bg: rgba(34, 37, 70, 0.85);
-  --banner-text: #f4f5ff;
-  --icon-filter: invert(1);
+  --background-gradient: linear-gradient(180deg, #080808 0%, #2a0303 48%, #050505 100%);
+  --surface: rgba(48, 12, 12, 0.85);
+  --surface-strong: rgba(64, 18, 18, 0.95);
+  --surface-soft: rgba(36, 9, 9, 0.68);
+  --text-primary: #f8f8f8;
+  --text-secondary: #d9d9d9;
+  --text-muted: #9a9a9a;
+  --accent: #ff3044;
+  --accent-hover: #ff5766;
+  --outline: rgba(255, 255, 255, 0.08);
+  --shadow-strong: 0 26px 55px rgba(0, 0, 0, 0.45);
+  --shadow-soft: 0 18px 42px rgba(0, 0, 0, 0.32);
+  --banner-bg: rgba(20, 20, 20, 0.88);
+  --banner-text: #f8f8f8;
 }
 
 body.theme-light {
   color-scheme: light;
-  --background-gradient: linear-gradient(180deg, #ff9a9e 0%, #ffdde1 45%, #fff7f7 100%);
-  --surface: rgba(255, 255, 255, 0.82);
-  --surface-strong: rgba(255, 255, 255, 0.94);
-  --surface-soft: rgba(255, 255, 255, 0.7);
-  --text-primary: #1f1f1f;
-  --text-secondary: #3a3a3a;
-  --text-muted: #666;
-  --accent: #ff3366;
-  --accent-hover: #d32153;
+  --background-gradient: linear-gradient(180deg, #ffffff 0%, #ffe6e6 48%, #f7f7f7 100%);
+  --surface: rgba(255, 255, 255, 0.86);
+  --surface-strong: rgba(255, 255, 255, 0.96);
+  --surface-soft: rgba(255, 255, 255, 0.72);
+  --text-primary: #111;
+  --text-secondary: #2e2e2e;
+  --text-muted: #555;
+  --accent: #d7263d;
+  --accent-hover: #b71d31;
   --outline: rgba(0, 0, 0, 0.08);
-  --shadow-strong: 0 22px 50px rgba(255, 51, 102, 0.2);
-  --shadow-soft: 0 14px 30px rgba(0, 0, 0, 0.12);
-  --banner-bg: rgba(255, 255, 255, 0.92);
-  --banner-text: #1f1f1f;
-  --icon-filter: none;
+  --shadow-strong: 0 22px 48px rgba(215, 38, 61, 0.28);
+  --shadow-soft: 0 16px 34px rgba(0, 0, 0, 0.12);
+  --banner-bg: rgba(255, 255, 255, 0.95);
+  --banner-text: #111;
 }
 
 * {
@@ -128,6 +126,7 @@ body {
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
+  flex-wrap: wrap;
 }
 
 .site-logo {
@@ -164,6 +163,10 @@ body {
   box-shadow: var(--shadow-soft);
 }
 
+.header-bar .theme-toggle {
+  margin-left: auto;
+}
+
 .theme-toggle:hover {
   transform: translateY(-2px);
   background: var(--accent);
@@ -195,6 +198,10 @@ main {
   align-items: center;
   gap: 1.75rem;
   padding: 0 1rem;
+}
+
+body:not(.home-page) main {
+  margin-top: clamp(2.5rem, 6vw, 4rem);
 }
 
 h1 {
@@ -381,7 +388,7 @@ ul {
   height: 48px;
   border-radius: 50%;
   background: var(--surface-strong);
-  border: 1px solid var(--outline);
+  border: 1px solid var(--outline); 
   box-shadow: var(--shadow-soft);
   transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
 }
@@ -396,7 +403,7 @@ ul {
   width: clamp(28px, 5vw, 32px);
   height: clamp(28px, 5vw, 32px);
   transition: transform 0.2s;
-  filter: var(--icon-filter);
+  filter: none;
 }
 
 .social-button:hover img {
@@ -499,7 +506,7 @@ footer a:hover {
 .contact-form input:focus,
 .contact-form textarea:focus {
   border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(255, 75, 130, 0.2);
+  box-shadow: 0 0 0 3px rgba(255, 48, 68, 0.25);
 }
 
 .contact-form button:disabled {
@@ -781,6 +788,112 @@ footer a:hover {
   border-color: currentColor;
 }
 
+.blog-article-wrapper {
+  width: 100%;
+  max-width: 920px;
+  margin: 0 auto;
+  padding: clamp(1.5rem, 4vw, 2.5rem);
+  background: var(--surface-strong);
+  border-radius: 24px;
+  border: 1px solid var(--outline);
+  box-shadow: var(--shadow-soft);
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+  text-align: left;
+}
+
+.blog-article-header {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.blog-article-header h1 {
+  font-size: clamp(2rem, 5vw, 2.8rem);
+  color: var(--text-primary);
+}
+
+.blog-article-header .lead {
+  font-size: clamp(1.05rem, 2.5vw, 1.3rem);
+  color: var(--text-secondary);
+}
+
+.blog-article-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.blog-article-meta time {
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.blog-article-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  color: var(--text-secondary);
+}
+
+.blog-article-content h2 {
+  font-size: clamp(1.4rem, 4vw, 1.9rem);
+  color: var(--text-primary);
+}
+
+.blog-article-content p,
+.blog-article-content li {
+  line-height: 1.8;
+}
+
+.blog-article-content ul {
+  margin-left: 1.2rem;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.blog-article-content blockquote {
+  border-left: 4px solid var(--accent);
+  padding: 0.75rem 1.1rem;
+  font-style: italic;
+  color: var(--text-secondary);
+  background: var(--surface);
+  border-radius: 12px;
+}
+
+.blog-article-footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.blog-article-footer .article-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.blog-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.blog-back-link:hover {
+  color: var(--accent-hover);
+}
+
 /* Responsive design */
 @media (max-width: 768px) {
   body {
@@ -795,9 +908,9 @@ footer a:hover {
   }
 
   .header-bar {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.75rem;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5rem;
   }
 
   .nav-wrapper {
@@ -817,9 +930,13 @@ footer a:hover {
     flex: 0 0 auto;
   }
 
-  .theme-toggle {
-    width: 100%;
-    justify-content: center;
+  .header-bar {
+    justify-content: space-between;
+    gap: 0.6rem;
+  }
+
+  .header-bar .theme-toggle {
+    width: auto;
   }
 
   .hero-actions {
@@ -863,6 +980,17 @@ footer a:hover {
   .contact-links {
     flex-direction: column;
     gap: 1rem;
+  }
+
+  .blog-article-wrapper {
+    padding: 1.25rem;
+    border-radius: 20px;
+  }
+
+  .blog-article-footer {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
   }
 }
 

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="images/avatar.png" />
+    <title>Rebuilding My Roblox Combat System - COOLmanYT</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="blog-page">
+    <div class="top-banner">
+        <span>🛠️ <strong>Public Beta</strong> version of the website.</span>
+        <a class="banner-button" href="https://github.com/RandomInternetUser3000/mycoolwebsite" target="_blank" rel="noopener noreferrer">Open Source GitHub Repository</a>
+    </div>
+
+    <header class="site-header">
+        <div class="header-bar">
+            <a href="index.html" class="site-logo">COOLmanYT</a>
+            <button type="button" class="theme-toggle" aria-label="Switch to light mode" aria-pressed="true">
+                <span class="toggle-icon">🌙</span>
+                <span class="toggle-text">Light mode</span>
+            </button>
+        </div>
+        <div class="social-links">
+            <a href="https://github.com/RandomInternetUser3000" target="_blank" rel="noopener noreferrer" class="social-button">
+                <img src="images/github.png" alt="Github">
+            </a>
+            <a href="https://www.youtube.com/@COOLmanGamer?sub_confirmation=1" target="_blank" rel="noopener noreferrer" class="social-button">
+                <img src="images/youtube.png" alt="YouTube">
+            </a>
+            <a href="https://discord.com/users/YOUR_DISCORD_ID" target="_blank" rel="noopener noreferrer" class="social-button">
+                <img src="images/discord.svg" alt="Discord">
+            </a>
+            <a href="https://www.roblox.com/users/YOUR_ROBLOX_ID/profile" target="_blank" rel="noopener noreferrer" class="social-button">
+                <img src="images/roblox.svg" alt="Roblox">
+            </a>
+            <a href="#" target="_blank" rel="noopener noreferrer" class="social-button">
+                <img src="images/placeholder1.svg" alt="Social Link">
+            </a>
+            <a href="#" target="_blank" rel="noopener noreferrer" class="social-button">
+                <img src="images/placeholder2.svg" alt="Social Link">
+            </a>
+        </div>
+        <div class="nav-wrapper">
+            <nav class="nav-links">
+                <a href="index.html" class="nav-pill">Home</a>
+                <a href="about.html" class="nav-pill">About</a>
+                <a href="projects.html" class="nav-pill">Projects</a>
+                <a href="contact.html" class="nav-pill">Contact</a>
+                <a href="gallery.html" class="nav-pill">Gallery</a>
+                <a href="blog.html" class="nav-pill active">Blog</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <a href="blog.html" class="blog-back-link">← Back to all posts</a>
+        <article class="blog-article-wrapper">
+            <header class="blog-article-header">
+                <div class="blog-article-meta">
+                    <span class="tag-pill">Featured</span>
+                    <time datetime="2025-10-19">October 19, 2025</time>
+                    <span>~6 minute read</span>
+                </div>
+                <h1>Rebuilding My Roblox Combat System From Scratch</h1>
+                <p class="lead">I rewrote the entire combat loop to be faster, fairer, and easier to extend. Here's the breakdown of what changed and why the upgrade was worth the effort.</p>
+            </header>
+
+            <div class="blog-article-content">
+                <p>When I first prototyped combat for my Roblox project, the goal was simple: hit detection that "felt" right. Months later the codebase was a spaghetti bowl of remote events, server-side guesses, and duct tape cooldowns. The rewrite replaces every piece of that foundation with something intentional.</p>
+
+                <h2>What Was Holding the Old System Back</h2>
+                <ul>
+                    <li>A single hitbox meant wide swings and tight pokes behaved the same.</li>
+                    <li>Client prediction drifted every few seconds, so blocking felt random.</li>
+                    <li>Animation state checks were tied to frame events, not actual timing.</li>
+                </ul>
+
+                <p>Instead of patching each bug, I listed the sensations I wanted players to feel—snappy confirms, punishable misses, and readable blocks. Anything that didn't support those outcomes went on the chopping block.</p>
+
+                <h2>The New Foundation</h2>
+                <p>The rewrite centers around modular abilities. Each ability defines its own hit windows, stamina taxes, and visual effects, then plugs into a shared state machine. That gives me granular control and cleaner testing.</p>
+
+                <blockquote>"The biggest win was separating animation pacing from damage timing. Once those two systems stopped fighting each other, every combo suddenly clicked."</blockquote>
+
+                <p>On top of that, I built dashboards that track hit accuracy, block success, and combo drops per session. Data beats vibes when you're balancing PvP.</p>
+
+                <h2>What's Next</h2>
+                <p>Two features are still in the lab: directional dodges and weapon-specific perks. Directional dodges need bespoke camera easing, and perks require UI updates so players actually notice them. Expect more updates once those hit testing.</p>
+            </div>
+
+            <footer class="blog-article-footer">
+                <span>Last updated October 24, 2025 • Changelog: Added telemetry charts and refactored stamina costs.</span>
+                <div class="article-actions">
+                    <a href="blog.html" class="button">More posts</a>
+                    <a href="contact.html" class="button">Request a follow-up</a>
+                </div>
+            </footer>
+        </article>
+    </main>
+
+    <footer>
+        Made with ♥️ by <strong>COOLmanYT</strong><br>
+        Website <a id="github-repo" href="https://github.com/RandomInternetUser3000/mycoolwebsite">Version 0.8.11 Public Beta</a> <br>
+        Credits to <a href="https://zinheere.vercel.app">Zinheere</a> <br>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
