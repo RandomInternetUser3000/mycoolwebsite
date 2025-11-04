@@ -55,7 +55,7 @@ function updateToggleState(theme) {
 	const nextThemeName = isLight ? 'Dark mode' : 'Light mode';
 
 	if (icon) {
-		icon.textContent = isLight ? '🌞' : '🌙';
+		icon.textContent = isLight ? '☀️' : '🌙';
 	}
 
 	if (label) {
