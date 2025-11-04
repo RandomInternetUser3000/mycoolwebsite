@@ -7,56 +7,90 @@
     <title>About Me - COOLmanYT</title>
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
-  <div class="main-content">
-    <img src="images/avatar.png" alt="COOLmanYT Avatar">
-    <div class="text-section">
-      <h1>About Me</h1>
-      <p><strong>Hello!</strong> I am known as <em>COOLmanYT</em> on the internet!</p>
-      <p>I am a:</p>
-      <ul>
-        <li>Novice Programmer</li>
-        <li>Content Creator</li>
-        <li>Tech Nerd</li>
-        <li>Developer on Discord and Github</li>
-        <li>Verified Discord Degenerate</li>
-        <li>Student</li>
-      </ul>
-      <p>I have a bit of HTML and CSS experience as well as basic Python knowledge. I made a few projects using Python, like a Guess Who? game.</p>
-    </div>
+<body class="about-page">
+  <div class="top-banner">
+    <span>🛠️ <strong>Public Beta</strong> version of the website.</span>
+    <a class="banner-button" href="https://github.com/RandomInternetUser3000/mycoolwebsite" target="_blank" rel="noopener noreferrer">Open Source GitHub Repository</a>
   </div>
 
-  <div class="nav-links">
-    <a href="index.html" class="button">Home</a>
-    <a href="projects.html" class="button">Projects</a>
-    <a href="contact.html" class="button">Contact</a>
+  <header class="site-header">
+    <a href="index.html" class="site-logo">COOLmanYT</a>
+    <div class="social-links">
+      <a href="https://github.com/RandomInternetUser3000" target="_blank" rel="noopener noreferrer" class="social-button">
+        <img src="images/github.png" alt="Github">
+      </a>
+      <a href="https://www.youtube.com/@COOLmanGamer?sub_confirmation=1" target="_blank" rel="noopener noreferrer" class="social-button">
+        <img src="images/youtube.png" alt="YouTube">
+      </a>
+      <a href="https://discord.com/users/YOUR_DISCORD_ID" target="_blank" rel="noopener noreferrer" class="social-button">
+        <img src="images/discord.svg" alt="Discord">
+      </a>
+      <a href="https://www.roblox.com/users/YOUR_ROBLOX_ID/profile" target="_blank" rel="noopener noreferrer" class="social-button">
+        <img src="images/roblox.svg" alt="Roblox">
+      </a>
+      <a href="#" target="_blank" rel="noopener noreferrer" class="social-button">
+        <img src="images/placeholder1.svg" alt="Social Link">
+      </a>
+      <a href="#" target="_blank" rel="noopener noreferrer" class="social-button">
+        <img src="images/placeholder2.svg" alt="Social Link">
+      </a>
+    </div>
+    <nav class="nav-links">
+      <a href="index.html" class="nav-pill">Home</a>
+      <a href="about.html" class="nav-pill active">About</a>
+      <a href="projects.html" class="nav-pill">Projects</a>
+      <a href="contact.html" class="nav-pill">Contact</a>
+      <a href="gallery.html" class="nav-pill">Gallery</a>
+      <a href="blog.html" class="nav-pill">Blog</a>
+      <a href="forum.html" class="nav-pill">Forum</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="main-content">
+      <img src="images/avatar.png" alt="COOLmanYT Avatar">
+      <div class="text-section">
+        <h1>About Me</h1>
+        <p><strong>Hello!</strong> I am known as <em>COOLmanYT</em> on the internet!</p>
+        <p>I am a:</p>
+        <ul>
+          <li>Novice Programmer</li>
+          <li>Content Creator</li>
+          <li>Tech Nerd</li>
+          <li>Developer on Discord and Github</li>
+          <li>Verified Discord Degenerate</li>
+          <li>Student</li>
+        </ul>
+        <p>I have a bit of HTML and CSS experience as well as basic Python knowledge. I made a few projects using Python, like a Guess Who? game.</p>
+      </div>
     </div>
 
-  <div class="social-links">
-    <a href="https://github.com/RandomInternetUser3000" target="_blank" class="social-button">
-      <img src="images/github.png" alt="Github">
-    </a>
-    <a href="https://www.youtube.com/@COOLmanGamer?sub_confirmation=1" target="_blank" class="social-button">
-      <img src="images/youtube.png" alt="YouTube">
-    </a>
-    <a href="https://discord.com/users/YOUR_DISCORD_ID" target="_blank" class="social-button">
-      <img src="images/discord.svg" alt="Discord">
-    </a>
-    <a href="https://www.roblox.com/users/YOUR_ROBLOX_ID/profile" target="_blank" class="social-button">
-      <img src="images/roblox.svg" alt="Roblox">
-    </a>
-    <a href="#" target="_blank" class="social-button">
-      <img src="images/placeholder1.svg" alt="Social Link">
-    </a>
-    <a href="#" target="_blank" class="social-button">
-      <img src="images/placeholder2.svg" alt="Social Link">
-    </a>
-  </div>
+    <section class="highlight-cards">
+      <article>
+        <h2>Gallery</h2>
+        <p>Peek behind the scenes with screenshots from my latest builds, studio setups, and works-in-progress.</p>
+        <a href="gallery.html" class="button">Browse Gallery</a>
+      </article>
+      <article>
+        <h2>Blog</h2>
+        <p>Read updates about what I am learning, building, and experimenting with each week.</p>
+        <a href="blog.html" class="button">Read Blog</a>
+      </article>
+      <article>
+        <h2>Community Forum</h2>
+        <p>Share ideas, ask questions, and let me reply directly. Let’s build something awesome together!</p>
+        <a href="forum.html" class="button">Join the Forum</a>
+      </article>
+    </section>
+  </main>
 
-<footer>
+  <footer>
     Made with ♥️ by <strong>COOLmanYT</strong><br>
-  Website <a id="github-repo" href="https://github.com/RandomInternetUser3000/mycoolwebsite">Version 0.8.5 Public Beta</a> <br>
+    Website <a id="github-repo" href="https://github.com/RandomInternetUser3000/mycoolwebsite">Version 0.8.7 Public Beta</a> <br>
     Credits to <a href="https://zinheere.vercel.app">Zinheere</a> <br>
   </footer>
+
+  <script src="script.js"></script>
+</body>
 </body>
 </html>
