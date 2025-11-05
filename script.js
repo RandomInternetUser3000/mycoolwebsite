@@ -173,7 +173,7 @@ function enableContactForm() {
 					try {
 						const text = await responseClone.text();
 						// Limit text length to avoid displaying large HTML error pages
-						if (text && text.length < MAX_ERROR_TEXT_LENGTH) {
+						if (text && text.length <= MAX_ERROR_TEXT_LENGTH) {
 							errorMessage = text;
 							parsedMessage = true;
 						}
@@ -200,11 +200,10 @@ function enableContactForm() {
 					statusElement.classList.add('error');
 				}
 				
-				// Log error for debugging
+				// Log error for debugging (excluding endpoint to avoid exposing sensitive info)
 				console.error('Form submission failed:', {
 					status: response.status,
-					statusText: response.statusText,
-					endpoint: endpoint
+					statusText: response.statusText
 				});
 			}
 		} catch (error) {
