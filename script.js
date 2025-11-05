@@ -1,4 +1,4 @@
-const ver = "Version 0.8.15 Public Beta"
+const ver = "Version 0.8.16 Public Beta"
 
 document.addEventListener('DOMContentLoaded', () => {
 	applyInitialTheme();
@@ -197,7 +197,17 @@ function addSocialTooltips() {
 			else label = 'External link';
 		}
 
-		btn.setAttribute('title', label);
+		// Remove native title to avoid browser tooltip; we'll show an animated label instead
+		if (btn.hasAttribute('title')) btn.removeAttribute('title');
 		btn.setAttribute('aria-label', label);
+
+		// Create or update a visible label element that will animate on hover
+		let span = btn.querySelector('.social-label');
+		if (!span) {
+			span = document.createElement('span');
+			span.className = 'social-label';
+			btn.appendChild(span);
+		}
+		span.textContent = label;
 	});
 }
