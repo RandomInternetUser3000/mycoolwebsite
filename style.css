@@ -411,6 +411,12 @@ ul {
   filter: none;
 }
 
+/* Make the GitHub logo white in dark mode (keeps other icons unchanged) */
+body:not(.theme-light) .social-button img[src*="github"] {
+  /* brightness(0) makes the image black; invert(1) turns black to white */
+  filter: brightness(0) invert(1);
+}
+
 .social-button.tilt {
   transform: scale(1.1) rotate(4deg);
 }

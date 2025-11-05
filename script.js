@@ -1,4 +1,4 @@
-const ver = "Version 0.8.14fix Public Beta"
+const ver = "Version 0.8.15 Public Beta"
 
 document.addEventListener('DOMContentLoaded', () => {
 	applyInitialTheme();
@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
 	enableContactForm();
 	enhanceSocialButtons();
     updatever();
+    addSocialTooltips();
 });
 
 const THEME_STORAGE_KEY = 'coolman-theme';
@@ -171,4 +172,32 @@ function updatever() {
 	if (!el) return; // nothing to update on this page
 	// Use textContent to avoid interpreting HTML and preserve the anchor href
 	el.textContent = ver;
+}
+
+/**
+ * Ensure social links show the platform name on hover.
+ * Uses the nested <img alt="..."> when available, otherwise infers from the href.
+ */
+function addSocialTooltips() {
+	const buttons = document.querySelectorAll('.social-button');
+	buttons.forEach((btn) => {
+		// Don't override an explicit title the author may have set
+		if (btn.getAttribute('title')) return;
+
+		const img = btn.querySelector('img');
+		let label = img && img.alt ? img.alt.trim() : '';
+
+		if (!label) {
+			const href = (btn.getAttribute('href') || '').toLowerCase();
+			if (/github/.test(href)) label = 'GitHub';
+			else if (/youtube|youtu\.be/.test(href)) label = 'YouTube';
+			else if (/discord/.test(href)) label = 'Discord';
+			else if (/roblox/.test(href)) label = 'Roblox';
+			else if (href) label = href.replace(/^https?:\/\//, '').replace(/\/.*$/, '');
+			else label = 'External link';
+		}
+
+		btn.setAttribute('title', label);
+		btn.setAttribute('aria-label', label);
+	});
 }
