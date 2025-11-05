@@ -1,4 +1,4 @@
-const ver = "Version 0.8.16 Public Beta"
+const ver = "Version 0.8.16fix Public Beta"
 
 document.addEventListener('DOMContentLoaded', () => {
 	applyInitialTheme();
@@ -185,8 +185,22 @@ function addSocialTooltips() {
 		if (btn.getAttribute('title')) return;
 
 		const img = btn.querySelector('img');
-		let label = img && img.alt ? img.alt.trim() : '';
 
+		// Ensure the image is wrapped in a fixed-size circular wrapper so the icon stays centered.
+		if (img) {
+			let iconWrapper = btn.querySelector('.social-icon');
+			if (!iconWrapper) {
+				iconWrapper = document.createElement('span');
+				iconWrapper.className = 'social-icon';
+				// Move the image into the wrapper
+				btn.insertBefore(iconWrapper, img);
+				iconWrapper.appendChild(img);
+			}
+		}
+
+		// Determine label from alt text or href
+		let label = '';
+		if (img && img.alt) label = img.alt.trim();
 		if (!label) {
 			const href = (btn.getAttribute('href') || '').toLowerCase();
 			if (/github/.test(href)) label = 'GitHub';
@@ -197,7 +211,7 @@ function addSocialTooltips() {
 			else label = 'External link';
 		}
 
-		// Remove native title to avoid browser tooltip; we'll show an animated label instead
+		// Remove native title to avoid browser tooltip; keep aria-label for accessibility
 		if (btn.hasAttribute('title')) btn.removeAttribute('title');
 		btn.setAttribute('aria-label', label);
 

@@ -383,30 +383,41 @@ ul {
 .social-button {
   display: inline-flex;
   align-items: center;
+  gap: 0.5rem;
+  padding: 0;
+  margin: 0;
+}
+
+/* Circular icon wrapper: keeps the icon centered and fixed size while label expands */
+.social-icon {
+  display: inline-flex;
+  align-items: center;
   justify-content: center;
   width: 48px;
   height: 48px;
   border-radius: 50%;
   background: var(--surface-strong);
-  border: 1px solid var(--outline); 
+  border: 1px solid var(--outline);
   box-shadow: var(--shadow-soft);
   transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+  flex: 0 0 auto;
 }
 
-.social-button:hover {
+.social-button:hover .social-icon {
   transform: translateY(-3px) scale(1.05);
   background: var(--accent);
   box-shadow: var(--shadow-strong);
 }
 
-.social-button img {
+.social-icon img {
   width: clamp(28px, 5vw, 32px);
   height: clamp(28px, 5vw, 32px);
   transition: transform 0.2s;
   filter: none;
 }
 
-.social-button:hover img {
+.social-icon:hover img,
+.social-button:hover .social-icon img {
   transform: scale(1.1);
   filter: none;
 }
