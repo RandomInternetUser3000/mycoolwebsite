@@ -1,13 +1,14 @@
-const ver = "Version 0.8.16fix Public Beta"
+const ver = "Version 0.8.17 Public Beta"
 
 document.addEventListener('DOMContentLoaded', () => {
 	applyInitialTheme();
 	setupThemeToggle();
 	fadeInPage();
 	enableContactForm();
+	updatever();
+	addSocialTooltips();
 	enhanceSocialButtons();
-    updatever();
-    addSocialTooltips();
+	setupNavHoverGlow();
 });
 
 const THEME_STORAGE_KEY = 'coolman-theme';
@@ -101,7 +102,7 @@ function fadeInPage() {
 }
 
 function enhanceSocialButtons() {
-	const socialButtons = document.querySelectorAll('.social-button');
+	const socialButtons = document.querySelectorAll('.social-links .social-button');
 	socialButtons.forEach((button) => {
 		button.addEventListener('mouseenter', () => button.classList.add('tilt'));
 		button.addEventListener('mouseleave', () => button.classList.remove('tilt'));
@@ -118,14 +119,29 @@ function enableContactForm() {
 	const submitButton = contactForm.querySelector('button[type="submit"]');
 	const endpoint = contactForm.getAttribute('action');
 
-	contactForm.addEventListener('submit', async (event) => {
+	if (!endpoint || !submitButton) {
+		return;
+	}
+
+	const handleSubmit = async (event) => {
 		event.preventDefault();
 
-		if (!endpoint) {
-			return;
-		}
-
 		const formData = new FormData(contactForm);
+		const urlEncoded = new URLSearchParams();
+		formData.forEach((value, key) => {
+			urlEncoded.append(key, String(value));
+		});
+
+		const resetStatus = () => {
+			submitButton.disabled = false;
+			submitButton.textContent = 'Send Message';
+		};
+
+		const fallbackSubmit = () => {
+			resetStatus();
+			contactForm.removeEventListener('submit', handleSubmit);
+			contactForm.submit();
+		};
 
 		submitButton.disabled = true;
 		submitButton.textContent = 'Sending...';
@@ -137,8 +153,11 @@ function enableContactForm() {
 		try {
 			const response = await fetch(endpoint, {
 				method: 'POST',
-				headers: { Accept: 'application/json' },
-				body: formData,
+				headers: {
+					Accept: 'application/json',
+					'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+				},
+				body: urlEncoded.toString(),
 			});
 
 			if (response.ok) {
@@ -149,10 +168,17 @@ function enableContactForm() {
 				contactForm.reset();
 			} else {
 				const data = await response.json().catch(() => null);
-				const errorMessage = data?.errors?.[0]?.message || 'Something went wrong. Please try again later.';
+				const errorList = Array.isArray(data?.errors)
+					? data.errors.map((item) => item?.message).filter(Boolean)
+					: [];
+				const errorMessage = errorList.join('\n') || data?.message || 'Something went wrong. Please try again later.';
 				if (statusElement) {
 					statusElement.textContent = errorMessage;
 					statusElement.classList.add('error');
+				}
+				if (response.status >= 500) {
+					fallbackSubmit();
+					return;
 				}
 			}
 		} catch (error) {
@@ -160,11 +186,14 @@ function enableContactForm() {
 				statusElement.textContent = 'Network error. Please check your connection and try again.';
 				statusElement.classList.add('error');
 			}
+			fallbackSubmit();
+			return;
 		} finally {
-			submitButton.disabled = false;
-			submitButton.textContent = 'Send Message';
+			resetStatus();
 		}
-	});
+	};
+
+	contactForm.addEventListener('submit', handleSubmit);
 }
 
 function updatever() {
@@ -179,7 +208,7 @@ function updatever() {
  * Uses the nested <img alt="..."> when available, otherwise infers from the href.
  */
 function addSocialTooltips() {
-	const buttons = document.querySelectorAll('.social-button');
+	const buttons = document.querySelectorAll('.social-links .social-button');
 	buttons.forEach((btn) => {
 		// Don't override an explicit title the author may have set
 		if (btn.getAttribute('title')) return;
@@ -223,5 +252,22 @@ function addSocialTooltips() {
 			btn.appendChild(span);
 		}
 		span.textContent = label;
+	});
+}
+
+function setupNavHoverGlow() {
+	const navBars = document.querySelectorAll('.nav-links');
+	navBars.forEach((nav) => {
+		nav.addEventListener('pointermove', (event) => {
+			const rect = nav.getBoundingClientRect();
+			const x = ((event.clientX - rect.left) / rect.width) * 100;
+			const y = ((event.clientY - rect.top) / rect.height) * 100;
+			nav.style.setProperty('--nav-hover-x', `${x}%`);
+			nav.style.setProperty('--nav-hover-y', `${y}%`);
+		});
+		nav.addEventListener('pointerleave', () => {
+			nav.style.removeProperty('--nav-hover-x');
+			nav.style.removeProperty('--nav-hover-y');
+		});
 	});
 }

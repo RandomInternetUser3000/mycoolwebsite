@@ -150,8 +150,46 @@ body {
 .theme-toggle {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
+  overflow-x: auto;
+  position: relative;
+  isolation: isolate;
+  position: relative;
+
+.nav-links::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  background: radial-gradient(circle at var(--nav-hover-x, 50%) var(--nav-hover-y, 50%), rgba(255, 48, 68, 0.28), rgba(255, 48, 68, 0) 60%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.nav-links:hover::before {
+  opacity: 1;
+}
+  overflow: hidden;
+  isolation: isolate;
   padding: 0.55rem 1.1rem;
+
+.nav-links::before {
+  content: "";
+  position: absolute;
+  position: relative;
+  z-index: 1;
+  inset: -1px;
+  background: radial-gradient(circle at var(--nav-hover-x, 50%) var(--nav-hover-y, 50%), rgba(255, 48, 68, 0.28), rgba(255, 48, 68, 0) 60%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.nav-links:hover::before {
+  opacity: 1;
+}
   border-radius: 999px;
   border: 1px solid var(--outline);
   background: var(--surface-strong);
@@ -159,6 +197,8 @@ body {
   font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
+  position: relative;
+  z-index: 1;
   transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
   box-shadow: var(--shadow-soft);
 }
@@ -380,16 +420,19 @@ ul {
   margin: 0.25rem 0 0.5rem;
 }
 
-.social-button {
+.social-links .social-button {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0;
+  padding: 0 0.5rem;
   margin: 0;
+  text-decoration: none;
+  color: var(--text-primary);
+  overflow: visible;
 }
 
 /* Circular icon wrapper: keeps the icon centered and fixed size while label expands */
-.social-icon {
+.social-links .social-icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -403,33 +446,26 @@ ul {
   flex: 0 0 auto;
 }
 
-.social-button:hover .social-icon {
+.social-links .social-button:hover .social-icon {
   transform: translateY(-3px) scale(1.05);
   background: var(--accent);
   box-shadow: var(--shadow-strong);
 }
 
-.social-icon img {
+.social-links .social-icon img {
   width: clamp(28px, 5vw, 32px);
   height: clamp(28px, 5vw, 32px);
   transition: transform 0.2s;
   filter: none;
 }
 
-.social-icon:hover img,
-.social-button:hover .social-icon img {
+.social-links .social-button:hover .social-icon img {
   transform: scale(1.1);
   filter: none;
 }
 
 /* Animated label that appears to the right of the icon and pushes content when hovered */
-.social-button {
-  gap: 0.5rem; /* space between icon and label */
-  padding: 0 0.5rem; /* allow room for label expansion */
-  overflow: visible; /* allow the label to be visible outside the circle area */
-}
-
-.social-button .social-label {
+.social-links .social-button .social-label {
   display: inline-block;
   max-width: 0;
   opacity: 0;
@@ -440,29 +476,25 @@ ul {
   color: var(--text-primary);
   transition: max-width 260ms cubic-bezier(.2,.9,.2,1), opacity 160ms ease, margin 260ms cubic-bezier(.2,.9,.2,1);
   margin-left: 0;
+  user-select: none;
+  pointer-events: none;
 }
 
-.social-button:hover .social-label,
-.social-button:focus-within .social-label {
+.social-links .social-button:hover .social-label,
+.social-links .social-button:focus-within .social-label {
   max-width: 200px; /* expand to fit text */
   opacity: 1;
   margin-left: 8px;
 }
 
-/* Make sure the label doesn't get selected during quick drags */
-.social-button .social-label {
-  user-select: none;
-  pointer-events: none;
-}
-
 /* Make the GitHub logo white in dark mode (keeps other icons unchanged) */
-body:not(.theme-light) .social-button img[src*="github"] {
+body:not(.theme-light) .social-links .social-icon img[src*="github"] {
   /* brightness(0) makes the image black; invert(1) turns black to white */
   filter: brightness(0) invert(1);
 }
 
-.social-button.tilt {
-  transform: scale(1.1) rotate(4deg);
+.social-links .social-button.tilt {
+  transform: scale(1.05) rotate(2deg);
 }
 
 .contact-links {
