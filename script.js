@@ -150,36 +150,45 @@ function enableContactForm() {
 			} else {
 				// Try to parse error response
 				let errorMessage = 'Something went wrong. Please try again later.';
+				let parsedMessage = false;
+				
 				try {
 					const data = await response.json();
 					if (data?.errors?.[0]?.message) {
 						errorMessage = data.errors[0].message;
+						parsedMessage = true;
 					} else if (data?.error) {
 						errorMessage = data.error;
+						parsedMessage = true;
 					} else if (data?.message) {
 						errorMessage = data.message;
+						parsedMessage = true;
 					}
 				} catch (parseError) {
 					// If JSON parsing fails, try to get text response
 					try {
 						const text = await response.text();
+						// Limit text length to avoid displaying large HTML error pages
 						if (text && text.length < 200) {
 							errorMessage = text;
+							parsedMessage = true;
 						}
 					} catch (textError) {
 						// Keep default error message
 					}
 				}
 				
-				// Add status-specific messages
-				if (response.status === 400) {
-					errorMessage = 'Please check that all fields are filled correctly.';
-				} else if (response.status === 403) {
-					errorMessage = 'Form submission blocked. Please contact the site owner.';
-				} else if (response.status === 404) {
-					errorMessage = 'Form endpoint not found. Please contact the site owner.';
-				} else if (response.status >= 500) {
-					errorMessage = 'Server error. Please try again later.';
+				// Add status-specific messages only if no meaningful message was parsed
+				if (!parsedMessage) {
+					if (response.status === 400) {
+						errorMessage = 'Please check that all fields are filled correctly.';
+					} else if (response.status === 403) {
+						errorMessage = 'Form submission blocked. Please contact the site owner.';
+					} else if (response.status === 404) {
+						errorMessage = 'Form endpoint not found. Please contact the site owner.';
+					} else if (response.status >= 500) {
+						errorMessage = 'Server error. Please try again later.';
+					}
 				}
 				
 				if (statusElement) {
