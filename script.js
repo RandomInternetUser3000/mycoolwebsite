@@ -1,4 +1,4 @@
-const ver = "Version 0.8.14 Public Beta"
+const ver = "Version 0.8.14fix Public Beta"
 
 document.addEventListener('DOMContentLoaded', () => {
 	applyInitialTheme();
@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
 	fadeInPage();
 	enableContactForm();
 	enhanceSocialButtons();
+    updatever();
 });
 
 const THEME_STORAGE_KEY = 'coolman-theme';
@@ -166,5 +167,8 @@ function enableContactForm() {
 }
 
 function updatever() {
-	document.getElementById("github-repo").innerText = ver;
+	const el = document.getElementById('github-repo');
+	if (!el) return; // nothing to update on this page
+	// Use textContent to avoid interpreting HTML and preserve the anchor href
+	el.textContent = ver;
 }
