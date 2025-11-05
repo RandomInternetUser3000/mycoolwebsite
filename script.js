@@ -148,18 +148,58 @@ function enableContactForm() {
 				}
 				contactForm.reset();
 			} else {
-				const data = await response.json().catch(() => null);
-				const errorMessage = data?.errors?.[0]?.message || 'Something went wrong. Please try again later.';
+				// Try to parse error response
+				let errorMessage = 'Something went wrong. Please try again later.';
+				try {
+					const data = await response.json();
+					if (data?.errors?.[0]?.message) {
+						errorMessage = data.errors[0].message;
+					} else if (data?.error) {
+						errorMessage = data.error;
+					} else if (data?.message) {
+						errorMessage = data.message;
+					}
+				} catch (parseError) {
+					// If JSON parsing fails, try to get text response
+					try {
+						const text = await response.text();
+						if (text && text.length < 200) {
+							errorMessage = text;
+						}
+					} catch (textError) {
+						// Keep default error message
+					}
+				}
+				
+				// Add status-specific messages
+				if (response.status === 400) {
+					errorMessage = 'Please check that all fields are filled correctly.';
+				} else if (response.status === 403) {
+					errorMessage = 'Form submission blocked. Please contact the site owner.';
+				} else if (response.status === 404) {
+					errorMessage = 'Form endpoint not found. Please contact the site owner.';
+				} else if (response.status >= 500) {
+					errorMessage = 'Server error. Please try again later.';
+				}
+				
 				if (statusElement) {
 					statusElement.textContent = errorMessage;
 					statusElement.classList.add('error');
 				}
+				
+				// Log error for debugging
+				console.error('Form submission failed:', {
+					status: response.status,
+					statusText: response.statusText,
+					endpoint: endpoint
+				});
 			}
 		} catch (error) {
 			if (statusElement) {
 				statusElement.textContent = 'Network error. Please check your connection and try again.';
 				statusElement.classList.add('error');
 			}
+			console.error('Form submission error:', error);
 		} finally {
 			submitButton.disabled = false;
 			submitButton.textContent = 'Send Message';
