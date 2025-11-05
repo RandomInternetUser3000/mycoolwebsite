@@ -411,6 +411,39 @@ ul {
   filter: none;
 }
 
+/* Animated label that appears to the right of the icon and pushes content when hovered */
+.social-button {
+  gap: 0.5rem; /* space between icon and label */
+  padding: 0 0.5rem; /* allow room for label expansion */
+  overflow: visible; /* allow the label to be visible outside the circle area */
+}
+
+.social-button .social-label {
+  display: inline-block;
+  max-width: 0;
+  opacity: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  transition: max-width 260ms cubic-bezier(.2,.9,.2,1), opacity 160ms ease, margin 260ms cubic-bezier(.2,.9,.2,1);
+  margin-left: 0;
+}
+
+.social-button:hover .social-label,
+.social-button:focus-within .social-label {
+  max-width: 200px; /* expand to fit text */
+  opacity: 1;
+  margin-left: 8px;
+}
+
+/* Make sure the label doesn't get selected during quick drags */
+.social-button .social-label {
+  user-select: none;
+  pointer-events: none;
+}
+
 /* Make the GitHub logo white in dark mode (keeps other icons unchanged) */
 body:not(.theme-light) .social-button img[src*="github"] {
   /* brightness(0) makes the image black; invert(1) turns black to white */
