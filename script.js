@@ -1,3 +1,5 @@
+const ver = "Version 0.8.14 Public Beta"
+
 document.addEventListener('DOMContentLoaded', () => {
 	applyInitialTheme();
 	setupThemeToggle();
@@ -163,4 +165,6 @@ function enableContactForm() {
 	});
 }
 
-
+function updatever() {
+	document.getElementById("github-repo").innerText = ver;
+}
