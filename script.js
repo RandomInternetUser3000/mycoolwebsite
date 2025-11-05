@@ -1,4 +1,4 @@
-const ver = "Version 0.8.17 Public Beta"
+const ver = "Version 0.8.18 Public Beta"
 
 document.addEventListener('DOMContentLoaded', () => {
 	applyInitialTheme();
@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
 	fadeInPage();
 	enableContactForm();
 	updatever();
-	addSocialTooltips();
+	syncSocialButtonLabels();
 	enhanceSocialButtons();
 	setupNavHoverGlow();
 });
@@ -207,51 +207,22 @@ function updatever() {
  * Ensure social links show the platform name on hover.
  * Uses the nested <img alt="..."> when available, otherwise infers from the href.
  */
-function addSocialTooltips() {
+function syncSocialButtonLabels() {
 	const buttons = document.querySelectorAll('.social-links .social-button');
 	buttons.forEach((btn) => {
-		// Don't override an explicit title the author may have set
-		if (btn.getAttribute('title')) return;
-
-		const img = btn.querySelector('img');
-
-		// Ensure the image is wrapped in a fixed-size circular wrapper so the icon stays centered.
-		if (img) {
-			let iconWrapper = btn.querySelector('.social-icon');
-			if (!iconWrapper) {
-				iconWrapper = document.createElement('span');
-				iconWrapper.className = 'social-icon';
-				// Move the image into the wrapper
-				btn.insertBefore(iconWrapper, img);
-				iconWrapper.appendChild(img);
-			}
-		}
-
-		// Determine label from alt text or href
-		let label = '';
-		if (img && img.alt) label = img.alt.trim();
-		if (!label) {
+		const explicitLabel = btn.dataset.label;
+		const imgAlt = btn.querySelector('img')?.alt?.trim();
+		const fallback = (() => {
 			const href = (btn.getAttribute('href') || '').toLowerCase();
-			if (/github/.test(href)) label = 'GitHub';
-			else if (/youtube|youtu\.be/.test(href)) label = 'YouTube';
-			else if (/discord/.test(href)) label = 'Discord';
-			else if (/roblox/.test(href)) label = 'Roblox';
-			else if (href) label = href.replace(/^https?:\/\//, '').replace(/\/.*$/, '');
-			else label = 'External link';
-		}
+			if (/github/.test(href)) return 'GitHub';
+			if (/youtube|youtu\.be/.test(href)) return 'YouTube';
+			if (/discord/.test(href)) return 'Discord';
+			if (/roblox/.test(href)) return 'Roblox';
+			return imgAlt || 'External link';
+		})();
 
-		// Remove native title to avoid browser tooltip; keep aria-label for accessibility
-		if (btn.hasAttribute('title')) btn.removeAttribute('title');
+		const label = explicitLabel || fallback;
 		btn.setAttribute('aria-label', label);
-
-		// Create or update a visible label element that will animate on hover
-		let span = btn.querySelector('.social-label');
-		if (!span) {
-			span = document.createElement('span');
-			span.className = 'social-label';
-			btn.appendChild(span);
-		}
-		span.textContent = label;
 	});
 }
 

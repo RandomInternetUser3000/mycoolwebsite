@@ -1,69 +1,73 @@
 @import url('https://fonts.googleapis.com/css2?family=Funnel+Sans:ital,wght@0,300..800;1,300..800&display=swap');
 
-:root {
-  color-scheme: dark;
-  --background-gradient: linear-gradient(180deg, #080808 0%, #2a0303 48%, #050505 100%);
-  --surface: rgba(48, 12, 12, 0.85);
-  --surface-strong: rgba(64, 18, 18, 0.95);
-  --surface-soft: rgba(36, 9, 9, 0.68);
-  --text-primary: #f8f8f8;
-  --text-secondary: #d9d9d9;
-  --text-muted: #9a9a9a;
-  --accent: #ff3044;
-  --accent-hover: #ff5766;
-  --outline: rgba(255, 255, 255, 0.08);
-  --shadow-strong: 0 26px 55px rgba(0, 0, 0, 0.45);
-  --shadow-soft: 0 18px 42px rgba(0, 0, 0, 0.32);
-  --banner-bg: rgba(20, 20, 20, 0.88);
-  --banner-text: #f8f8f8;
-}
-
-body.theme-light {
-  color-scheme: light;
-  --background-gradient: linear-gradient(180deg, #ffffff 0%, #ffe6e6 48%, #f7f7f7 100%);
-  --surface: rgba(255, 255, 255, 0.86);
-  --surface-strong: rgba(255, 255, 255, 0.96);
-  --surface-soft: rgba(255, 255, 255, 0.72);
-  --text-primary: #111;
-  --text-secondary: #2e2e2e;
-  --text-muted: #555;
-  --accent: #d7263d;
-  --accent-hover: #b71d31;
-  --outline: rgba(0, 0, 0, 0.08);
-  --shadow-strong: 0 22px 48px rgba(215, 38, 61, 0.28);
-  --shadow-soft: 0 16px 34px rgba(0, 0, 0, 0.12);
-  --banner-bg: rgba(255, 255, 255, 0.95);
-  --banner-text: #111;
-}
-
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-html {
-  scroll-behavior: smooth;
-}
-
-body {
-  background: var(--background-gradient);
-  background-attachment: fixed;
-  min-height: 100vh;
-  margin: 0;
-  color: var(--text-primary);
-  text-align: center;
-  font-family: "Funnel Sans", system-ui, -apple-system, sans-serif;
-  padding: 1.75rem 1rem 2.5rem;
-  display: flex;
-  flex-direction: column;
+.social-links .social-button {
+  position: relative;
+  display: inline-flex;
   align-items: center;
-  justify-content: flex-start;
-  transition: background 0.4s ease, color 0.3s ease;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--surface-strong);
+  border: 1px solid var(--outline);
+  box-shadow: var(--shadow-soft);
+  transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+  text-decoration: none;
+  color: var(--text-primary);
+  overflow: visible;
 }
 
-.home-page {
-  justify-content: flex-start;
+.social-links .social-button img {
+  width: clamp(28px, 5vw, 32px);
+  height: clamp(28px, 5vw, 32px);
+  transition: transform 0.2s ease;
+  filter: none;
+}
+
+.social-links .social-button:hover,
+.social-links .social-button:focus-visible {
+  transform: translateY(-3px) scale(1.05);
+  background: var(--accent);
+  box-shadow: var(--shadow-strong);
+}
+
+.social-links .social-button:hover img,
+.social-links .social-button:focus-visible img {
+  transform: scale(1.1);
+}
+
+.social-links .social-button::after {
+  content: attr(data-label);
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 8px);
+  transform: translate(-50%, 10px);
+  background: var(--tooltip-bg);
+  color: var(--tooltip-text);
+  padding: 0.35rem 0.8rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  box-shadow: var(--shadow-soft);
+  transition: opacity 160ms ease, transform 200ms ease;
+}
+
+.social-links .social-button:hover::after,
+.social-links .social-button:focus-visible::after {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+body:not(.theme-light) .social-links .social-button img[src*="github"] {
+  filter: brightness(0) invert(1);
+}
+
+.social-links .social-button.tilt {
+  transform: translateY(-3px) scale(1.05) rotate(2deg);
 }
 
 .home-page main {
@@ -150,46 +154,8 @@ body {
 .theme-toggle {
   display: inline-flex;
   align-items: center;
-  overflow-x: auto;
-  position: relative;
-  isolation: isolate;
-  position: relative;
-
-.nav-links::before {
-  content: "";
-  position: absolute;
-  inset: -1px;
-  border-radius: inherit;
-  background: radial-gradient(circle at var(--nav-hover-x, 50%) var(--nav-hover-y, 50%), rgba(255, 48, 68, 0.28), rgba(255, 48, 68, 0) 60%);
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  pointer-events: none;
-  z-index: 0;
-}
-
-.nav-links:hover::before {
-  opacity: 1;
-}
-  overflow: hidden;
-  isolation: isolate;
+  gap: 0.5rem;
   padding: 0.55rem 1.1rem;
-
-.nav-links::before {
-  content: "";
-  position: absolute;
-  position: relative;
-  z-index: 1;
-  inset: -1px;
-  background: radial-gradient(circle at var(--nav-hover-x, 50%) var(--nav-hover-y, 50%), rgba(255, 48, 68, 0.28), rgba(255, 48, 68, 0) 60%);
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  pointer-events: none;
-  z-index: 0;
-}
-
-.nav-links:hover::before {
-  opacity: 1;
-}
   border-radius: 999px;
   border: 1px solid var(--outline);
   background: var(--surface-strong);
@@ -198,7 +164,8 @@ body {
   font-weight: 600;
   cursor: pointer;
   position: relative;
-  z-index: 1;
+  isolation: isolate;
+  overflow: hidden;
   transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
   box-shadow: var(--shadow-soft);
 }
@@ -320,6 +287,24 @@ ul {
   border: 1px solid var(--outline);
   backdrop-filter: blur(12px);
   overflow-x: auto;
+  position: relative;
+  isolation: isolate;
+}
+
+.nav-links::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  background: radial-gradient(circle at var(--nav-hover-x, 50%) var(--nav-hover-y, 50%), rgba(255, 48, 68, 0.26), rgba(255, 48, 68, 0) 60%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.nav-links:hover::before {
+  opacity: 1;
 }
 
 .nav-links::-webkit-scrollbar {
@@ -340,6 +325,8 @@ ul {
   border: 1px solid transparent;
   transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
   white-space: nowrap;
+  position: relative;
+  z-index: 1;
 }
 
 .nav-pill:hover {
@@ -418,83 +405,6 @@ ul {
 
 .site-header .social-links {
   margin: 0.25rem 0 0.5rem;
-}
-
-.social-links .social-button {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0 0.5rem;
-  margin: 0;
-  text-decoration: none;
-  color: var(--text-primary);
-  overflow: visible;
-}
-
-/* Circular icon wrapper: keeps the icon centered and fixed size while label expands */
-.social-links .social-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  background: var(--surface-strong);
-  border: 1px solid var(--outline);
-  box-shadow: var(--shadow-soft);
-  transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
-  flex: 0 0 auto;
-}
-
-.social-links .social-button:hover .social-icon {
-  transform: translateY(-3px) scale(1.05);
-  background: var(--accent);
-  box-shadow: var(--shadow-strong);
-}
-
-.social-links .social-icon img {
-  width: clamp(28px, 5vw, 32px);
-  height: clamp(28px, 5vw, 32px);
-  transition: transform 0.2s;
-  filter: none;
-}
-
-.social-links .social-button:hover .social-icon img {
-  transform: scale(1.1);
-  filter: none;
-}
-
-/* Animated label that appears to the right of the icon and pushes content when hovered */
-.social-links .social-button .social-label {
-  display: inline-block;
-  max-width: 0;
-  opacity: 0;
-  white-space: nowrap;
-  overflow: hidden;
-  font-size: 0.92rem;
-  font-weight: 600;
-  color: var(--text-primary);
-  transition: max-width 260ms cubic-bezier(.2,.9,.2,1), opacity 160ms ease, margin 260ms cubic-bezier(.2,.9,.2,1);
-  margin-left: 0;
-  user-select: none;
-  pointer-events: none;
-}
-
-.social-links .social-button:hover .social-label,
-.social-links .social-button:focus-within .social-label {
-  max-width: 200px; /* expand to fit text */
-  opacity: 1;
-  margin-left: 8px;
-}
-
-/* Make the GitHub logo white in dark mode (keeps other icons unchanged) */
-body:not(.theme-light) .social-links .social-icon img[src*="github"] {
-  /* brightness(0) makes the image black; invert(1) turns black to white */
-  filter: brightness(0) invert(1);
-}
-
-.social-links .social-button.tilt {
-  transform: scale(1.05) rotate(2deg);
 }
 
 .contact-links {
@@ -613,9 +523,9 @@ footer a:hover {
 }
 
 #formStatus.error {
-  background: rgba(231, 76, 60, 0.2);
-  border-color: rgba(231, 76, 60, 0.35);
-  color: #ffb3b3;
+  background: var(--status-error-bg);
+  border-color: var(--status-error-border);
+  color: var(--status-error-text);
 }
 
 /* About Page Styles */
