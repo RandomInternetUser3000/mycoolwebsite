@@ -1,4 +1,4 @@
-const ver = "Version 0.9.02 Public Beta";
+const ver = "Version 0.9.03 Public Beta";
 const COMMENTS_API_URL = '/api/comments';
 const COMMENTS_STORAGE_KEY = 'coolman-comments';
 const ANALYTICS_MODULE_URL = 'https://unpkg.com/@vercel/analytics/dist/analytics.mjs';
@@ -355,33 +355,44 @@ function enableContactForm() {
 }
 
 function applySiteVersion() {
-	document.documentElement.dataset.siteVersion = ver;
-	document.body.dataset.siteVersion = ver;
-
-	const versionMatch = ver.match(/^Version\s+([^\s]+)\s*(.*)$/i);
-	const versionNumber = versionMatch?.[1] ?? ver;
+	const versionMatch = ver.match(/^Version\s+([^\s]+)(?:\s+(.+))?$/i);
+	const versionNumber = versionMatch?.[1] ?? '';
 	const versionTypeRaw = versionMatch?.[2]?.trim() ?? '';
-	const versionType = versionTypeRaw ? `(${versionTypeRaw})` : '';
+	const versionLabel = [versionNumber, versionTypeRaw].filter(Boolean).join(' ');
 
 	document.querySelectorAll('[data-site-version-link]').forEach((link) => {
-		link.setAttribute('title', `Open GitHub repository for website version ${versionNumber}`);
-		link.setAttribute('aria-label', `Website version repository`);
+		const fallbackText = link.textContent?.trim();
+		if (!fallbackText) {
+			link.textContent = 'Version';
+		}
+		const ariaLabel = versionLabel
+			? `Open GitHub repository for website version ${versionLabel}`
+			: 'Open the website GitHub repository';
+		link.setAttribute('title', ariaLabel);
+		link.setAttribute('aria-label', ariaLabel);
 	});
 
 	document.querySelectorAll('[data-site-version-number]').forEach((node) => {
-		node.textContent = versionNumber ? ` ${versionNumber}` : '';
+		if (versionNumber) {
+			node.textContent = ` ${versionNumber}`;
+			node.hidden = false;
+			node.removeAttribute('hidden');
+		} else {
+			node.textContent = '';
+			node.hidden = true;
+			node.setAttribute('hidden', 'hidden');
+		}
 	});
 
 	document.querySelectorAll('[data-site-version-type]').forEach((node) => {
-		node.textContent = versionType ? ` ${versionType}` : '';
-		node.toggleAttribute('hidden', !versionType);
-	});
-
-	document.querySelectorAll('[data-site-version]').forEach((element) => {
-		element.textContent = ver;
-		if (element.tagName === 'A') {
-			element.setAttribute('title', ver);
-			element.setAttribute('aria-label', `Website version ${ver}`);
+		if (versionTypeRaw) {
+			node.textContent = ` (${versionTypeRaw})`;
+			node.hidden = false;
+			node.removeAttribute('hidden');
+		} else {
+			node.textContent = '';
+			node.hidden = true;
+			node.setAttribute('hidden', 'hidden');
 		}
 	});
 }
