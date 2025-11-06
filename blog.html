@@ -23,22 +23,28 @@
         </div>
         <div class="social-links">
             <a href="https://github.com/RandomInternetUser3000" target="_blank" rel="noopener noreferrer" class="social-button" data-label="GitHub">
-                <img src="images/github.png" alt="Github">
+                <img src="images/github.png" alt="GitHub">
+                <span class="social-label">GitHub</span>
             </a>
             <a href="https://www.youtube.com/@COOLmanGamer?sub_confirmation=1" target="_blank" rel="noopener noreferrer" class="social-button" data-label="YouTube">
                 <img src="images/youtube.png" alt="YouTube">
+                <span class="social-label">YouTube</span>
             </a>
             <a href="https://discord.com/users/YOUR_DISCORD_ID" target="_blank" rel="noopener noreferrer" class="social-button" data-label="Discord">
                 <img src="images/discord.svg" alt="Discord">
+                <span class="social-label">Discord</span>
             </a>
             <a href="https://www.roblox.com/users/YOUR_ROBLOX_ID/profile" target="_blank" rel="noopener noreferrer" class="social-button" data-label="Roblox">
                 <img src="images/roblox.svg" alt="Roblox">
+                <span class="social-label">Roblox</span>
             </a>
-            <a href="#" target="_blank" rel="noopener noreferrer" class="social-button" data-label="Coming soon">
+            <a href="#" target="_blank" rel="noopener noreferrer" class="social-button" data-label="Social Link">
                 <img src="images/placeholder1.svg" alt="Social Link">
+                <span class="social-label">Social Link</span>
             </a>
-            <a href="#" target="_blank" rel="noopener noreferrer" class="social-button" data-label="Coming soon">
+            <a href="#" target="_blank" rel="noopener noreferrer" class="social-button" data-label="Social Link">
                 <img src="images/placeholder2.svg" alt="Social Link">
+                <span class="social-label">Social Link</span>
             </a>
         </div>
         <div class="nav-wrapper">
@@ -64,7 +70,7 @@
         </section>
 
         <section class="blog-featured">
-            <article class="blog-featured-card">
+            <article class="blog-featured-card" data-blog-id="rebuilding-my-roblox-combat-system">
                 <div class="blog-meta">
                     <span class="tag-pill">Featured</span>
                     <time datetime="2025-10-19">October 19, 2025</time>
@@ -76,56 +82,191 @@
                     <li>The animation blending trick that made slides feel buttery.</li>
                     <li>Telemetry dashboards I used to balance damage values.</li>
                 </ul>
-                <a href="blog-post-combat.html" class="button">Read the deep dive</a>
+                <a href="blog-post-combat.html" class="button" data-blog-open="rebuilding-my-roblox-combat-system">Read the deep dive</a>
             </article>
         </section>
 
         <section class="blog-grid">
-            <article class="blog-card">
+            <article class="blog-card" data-blog-id="lighting-makeover-checklist">
                 <div class="blog-meta">
                     <span class="tag-pill">Devlog</span>
                     <time datetime="2025-10-05">Oct 5, 2025</time>
                 </div>
                 <h3>Lighting Makeover Checklist</h3>
                 <p>Ten tweaks that instantly made my Roblox worlds moodier, from volumetric fog presets to shadow map tweaks.</p>
-                <a href="#">Continue reading</a>
+                <a href="blog.html#lighting-makeover" data-blog-open="lighting-makeover-checklist">Continue reading</a>
             </article>
-            <article class="blog-card">
+            <article class="blog-card" data-blog-id="what-daily-shorts-taught-me">
                 <div class="blog-meta">
                     <span class="tag-pill">Video</span>
                     <time datetime="2025-09-29">Sep 29, 2025</time>
                 </div>
                 <h3>What Daily Shorts Taught Me</h3>
                 <p>Compressing 30 days of highlights into bite-sized edits improved my storytelling and production workflow.</p>
-                <a href="#">Continue reading</a>
+                <a href="blog.html#daily-shorts" data-blog-open="what-daily-shorts-taught-me">Continue reading</a>
             </article>
-            <article class="blog-card">
+            <article class="blog-card" data-blog-id="vs-code-extensions-i-swear-by">
                 <div class="blog-meta">
                     <span class="tag-pill">Toolkit</span>
                     <time datetime="2025-09-10">Sep 10, 2025</time>
                 </div>
                 <h3>VS Code Extensions I Swear By</h3>
                 <p>A curated list of extensions that keep me shipping faster when I swap between scripting and video editing.</p>
-                <a href="#">Continue reading</a>
+                <a href="blog.html#vscode-stack" data-blog-open="vs-code-extensions-i-swear-by">Continue reading</a>
             </article>
-            <article class="blog-card">
+            <article class="blog-card" data-blog-id="balancing-school-and-builds">
                 <div class="blog-meta">
                     <span class="tag-pill">Planning</span>
                     <time datetime="2025-08-21">Aug 21, 2025</time>
                 </div>
                 <h3>Balancing School and Builds</h3>
                 <p>The Notion template and sprint rhythm I use to stay focused on class while shipping new game content.</p>
-                <a href="#">Continue reading</a>
+                <a href="blog.html#balance" data-blog-open="balancing-school-and-builds">Continue reading</a>
             </article>
         </section>
     </main>
 
+    <div class="blog-modal" id="blogModal" aria-hidden="true">
+        <div class="blog-modal__overlay" data-modal-overlay></div>
+        <div class="blog-modal__dialog" role="dialog" aria-modal="true">
+            <button type="button" class="blog-modal__close" data-modal-close aria-label="Close blog post">
+                <span aria-hidden="true">×</span>
+            </button>
+            <div class="blog-modal__scroll">
+                <div class="blog-modal__content" data-modal-content></div>
+                <section class="comments-section comments-section--embedded" aria-labelledby="commentsHeading">
+                    <div class="comments-section__header">
+                        <h3 id="commentsHeading">Comments</h3>
+                        <p class="comments-status">Powered by Commento</p>
+                    </div>
+                    <div id="commento"></div>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <template id="blog-template-rebuilding-my-roblox-combat-system">
+        <article class="blog-article-wrapper">
+            <header class="blog-article-header">
+                <div class="blog-article-meta">
+                    <span class="tag-pill">Featured</span>
+                    <time datetime="2025-10-19">October 19, 2025</time>
+                    <span>7 minute read</span>
+                </div>
+                <h1>Rebuilding My Roblox Combat System From Scratch</h1>
+                <p class="lead">I rewrote the entire combat loop to be faster, fairer, and easier to extend. Here's the breakdown of what changed and why the upgrade was worth the effort.</p>
+            </header>
+            <div class="blog-article-content">
+                <p>When I first prototyped combat for my Roblox project, the goal was simple: hit detection that "felt" right. Months later the codebase was a spaghetti bowl of remote events, server-side guesses, and duct tape cooldowns. The rewrite replaces every piece of that foundation with something intentional.</p>
+
+                <h2>What Was Holding the Old System Back</h2>
+                <ul>
+                    <li>Server-side damage checks that felt laggy for high-ping players.</li>
+                    <li>Animations and damage timing competing for control of the same state.</li>
+                    <li>Cooldowns that grew more brittle every time I added a new weapon.</li>
+                </ul>
+
+                <p>Instead of patching each bug, I listed the sensations I wanted players to feel—snappy confirms, punishable misses, and readable blocks. Anything that didn't support those outcomes went on the chopping block.</p>
+
+                <h2>The New Foundation</h2>
+                <p>The rewrite centers around modular abilities. Each ability defines its own hit windows, stamina taxes, and visual effects, then plugs into a shared state machine. That gives me granular control and cleaner testing.</p>
+
+                <blockquote>"The biggest win was separating animation pacing from damage timing. Once those two systems stopped fighting each other, every combo suddenly clicked."</blockquote>
+
+                <p>On top of that, I built dashboards that track hit accuracy, block success, and combo drops per session. Data beats vibes when you're balancing PvP.</p>
+
+                <h2>What's Next</h2>
+                <p>Two features are still in the lab: directional dodges and weapon-specific perks. Directional dodges need bespoke camera easing, and perks require UI updates so players actually notice them. Expect more updates once those hit testing.</p>
+            </div>
+
+            <footer class="blog-article-footer">
+                <span>Last updated October 24, 2025 • Changelog: Added telemetry charts and refactored stamina costs.</span>
+                <div class="article-actions">
+                    <a href="https://twitter.com/intent/tweet?text=Rebuilding%20My%20Roblox%20Combat%20System%20From%20Scratch">Share</a>
+                    <a href="https://github.com/RandomInternetUser3000">View Source</a>
+                </div>
+            </footer>
+        </article>
+    </template>
+
+    <template id="blog-template-lighting-makeover-checklist">
+        <article class="blog-article-wrapper">
+            <header class="blog-article-header">
+                <div class="blog-article-meta">
+                    <span class="tag-pill">Devlog</span>
+                    <time datetime="2025-10-05">October 5, 2025</time>
+                </div>
+                <h1>Lighting Makeover Checklist</h1>
+                <p class="lead">A snapshot of the cinematic tweaks I'm testing to make Roblox scenes feel more atmospheric.</p>
+            </header>
+            <div class="blog-article-content">
+                <p>This deep dive is still in production. I'm collecting before/after shots of every tweak so you can copy the presets straight into Studio. Check back soon for:</p>
+                <ul>
+                    <li>My volumetric fog presets for neon city builds.</li>
+                    <li>Three bloom configurations that stay crisp in low light.</li>
+                    <li>A quick script to swap sun angles for golden hour screenshots.</li>
+                </ul>
+                <p>Request specific lighting setups in the comments and I'll prioritize those in the final guide.</p>
+            </div>
+        </article>
+    </template>
+
+    <template id="blog-template-what-daily-shorts-taught-me">
+        <article class="blog-article-wrapper">
+            <header class="blog-article-header">
+                <div class="blog-article-meta">
+                    <span class="tag-pill">Video</span>
+                    <time datetime="2025-09-29">September 29, 2025</time>
+                </div>
+                <h1>What Daily Shorts Taught Me</h1>
+                <p class="lead">Thirty straight days of Shorts forced me to build a better highlight workflow. Here's the breakdown.</p>
+            </header>
+            <div class="blog-article-content">
+                <p>I storyboard every short in Notion, edit in batches of five, and reuse motion templates to keep pace. I'm polishing the calendar and project templates so you can remix them.</p>
+                <p>Drop a comment if you want a downloadable version of the timeline presets or the color grading LUTs.</p>
+            </div>
+        </article>
+    </template>
+
+    <template id="blog-template-vs-code-extensions-i-swear-by">
+        <article class="blog-article-wrapper">
+            <header class="blog-article-header">
+                <div class="blog-article-meta">
+                    <span class="tag-pill">Toolkit</span>
+                    <time datetime="2025-09-10">September 10, 2025</time>
+                </div>
+                <h1>VS Code Extensions I Swear By</h1>
+                <p class="lead">From Lua development to thumbnail prep, these extensions save me hours every sprint.</p>
+            </header>
+            <div class="blog-article-content">
+                <p>This roundup is shipping soon with GIF demos, sync settings, and custom keybindings. Comment the workflows you want me to prioritize.</p>
+            </div>
+        </article>
+    </template>
+
+    <template id="blog-template-balancing-school-and-builds">
+        <article class="blog-article-wrapper">
+            <header class="blog-article-header">
+                <div class="blog-article-meta">
+                    <span class="tag-pill">Planning</span>
+                    <time datetime="2025-08-21">August 21, 2025</time>
+                </div>
+                <h1>Balancing School and Builds</h1>
+                <p class="lead">The Notion dashboards and time blocks that keep me on track between classes and dev sessions.</p>
+            </header>
+            <div class="blog-article-content">
+                <p>The full article will unpack my weekly sprint board, school assignment tracker, and how I delegate asset polish when finals hit. Bookmark this post or subscribe for the update!</p>
+            </div>
+        </article>
+    </template>
+
     <footer>
         Made with ♥️ by <strong>COOLmanYT</strong><br>
-        Website <a id="github-repo" href="https://github.com/RandomInternetUser3000/mycoolwebsite">Version 0.8.13 Public Beta</a> <br>
+    Website <a id="github-repo" data-site-version href="https://github.com/RandomInternetUser3000/mycoolwebsite"></a> <br>
         Credits to <a href="https://zinheere.vercel.app">Zinheere</a> <br>
     </footer>
 
+    <script defer src="https://cdn.commento.io/js/commento.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
