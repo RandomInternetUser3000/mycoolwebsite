@@ -1,11 +1,11 @@
-const ver = "Version 0.9.0 Public Beta";
+const ver = "Version 0.9.01 Public Beta";
 const COMMENTS_API_URL = '/api/comments';
 const COMMENTS_STORAGE_KEY = 'coolman-comments';
 const ANALYTICS_MODULE_URL = 'https://unpkg.com/@vercel/analytics/dist/analytics.mjs';
 const blogViewerState = {
-	modal: null,
-	overlay: null,
+	container: null,
 	closeButton: null,
+	readerTitle: null,
 	contentHost: null,
 	commentList: null,
 	commentStatus: null,
@@ -14,7 +14,7 @@ const blogViewerState = {
 	submitButton: null,
 	activeSlug: null,
 	activeTrigger: null,
-	focusable: [],
+	defaultStatusMessage: '',
 	currentComments: [],
 };
 
@@ -184,13 +184,12 @@ function initNavGradient() {
 		return;
 	}
 
-	let pendingEvent = null;
-	let animationFrame = null;
-	let resetTimeoutId = null;
+	let lastPoint = null;
+	let frameId = null;
 
-	const updateGradient = () => {
-		animationFrame = null;
-		if (!pendingEvent) {
+	const updateFromPoint = (point) => {
+		frameId = null;
+		if (!point) {
 			return;
 		}
 
@@ -199,13 +198,12 @@ function initNavGradient() {
 			return;
 		}
 
-		const { clientX, clientY } = pendingEvent;
-		const relativeX = (clientX - rect.left) / rect.width;
-		const relativeY = (clientY - rect.top) / rect.height;
+		const relativeX = (point.clientX - rect.left) / rect.width;
+		const relativeY = (point.clientY - rect.top) / rect.height;
 		const clampedX = Math.min(Math.max(relativeX, 0), 1);
 		const clampedY = Math.min(Math.max(relativeY, 0), 1);
-		const globalXRatio = clientX / window.innerWidth;
-		const globalYRatio = clientY / window.innerHeight;
+		const globalXRatio = point.clientX / window.innerWidth;
+		const globalYRatio = point.clientY / window.innerHeight;
 		const hue = 260 + globalXRatio * 140;
 		const secondaryHue = (hue + 60) % 360;
 		const distanceFromCenter = Math.min(Math.hypot(clampedX - 0.5, clampedY - 0.5) * 2, 1);
@@ -226,51 +224,37 @@ function initNavGradient() {
 		);
 	};
 
-	const scheduleGradientUpdate = (event) => {
-		if (resetTimeoutId) {
-			clearTimeout(resetTimeoutId);
-			resetTimeoutId = null;
-		}
-		pendingEvent = event;
-		if (!animationFrame) {
-			animationFrame = requestAnimationFrame(updateGradient);
+	const queueUpdate = (event) => {
+		lastPoint = { clientX: event.clientX, clientY: event.clientY };
+		if (!frameId) {
+			frameId = requestAnimationFrame(() => updateFromPoint(lastPoint));
 		}
 	};
 
-	window.addEventListener('pointermove', scheduleGradientUpdate, { passive: true });
+	const resetGlow = () => {
+		lastPoint = null;
+		if (frameId) {
+			cancelAnimationFrame(frameId);
+			frameId = null;
+		}
+		setStaticNavGlow();
+	};
+
+	navLinks.addEventListener('pointerenter', queueUpdate, { passive: true });
+	navLinks.addEventListener('pointermove', queueUpdate, { passive: true });
+	navLinks.addEventListener('pointerleave', resetGlow);
+	navLinks.addEventListener('pointercancel', resetGlow);
 
 	window.addEventListener('resize', () => {
-		if (pendingEvent && !animationFrame) {
-			animationFrame = requestAnimationFrame(updateGradient);
+		if (lastPoint) {
+			updateFromPoint(lastPoint);
 		}
 	});
 
-	window.addEventListener('pointerout', (event) => {
-		if (event.relatedTarget === null) {
-			pendingEvent = null;
-			if (animationFrame) {
-				cancelAnimationFrame(animationFrame);
-				animationFrame = null;
-			}
-			resetTimeoutId = window.setTimeout(() => {
-				setStaticNavGlow();
-				resetTimeoutId = null;
-			}, 140);
-		}
-	});
-
+	window.addEventListener('blur', resetGlow);
 	document.addEventListener('visibilitychange', () => {
 		if (document.visibilityState === 'hidden') {
-			pendingEvent = null;
-			if (animationFrame) {
-				cancelAnimationFrame(animationFrame);
-				animationFrame = null;
-			}
-			if (resetTimeoutId) {
-				clearTimeout(resetTimeoutId);
-				resetTimeoutId = null;
-			}
-			setStaticNavGlow();
+			resetGlow();
 		}
 	});
 }
@@ -350,8 +334,27 @@ function enableContactForm() {
 function applySiteVersion() {
 	document.documentElement.dataset.siteVersion = ver;
 	document.body.dataset.siteVersion = ver;
-	const targets = document.querySelectorAll('[data-site-version]');
-	targets.forEach((element) => {
+
+	const versionMatch = ver.match(/^Version\s+([^\s]+)\s*(.*)$/i);
+	const versionNumber = versionMatch?.[1] ?? ver;
+	const versionTypeRaw = versionMatch?.[2]?.trim() ?? '';
+	const versionType = versionTypeRaw ? `(${versionTypeRaw})` : '';
+
+	document.querySelectorAll('[data-site-version-link]').forEach((link) => {
+		link.setAttribute('title', `Open GitHub repository for website version ${versionNumber}`);
+		link.setAttribute('aria-label', `Website version repository`);
+	});
+
+	document.querySelectorAll('[data-site-version-number]').forEach((node) => {
+		node.textContent = versionNumber ? ` ${versionNumber}` : '';
+	});
+
+	document.querySelectorAll('[data-site-version-type]').forEach((node) => {
+		node.textContent = versionType ? ` ${versionType}` : '';
+		node.toggleAttribute('hidden', !versionType);
+	});
+
+	document.querySelectorAll('[data-site-version]').forEach((element) => {
 		element.textContent = ver;
 		if (element.tagName === 'A') {
 			element.setAttribute('title', ver);
@@ -361,8 +364,8 @@ function applySiteVersion() {
 }
 
 function initBlogViewer() {
-	const modal = document.getElementById('blogModal');
-	if (!modal) {
+	const container = document.querySelector('[data-blog-reader]');
+	if (!container) {
 		return;
 	}
 
@@ -371,15 +374,16 @@ function initBlogViewer() {
 		return;
 	}
 
-	blogViewerState.modal = modal;
-	blogViewerState.overlay = modal.querySelector('[data-modal-overlay]');
-	blogViewerState.closeButton = modal.querySelector('[data-modal-close]');
-	blogViewerState.contentHost = modal.querySelector('[data-modal-content]');
-	blogViewerState.commentList = modal.querySelector('[data-comment-list]');
-	blogViewerState.commentStatus = modal.querySelector('[data-comment-status]');
-	blogViewerState.commentEmpty = modal.querySelector('[data-comment-empty]');
-	blogViewerState.commentForm = modal.querySelector('[data-comment-form]');
+	blogViewerState.container = container;
+	blogViewerState.closeButton = container.querySelector('[data-reader-close]');
+	blogViewerState.readerTitle = container.querySelector('[data-reader-title]');
+	blogViewerState.contentHost = container.querySelector('[data-modal-content]');
+	blogViewerState.commentList = container.querySelector('[data-comment-list]');
+	blogViewerState.commentStatus = container.querySelector('[data-comment-status]');
+	blogViewerState.commentEmpty = container.querySelector('[data-comment-empty]');
+	blogViewerState.commentForm = container.querySelector('[data-comment-form]');
 	blogViewerState.submitButton = blogViewerState.commentForm?.querySelector('button[type="submit"]') ?? null;
+	blogViewerState.defaultStatusMessage = blogViewerState.commentStatus?.dataset.defaultMessage ?? '';
 
 	triggers.forEach((trigger) => {
 		trigger.addEventListener('click', (event) => {
@@ -388,19 +392,13 @@ function initBlogViewer() {
 		});
 	});
 
-	blogViewerState.overlay?.addEventListener('click', () => {
-		closeBlogModal();
-	});
-
 	blogViewerState.closeButton?.addEventListener('click', () => {
 		closeBlogModal();
 	});
 
-	modal.addEventListener('keydown', (event) => {
+	container.addEventListener('keydown', (event) => {
 		if (event.key === 'Escape') {
 			closeBlogModal();
-		} else if (event.key === 'Tab') {
-			maintainModalFocus(event);
 		}
 	});
 
@@ -411,16 +409,8 @@ function initBlogViewer() {
 
 function openBlogModal(trigger) {
 	const slug = trigger.getAttribute('data-blog-open');
-	if (!slug) {
-		return;
-	}
-
 	const template = document.getElementById(`blog-template-${slug}`);
 	if (!template) {
-		const fallback = trigger.getAttribute('href');
-		if (fallback) {
-			window.location.href = fallback;
-		}
 		return;
 	}
 
@@ -432,18 +422,22 @@ function openBlogModal(trigger) {
 
 	if (blogViewerState.contentHost) {
 		blogViewerState.contentHost.innerHTML = '';
-		blogViewerState.contentHost.appendChild(template.content.cloneNode(true));
+		const articleFragment = template.content.cloneNode(true);
+		blogViewerState.contentHost.appendChild(articleFragment);
 	}
 
 	const heading = blogViewerState.contentHost?.querySelector('h1');
-	const dialog = blogViewerState.modal?.querySelector('.blog-modal__dialog');
-	if (heading && dialog) {
+	if (heading) {
 		if (!heading.id) {
-			heading.id = `blog-modal-heading-${slug}`;
+			heading.id = `blog-reader-heading-${slug}`;
 		}
-		dialog.setAttribute('aria-labelledby', heading.id);
-	} else {
-		dialog?.removeAttribute('aria-labelledby');
+		if (!heading.hasAttribute('tabindex')) {
+			heading.setAttribute('tabindex', '-1');
+		}
+	}
+
+	if (blogViewerState.readerTitle) {
+		blogViewerState.readerTitle.textContent = heading?.textContent?.trim() || 'Selected Post';
 	}
 
 	if (blogViewerState.commentForm) {
@@ -451,35 +445,38 @@ function openBlogModal(trigger) {
 		blogViewerState.commentForm.dataset.slug = slug;
 	}
 
-	blogViewerState.modal?.classList.add('is-open');
-	blogViewerState.modal?.setAttribute('aria-hidden', 'false');
-	document.body.classList.add('modal-open');
-
-	refreshModalFocusable();
-	blogViewerState.closeButton?.focus({ preventScroll: true });
+	blogViewerState.container?.classList.add('is-open');
+	blogViewerState.container?.removeAttribute('hidden');
+	blogViewerState.container?.setAttribute('aria-expanded', 'true');
+	blogViewerState.container?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+	if (heading) {
+		heading.focus({ preventScroll: true });
+	}
 
 	if (hasLegacyComments) {
+		renderComments([]);
 		setCommentStatus('Loading comments…', 'loading');
 		loadComments(slug);
 	}
 }
 
 function closeBlogModal() {
-	if (!blogViewerState.modal?.classList.contains('is-open')) {
+	if (!blogViewerState.container?.classList.contains('is-open')) {
 		return;
 	}
 
-	blogViewerState.modal.classList.remove('is-open');
-	blogViewerState.modal.setAttribute('aria-hidden', 'true');
-	document.body.classList.remove('modal-open');
+	blogViewerState.container.classList.remove('is-open');
+	blogViewerState.container.setAttribute('hidden', 'hidden');
+	blogViewerState.container.removeAttribute('aria-expanded');
 
 	if (blogViewerState.contentHost) {
 		blogViewerState.contentHost.innerHTML = '';
 	}
 
 	blogViewerState.activeSlug = null;
-	refreshModalFocusable();
-	setCommentStatus('Powered by your messages ✨');
+	blogViewerState.currentComments = [];
+	toggleCommentEmpty(true);
+	setCommentStatus(blogViewerState.defaultStatusMessage || 'Powered by Commento');
 
 	if (blogViewerState.activeTrigger) {
 		blogViewerState.activeTrigger.focus();
@@ -487,43 +484,6 @@ function closeBlogModal() {
 	}
 }
 
-function refreshModalFocusable() {
-	if (!blogViewerState.modal) {
-		blogViewerState.focusable = [];
-		return;
-	}
-
-	blogViewerState.focusable = Array.from(
-		blogViewerState.modal.querySelectorAll(
-			'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])',
-		),
-	);
-}
-
-function maintainModalFocus(event) {
-	if (!blogViewerState.modal?.classList.contains('is-open')) {
-		return;
-	}
-
-	const focusables = blogViewerState.focusable;
-	if (!focusables.length) {
-		return;
-	}
-
-	const first = focusables[0];
-	const last = focusables[focusables.length - 1];
-	const activeElement = document.activeElement;
-
-	if (event.shiftKey) {
-		if (activeElement === first) {
-			last.focus();
-			event.preventDefault();
-		}
-	} else if (activeElement === last) {
-		first.focus();
-		event.preventDefault();
-	}
-}
 
 async function loadComments(slug) {
 	const fallback = readLocalComments(slug);
@@ -565,12 +525,13 @@ function renderComments(comments = []) {
 	blogViewerState.commentList.innerHTML = '';
 	blogViewerState.currentComments = Array.isArray(comments) ? [...comments] : [];
 
-	if (!blogViewerState.currentComments.length) {
-		toggleCommentEmpty(true);
+	const hasComments = blogViewerState.currentComments.length > 0;
+	blogViewerState.commentList.hidden = !hasComments;
+	toggleCommentEmpty(!hasComments);
+
+	if (!hasComments) {
 		return;
 	}
-
-	toggleCommentEmpty(false);
 
 	blogViewerState.currentComments
 		.sort((a, b) => new Date(b.createdAt || b.timestamp || 0) - new Date(a.createdAt || a.timestamp || 0))
@@ -603,7 +564,8 @@ function setCommentStatus(message, tone = 'idle') {
 		return;
 	}
 
-	statusElement.textContent = message;
+	const text = message || blogViewerState.defaultStatusMessage || '';
+	statusElement.textContent = text;
 	statusElement.className = 'comments-status';
 	if (tone && tone !== 'idle') {
 		statusElement.classList.add(`comments-status--${tone}`);

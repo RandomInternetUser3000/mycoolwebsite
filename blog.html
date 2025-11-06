@@ -82,7 +82,7 @@
                     <li>The animation blending trick that made slides feel buttery.</li>
                     <li>Telemetry dashboards I used to balance damage values.</li>
                 </ul>
-                <a href="blog-post-combat.html" class="button" data-blog-open="rebuilding-my-roblox-combat-system">Read the deep dive</a>
+                <a href="#blogReader" class="button" data-blog-open="rebuilding-my-roblox-combat-system">Read the deep dive</a>
             </article>
         </section>
 
@@ -94,7 +94,7 @@
                 </div>
                 <h3>Lighting Makeover Checklist</h3>
                 <p>Ten tweaks that instantly made my Roblox worlds moodier, from volumetric fog presets to shadow map tweaks.</p>
-                <a href="blog.html#lighting-makeover" data-blog-open="lighting-makeover-checklist">Continue reading</a>
+                <a href="#blogReader" data-blog-open="lighting-makeover-checklist">Continue reading</a>
             </article>
             <article class="blog-card" data-blog-id="what-daily-shorts-taught-me">
                 <div class="blog-meta">
@@ -103,7 +103,7 @@
                 </div>
                 <h3>What Daily Shorts Taught Me</h3>
                 <p>Compressing 30 days of highlights into bite-sized edits improved my storytelling and production workflow.</p>
-                <a href="blog.html#daily-shorts" data-blog-open="what-daily-shorts-taught-me">Continue reading</a>
+                <a href="#blogReader" data-blog-open="what-daily-shorts-taught-me">Continue reading</a>
             </article>
             <article class="blog-card" data-blog-id="vs-code-extensions-i-swear-by">
                 <div class="blog-meta">
@@ -112,7 +112,7 @@
                 </div>
                 <h3>VS Code Extensions I Swear By</h3>
                 <p>A curated list of extensions that keep me shipping faster when I swap between scripting and video editing.</p>
-                <a href="blog.html#vscode-stack" data-blog-open="vs-code-extensions-i-swear-by">Continue reading</a>
+                <a href="#blogReader" data-blog-open="vs-code-extensions-i-swear-by">Continue reading</a>
             </article>
             <article class="blog-card" data-blog-id="balancing-school-and-builds">
                 <div class="blog-meta">
@@ -121,29 +121,31 @@
                 </div>
                 <h3>Balancing School and Builds</h3>
                 <p>The Notion template and sprint rhythm I use to stay focused on class while shipping new game content.</p>
-                <a href="blog.html#balance" data-blog-open="balancing-school-and-builds">Continue reading</a>
+                <a href="#blogReader" data-blog-open="balancing-school-and-builds">Continue reading</a>
             </article>
         </section>
     </main>
 
-    <div class="blog-modal" id="blogModal" aria-hidden="true">
-        <div class="blog-modal__overlay" data-modal-overlay></div>
-        <div class="blog-modal__dialog" role="dialog" aria-modal="true">
-            <button type="button" class="blog-modal__close" data-modal-close aria-label="Close blog post">
-                <span aria-hidden="true">×</span>
+    <section class="blog-reader" id="blogReader" data-blog-reader hidden>
+        <div class="blog-reader__toolbar">
+            <h2 class="blog-reader__title" data-reader-title>Selected Post</h2>
+            <button type="button" class="blog-reader__close" data-reader-close aria-label="Close blog post">
+                Close
             </button>
-            <div class="blog-modal__scroll">
-                <div class="blog-modal__content" data-modal-content></div>
-                <section class="comments-section comments-section--embedded" aria-labelledby="commentsHeading">
-                    <div class="comments-section__header">
-                        <h3 id="commentsHeading">Comments</h3>
-                        <p class="comments-status">Powered by Commento</p>
-                    </div>
-                    <div id="commento"></div>
-                </section>
-            </div>
         </div>
-    </div>
+        <div class="blog-reader__body">
+            <div class="blog-reader__content" data-modal-content></div>
+            <section class="comments-section comments-section--embedded" aria-labelledby="commentsHeading">
+                <div class="comments-section__header">
+                    <h3 id="commentsHeading">Comments</h3>
+                    <p class="comments-status" data-comment-status data-default-message="Powered by Commento">Powered by Commento</p>
+                </div>
+                <div id="commento"></div>
+                <p class="comments-empty" data-comment-empty hidden>No comments yet. Be the first to share your thoughts.</p>
+                <ul class="comment-list" data-comment-list hidden></ul>
+            </section>
+        </div>
+    </section>
 
     <template id="blog-template-rebuilding-my-roblox-combat-system">
         <article class="blog-article-wrapper">
@@ -262,7 +264,9 @@
 
     <footer>
         Made with ♥️ by <strong>COOLmanYT</strong><br>
-    Website <a id="github-repo" data-site-version href="https://github.com/RandomInternetUser3000/mycoolwebsite"></a> <br>
+        Website <a data-site-version-link href="https://github.com/RandomInternetUser3000/mycoolwebsite">Version</a>
+        <span data-site-version-number></span>
+        <span data-site-version-type></span><br>
         Credits to <a href="https://zinheere.vercel.app">Zinheere</a> <br>
     </footer>
 

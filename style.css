@@ -42,10 +42,7 @@ body {
   --status-error-text: #ffd2dc;
 
   margin: 0;
-  padding: 1.75rem 1.25rem 2.5rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  padding: 0;
   font-family: "Funnel Sans", "Segoe UI", Tahoma, sans-serif;
   background: var(--background);
   color: var(--text-primary);
@@ -112,6 +109,7 @@ body:not(.theme-light) .social-button img[src*="github"] {
   border: 1px solid var(--outline);
   border-radius: 16px;
   padding: 0.85rem 1.75rem;
+  margin: 1.25rem auto 0;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
@@ -150,7 +148,8 @@ body:not(.theme-light) .social-button img[src*="github"] {
   flex-direction: column;
   align-items: center;
   gap: 1.1rem;
-  margin-top: 1.75rem;
+  margin: 1.75rem auto 0;
+  padding: 0 1.5rem;
 }
 
 .header-bar {
@@ -284,7 +283,6 @@ body:not(.theme-light) .social-button img[src*="github"] {
 }
 
 main {
-  flex: 1;
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
@@ -292,11 +290,11 @@ main {
   flex-direction: column;
   align-items: center;
   gap: 1.75rem;
-  padding: 0 1rem;
+  padding: 0 1.5rem 3rem;
 }
 
 body:not(.home-page) main {
-  margin-top: clamp(2.5rem, 6vw, 4rem);
+  margin-top: clamp(1.5rem, 5vw, 2.75rem);
 }
 
 h1 {
@@ -362,13 +360,14 @@ ul {
   box-shadow: var(--shadow-strong);
 }
 
+/* Base social buttons (shared) */
 .social-button {
   position: relative;
   display: inline-flex;
   align-items: center;
-  justify-content: flex-start;
-  min-width: 48px;
-  height: 48px;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
   border-radius: 999px;
   background: var(--surface-strong);
   border: 1px solid var(--outline);
@@ -377,16 +376,28 @@ ul {
   text-decoration: none;
   color: var(--text-primary);
   overflow: hidden;
-  gap: 0.6rem;
-  padding: 0.6rem 0.8rem;
+  gap: 0.65rem;
+  padding: 0.65rem;
 }
 
 .social-button img {
-  width: clamp(28px, 5vw, 32px);
-  height: clamp(28px, 5vw, 32px);
+  width: clamp(30px, 5vw, 34px);
+  height: clamp(30px, 5vw, 34px);
   transition: transform 0.2s ease;
   filter: none;
   flex-shrink: 0;
+}
+
+.social-label {
+  opacity: 0;
+  transform: translateX(-10px);
+  max-width: 0;
+  transition: opacity 0.18s ease, transform 0.18s ease, max-width 0.25s ease;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  color: inherit;
 }
 
 .social-button:hover,
@@ -394,28 +405,12 @@ ul {
   transform: translateY(-3px) scale(1.05);
   background: var(--accent);
   box-shadow: var(--shadow-strong);
-  padding-right: 1.5rem;
+  padding-right: 1.6rem;
 }
 
 .social-button:hover img,
 .social-button:focus-visible img {
-  transform: scale(1.1);
-}
-
-.social-button::after {
-  content: none;
-}
-
-.social-label {
-  opacity: 0;
-  transform: translateX(-8px);
-  max-width: 0;
-  transition: opacity 0.16s ease, transform 0.16s ease, max-width 0.25s ease;
-  font-size: 0.82rem;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  white-space: nowrap;
-  color: inherit;
+  transform: scale(1.08);
 }
 
 .social-button:hover .social-label,
@@ -423,6 +418,21 @@ ul {
   opacity: 1;
   transform: translateX(0);
   max-width: 160px;
+}
+
+/* Compact social buttons inside headers retain square footprint */
+.site-header .social-button,
+.hero-socials .social-button {
+  width: 48px;
+  height: 48px;
+  padding: 0.55rem;
+}
+
+.site-header .social-button:hover,
+.site-header .social-button:focus-visible,
+.hero-socials .social-button:hover,
+.hero-socials .social-button:focus-visible {
+  padding-right: 1.3rem;
 }
 
 .nav-pill.active {
@@ -497,40 +507,8 @@ ul {
   margin: 0.25rem 0 0.5rem;
 }
 
-.social-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  background: var(--surface-strong);
-  border: 1px solid var(--outline); 
-  box-shadow: var(--shadow-soft);
-  transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
-}
-
-.social-button:hover {
-  transform: translateY(-3px) scale(1.05);
-  background: var(--accent);
-  box-shadow: var(--shadow-strong);
-}
-
-.social-button img {
-  width: clamp(28px, 5vw, 32px);
-  height: clamp(28px, 5vw, 32px);
-  transition: transform 0.2s;
-  filter: none;
-}
-
-.social-button:hover img {
-  transform: scale(1.1);
-  filter: none;
-}
-
 /* Make the GitHub logo white in dark mode (keeps other icons unchanged) */
 body:not(.theme-light) .social-button img[src*="github"] {
-  /* brightness(0) makes the image black; invert(1) turns black to white */
   filter: brightness(0) invert(1);
 }
 
@@ -547,6 +525,8 @@ body:not(.theme-light) .social-button img[src*="github"] {
 }
 
 .contact-links .social-button {
+  justify-content: flex-start;
+  width: auto;
   min-width: clamp(180px, 40vw, 220px);
   height: 56px;
   padding: 0.75rem 1.2rem;
@@ -562,17 +542,26 @@ body:not(.theme-light) .social-button img[src*="github"] {
 }
 
 .contact-links .social-button .social-label {
-  font-size: clamp(0.85rem, 2vw, 0.95rem);
+  opacity: 1;
+  transform: none;
+  max-width: none;
+  font-size: clamp(0.9rem, 2vw, 1rem);
   font-weight: 600;
 }
 
 footer {
-  margin-top: 3rem;
+  margin: 3rem auto 2.5rem;
   padding: 2rem 1rem;
   color: var(--text-muted);
   font-size: clamp(0.85rem, 2vw, 0.95rem);
   line-height: 1.6;
   width: 100%;
+  max-width: 1200px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
   border-top: 1px solid var(--outline);
 }
 
@@ -672,11 +661,7 @@ footer a:hover {
 .text-section {
   max-width: 500px;
   text-align: left;
-  padding: 1rem;
-  background: var(--surface);
-  border-radius: 18px;
-  border: 1px solid var(--outline);
-  box-shadow: var(--shadow-soft);
+  padding: 0 0.5rem;
 }
 
 .text-section ul {
@@ -701,9 +686,9 @@ footer a:hover {
 .gallery-grid {
   width: 100%;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 1.5rem;
-  margin: 1rem 0 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.75rem;
+  margin: 1.5rem 0 3rem;
 }
 
 .gallery-item {
@@ -899,6 +884,60 @@ footer a:hover {
 .blog-card a:hover {
   color: var(--accent-hover);
   border-color: currentColor;
+}
+
+.blog-reader {
+  width: 100%;
+  max-width: 920px;
+  margin: 0 auto 3rem;
+  display: none;
+  flex-direction: column;
+  gap: 1.75rem;
+}
+
+.blog-reader.is-open {
+  display: flex;
+}
+
+.blog-reader__toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.blog-reader__title {
+  font-size: clamp(1.4rem, 4vw, 2rem);
+  margin: 0;
+  color: var(--text-secondary);
+}
+
+.blog-reader__close {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.55rem 1rem;
+  border-radius: 999px;
+  border: 1px solid var(--outline);
+  background: var(--surface);
+  color: var(--text-primary);
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.blog-reader__close:hover,
+.blog-reader__close:focus-visible {
+  transform: translateY(-2px);
+  background: var(--accent);
+  color: #fff;
+  box-shadow: var(--shadow-soft);
+}
+
+.blog-reader__body {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
 }
 
 .blog-article-wrapper {
