@@ -1,4 +1,4 @@
-const ver = "Version 0.9.05 Public Beta";
+const ver = "Version 0.9.1 Public Beta";
 const COMMENTS_API_URL = '/api/comments';
 const COMMENTS_STORAGE_KEY = 'coolman-comments';
 const ANALYTICS_MODULE_URL = 'https://unpkg.com/@vercel/analytics/dist/analytics.mjs';
@@ -16,6 +16,7 @@ const blogViewerState = {
 	activeTrigger: null,
 	defaultStatusMessage: '',
 	currentComments: [],
+	shareFeedbackTimer: null,
 };
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -27,6 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
 	enhanceSocialButtons();
 	initNavGradient();
 	initBlogViewer();
+	initShareButtons();
 	injectAnalytics();
 });
 
@@ -461,6 +463,9 @@ function openBlogModal(trigger) {
 		blogViewerState.contentHost.appendChild(articleFragment);
 	}
 
+	const shareButton = blogViewerState.contentHost?.querySelector('[data-article-share]');
+	setupShareButton(shareButton, slug);
+
 	const heading = blogViewerState.contentHost?.querySelector('h1');
 	if (heading) {
 		if (!heading.id) {
@@ -516,6 +521,96 @@ function closeBlogModal() {
 	if (blogViewerState.activeTrigger) {
 		blogViewerState.activeTrigger.focus();
 		blogViewerState.activeTrigger = null;
+	}
+}
+
+function initShareButtons() {
+	const shareButtons = document.querySelectorAll('[data-article-share]');
+	shareButtons.forEach((button) => {
+		const slugAttr = button.getAttribute('data-share-slug') || '';
+		setupShareButton(button, slugAttr);
+	});
+}
+
+function setupShareButton(button, slugFromContext = '') {
+	if (!button || button.dataset.shareBound === 'true') {
+		return;
+	}
+
+	const defaultLabel = button.textContent?.trim() || 'Share';
+	button.dataset.shareDefault = defaultLabel;
+	button.dataset.shareBound = 'true';
+	button.setAttribute('type', button.getAttribute('type') || 'button');
+
+	button.addEventListener('click', async () => {
+		const explicitUrl = button.getAttribute('data-share-url') || '';
+		const shareSlug = button.getAttribute('data-share-slug') || slugFromContext;
+		const shareUrl = explicitUrl || resolveShareUrl(shareSlug);
+		const successLabel = button.getAttribute('data-share-success') || 'Link copied!';
+		const errorLabel = button.getAttribute('data-share-error') || 'Copy failed';
+		const labelTarget = button.querySelector('[data-share-label]') || button;
+
+		try {
+			await copyTextToClipboard(shareUrl);
+			updateShareLabel(button, labelTarget, successLabel);
+		} catch (error) {
+			updateShareLabel(button, labelTarget, errorLabel);
+		}
+	});
+}
+
+async function copyTextToClipboard(text) {
+	if (!text) {
+		throw new Error('Nothing to copy');
+	}
+
+	if (navigator.clipboard?.writeText) {
+		await navigator.clipboard.writeText(text);
+		return;
+	}
+
+	const textarea = document.createElement('textarea');
+	textarea.value = text;
+	textarea.setAttribute('readonly', '');
+	textarea.style.position = 'fixed';
+	textarea.style.opacity = '0';
+	textarea.style.pointerEvents = 'none';
+	document.body.appendChild(textarea);
+	textarea.focus();
+	textarea.select();
+
+	let successful = false;
+	try {
+		successful = document.execCommand('copy');
+	} finally {
+		document.body.removeChild(textarea);
+	}
+
+	if (!successful) {
+		throw new Error('Fallback copy command failed');
+	}
+}
+
+function updateShareLabel(button, target, message) {
+	const defaultLabel = button.dataset.shareDefault || 'Share';
+	target.textContent = message;
+	clearTimeout(button._shareResetTimer);
+	button._shareResetTimer = window.setTimeout(() => {
+		target.textContent = defaultLabel;
+	}, 2200);
+}
+
+function resolveShareUrl(slug) {
+	const hasSlug = Boolean(slug);
+	try {
+		const base = new URL('blog.html', window.location.href);
+		base.hash = hasSlug ? slug : '';
+		return base.href;
+	} catch (error) {
+		if (hasSlug) {
+			return `blog.html#${slug}`;
+		}
+		return window.location?.href || '';
 	}
 }
 

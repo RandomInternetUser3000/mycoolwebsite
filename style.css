@@ -187,7 +187,7 @@ img {
   box-shadow: var(--shadow-soft);
   backdrop-filter: blur(18px);
   isolation: isolate;
-  overflow: visible;
+  overflow: hidden;
   white-space: nowrap;
   --nav-glow-x: 50%;
   --nav-glow-y: 50%;
@@ -200,7 +200,7 @@ img {
 .nav-links::before {
   content: "";
   position: absolute;
-  inset: -35%;
+  inset: -12%;
   border-radius: inherit;
   background: radial-gradient(
     circle at var(--nav-glow-x, 50%) var(--nav-glow-y, 50%),
@@ -210,7 +210,7 @@ img {
   );
   opacity: var(--nav-glow-opacity, 0.32);
   pointer-events: none;
-  filter: saturate(1.35) blur(0px);
+  filter: saturate(1.35) blur(18px);
   transition: opacity 0.4s ease;
   z-index: 0;
 }
@@ -310,6 +310,7 @@ img {
   .site-logo {
     order: 2;
     margin-left: 0;
+    display: none;
   }
 
   .theme-toggle {
@@ -381,7 +382,7 @@ body.home-page main {
 }
 
 body:not(.home-page) main {
-  margin-top: clamp(1.5rem, 5vw, 2.75rem);
+  margin-top: clamp(1rem, 4vw, 2.25rem);
 }
 
 h1 {
@@ -681,7 +682,7 @@ ul {
 }
 
 .site-header .social-links {
-  margin: 0.25rem 0 0.5rem;
+  margin: 1.25rem 0 0.5rem;
 }
 
 /* Make the GitHub logo white in dark mode (keeps other icons unchanged) */
@@ -727,28 +728,23 @@ body:not(.theme-light) .social-button img[src*="github"] {
 }
 
 footer {
-  margin: 2rem auto 0;
-  padding: 1.25rem 1.75rem 1.1rem;
-  max-width: min(100%, 960px);
+  margin: 2rem 0 0;
+  padding: 1.1rem 1rem 1rem;
   color: var(--text-muted);
   font-size: clamp(0.85rem, 2vw, 0.95rem);
-  line-height: 1.45;
+  line-height: 1.4;
   width: 100%;
   text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.15rem;
-  border-top: 1px solid var(--outline);
-  background: var(--surface);
+  gap: 0.2rem;
 }
 
 @media (max-width: 767px) {
   footer {
     margin-top: 1.35rem;
-    padding: 1.1rem 1.25rem 1rem;
-    max-width: calc(100% - 2rem);
-    background: transparent;
+    padding: 1rem 0.75rem 0.9rem;
   }
 }
 
@@ -1218,6 +1214,37 @@ footer a:hover {
   display: flex;
   gap: 0.75rem;
   flex-wrap: wrap;
+}
+
+.blog-article-footer .article-actions a,
+.blog-article-footer .article-actions button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.45rem 0.95rem;
+  border-radius: 999px;
+  border: 1px solid var(--outline);
+  background: var(--surface);
+  color: var(--text-primary);
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease, color 0.2s ease;
+}
+
+.blog-article-footer .article-actions a:hover,
+.blog-article-footer .article-actions a:focus-visible,
+.blog-article-footer .article-actions button:hover,
+.blog-article-footer .article-actions button:focus-visible {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+  box-shadow: var(--shadow-strong);
+  transform: translateY(-2px);
+}
+
+.blog-article-footer .article-actions button {
+  font: inherit;
 }
 
 .blog-back-link {
