@@ -1,4 +1,4 @@
-const ver = "Version 0.9.5 Public Beta";
+const ver = "Version 0.9.51 Public Beta";
 const COMMENTS_API_URL = '/api/comments';
 const COMMENTS_STORAGE_KEY = 'coolman-comments';
 const ANALYTICS_MODULE_URL = 'https://unpkg.com/@vercel/analytics/dist/analytics.mjs';
@@ -18,6 +18,8 @@ const blogViewerState = {
 	currentComments: [],
 	shareFeedbackTimer: null,
 };
+
+const CHANNEL_ID_CACHE = new Map();
 
 document.addEventListener('DOMContentLoaded', () => {
 	applyInitialTheme();
@@ -312,7 +314,6 @@ function enableContactForm() {
 		}
 
 		const formData = new FormData(contactForm);
-		const payload = Object.fromEntries(formData.entries());
 
 		submitButton.disabled = true;
 		submitButton.textContent = 'Sending...';
@@ -326,9 +327,8 @@ function enableContactForm() {
 				method: 'POST',
 				headers: {
 					Accept: 'application/json',
-					'Content-Type': 'application/json',
 				},
-				body: JSON.stringify(payload),
+				body: formData,
 			});
 
 			if (response.ok) {
@@ -451,18 +451,16 @@ async function initLatestUploadCard() {
 		return;
 	}
 
-	const channelId = card.getAttribute('data-channel-id')?.trim();
-	const channelUser = card.getAttribute('data-channel-user')?.trim();
-	const channelUrl = channelUser
-		? `https://www.youtube.com/${channelUser}`
-		: channelId
-			? `https://www.youtube.com/channel/${channelId}`
-			: 'https://www.youtube.com';
-	const feedUrl = channelId
-		? `https://www.youtube.com/feeds/videos.xml?channel_id=${encodeURIComponent(channelId)}`
-		: channelUser
-			? `https://www.youtube.com/feeds/videos.xml?user=${encodeURIComponent(channelUser)}`
-			: null;
+	const channelIdAttr = card.getAttribute('data-channel-id')?.trim() || '';
+	const channelUserRaw = card.getAttribute('data-channel-user')?.trim() || '';
+	const { handle: normalizedHandle, legacyUser } = parseChannelUserInput(channelUserRaw);
+	let resolvedChannelId = channelIdAttr;
+	let channelUrl = computeChannelUrl(resolvedChannelId, normalizedHandle);
+	const updateChannelUrl = () => {
+		channelUrl = computeChannelUrl(resolvedChannelId, normalizedHandle);
+		return channelUrl;
+	};
+	updateChannelUrl();
 
 	const titleEl = card.querySelector('[data-video-title]');
 	const thumbEl = card.querySelector('[data-video-thumb-slot]');
@@ -492,15 +490,76 @@ async function initLatestUploadCard() {
 		if (linkEl) {
 			linkEl.href = channelUrl;
 		}
+		};
+
+		if (!resolvedChannelId && !legacyUser && !normalizedHandle) {
+			markError('Latest video coming soon — check out the full channel!');
+			return;
+		}
+
+	const buildChannelFeedUrl = (id) => `https://www.youtube.com/feeds/videos.xml?channel_id=${encodeURIComponent(id)}`;
+	const buildUserFeedUrl = (user) => `https://www.youtube.com/feeds/videos.xml?user=${encodeURIComponent(user)}`;
+
+	const candidateFeeds = [];
+	if (resolvedChannelId) {
+		candidateFeeds.push({ type: 'channel_id', channelId: resolvedChannelId, url: buildChannelFeedUrl(resolvedChannelId) });
+	}
+	if (legacyUser) {
+		candidateFeeds.push({ type: 'user', channelUser: legacyUser, url: buildUserFeedUrl(legacyUser) });
+	}
+
+	let feedText = null;
+	let lastFeedError = null;
+	const attemptFeed = async (candidate) => {
+		try {
+			return await fetchFeedWithFallback(candidate.url);
+		} catch (error) {
+			lastFeedError = error;
+			console.info('YouTube feed attempt failed', { url: candidate.url, reason: error?.message });
+			return null;
+		}
 	};
 
-	if (!feedUrl) {
-		markError('Latest video coming soon — check out the full channel!');
+	for (const candidate of candidateFeeds) {
+		const fetched = await attemptFeed(candidate);
+		if (fetched) {
+			if (candidate.type === 'channel_id') {
+				resolvedChannelId = candidate.channelId;
+				updateChannelUrl();
+			}
+			feedText = fetched;
+			break;
+		}
+	}
+
+	const resolutionIdentifier = normalizedHandle || channelUserRaw;
+	if (!feedText && resolutionIdentifier && !resolvedChannelId) {
+		const derivedChannelId = await resolveChannelId(resolutionIdentifier);
+		if (derivedChannelId) {
+			resolvedChannelId = derivedChannelId;
+			updateChannelUrl();
+			const derivedFeed = await attemptFeed({
+				type: 'channel_id',
+				channelId: derivedChannelId,
+				url: buildChannelFeedUrl(derivedChannelId),
+			});
+			if (derivedFeed) {
+				feedText = derivedFeed;
+			}
+		}
+	}
+
+	if (!feedText) {
+		if (lastFeedError) {
+			console.error('Failed to load latest YouTube upload', lastFeedError);
+		} else {
+			console.error('Failed to load latest YouTube upload: no feed could be retrieved');
+		}
+		markError('Unable to fetch the latest video right now. Watch more on YouTube.');
 		return;
 	}
 
 	try {
-		const feedText = await fetchFeedWithFallback(feedUrl);
 		const parser = new DOMParser();
 		const doc = parser.parseFromString(feedText, 'application/xml');
 		if (doc.querySelector('parsererror')) {
@@ -581,9 +640,9 @@ async function initLatestUploadCard() {
 	}
 }
 
-async function fetchFeedWithFallback(url) {
+async function fetchFeedWithFallback(url, accept = 'application/atom+xml') {
 	try {
-		const response = await fetch(url, { headers: { Accept: 'application/atom+xml' } });
+		const response = await fetch(url, { headers: { Accept: accept } });
 		if (response.ok) {
 			return response.text();
 		}
@@ -592,11 +651,131 @@ async function fetchFeedWithFallback(url) {
 	}
 
 	const proxiedUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
-	const response = await fetch(proxiedUrl, { headers: { Accept: 'application/atom+xml' } });
+	const response = await fetch(proxiedUrl, { headers: { Accept: accept } });
 	if (!response.ok) {
 		throw new Error(`Fallback request failed with status ${response.status}`);
 	}
 	return response.text();
+}
+
+function parseChannelUserInput(input) {
+	const trimmed = input?.trim();
+	if (!trimmed) {
+		return { handle: '', legacyUser: '' };
+	}
+
+	const urlPattern = /youtube\.com\/(?:@|channel\/|c\/|user\/)?([\w.-]+)/i;
+	const urlMatch = trimmed.match(urlPattern);
+	const baseWithDecorators = urlMatch?.[1] ?? trimmed;
+	const base = baseWithDecorators.split(/[?#]/)[0].replace(/\/+$/, '');
+	const handle = normalizeChannelHandle(base);
+	const legacyUser = base
+		.replace(/^@+/, '')
+		.replace(/^(?:channel\/|c\/|user\/)/i, '')
+		.split('/')[0];
+
+	return { handle, legacyUser };
+}
+
+function normalizeChannelHandle(value) {
+	const trimmed = value?.trim();
+	if (!trimmed) {
+		return '';
+	}
+
+	if (/^https?:\/\//i.test(trimmed)) {
+		const match = trimmed.match(/youtube\.com\/(@?[\w.-]+)/i);
+		if (match?.[1]) {
+			return normalizeChannelHandle(match[1]);
+		}
+	}
+
+	const sanitized = trimmed.split(/[?#]/)[0].replace(/\/+$/, '');
+	const withoutPathPrefixes = sanitized
+		.replace(/^@+/, '')
+		.replace(/^(?:channel\/)*/i, '')
+		.replace(/^(?:c\/)*/i, '')
+		.replace(/^(?:user\/)*/i, '');
+	const stripped = withoutPathPrefixes.replace(/^@+/, '');
+	if (!stripped) {
+		return '';
+	}
+
+	const primarySegment = stripped.split('/')[0];
+	if (!primarySegment) {
+		return '';
+	}
+
+	return `@${primarySegment}`;
+}
+
+function computeChannelUrl(channelId, handle) {
+	if (handle) {
+		return `https://www.youtube.com/${handle}`;
+	}
+	if (channelId) {
+		return `https://www.youtube.com/channel/${channelId}`;
+	}
+	return 'https://www.youtube.com';
+}
+
+async function resolveChannelId(channelUser) {
+	const { handle, legacyUser } = parseChannelUserInput(channelUser);
+	if (!handle && !legacyUser) {
+		return null;
+	}
+
+	if (handle && CHANNEL_ID_CACHE.has(handle)) {
+		return CHANNEL_ID_CACHE.get(handle);
+	}
+
+	if (legacyUser && CHANNEL_ID_CACHE.has(legacyUser)) {
+		return CHANNEL_ID_CACHE.get(legacyUser);
+	}
+
+	const acceptHeader = 'text/html,application/xhtml+xml;q=0.9,*/*;q=0.8';
+	const candidateUrls = [];
+	if (handle) {
+		candidateUrls.push(`https://www.youtube.com/${handle}/about`, `https://www.youtube.com/${handle}`);
+	}
+	if (legacyUser) {
+		candidateUrls.push(
+			`https://www.youtube.com/user/${legacyUser}/about`,
+			`https://www.youtube.com/user/${legacyUser}`,
+			`https://www.youtube.com/c/${legacyUser}/about`,
+			`https://www.youtube.com/c/${legacyUser}`,
+			`https://www.youtube.com/${legacyUser}/about`,
+			`https://www.youtube.com/${legacyUser}`,
+		);
+	}
+
+	for (const url of candidateUrls) {
+		try {
+			const html = await fetchFeedWithFallback(url, acceptHeader);
+			const match = html.match(/"channelId":"(UC[0-9A-Za-z_-]{21}[0-9A-Za-z_-])"/);
+			const externalMatch = match ?? html.match(/"externalId":"(UC[0-9A-Za-z_-]{21}[0-9A-Za-z_-])"/);
+			const channelId = externalMatch?.[1];
+			if (channelId) {
+				if (handle) {
+					CHANNEL_ID_CACHE.set(handle, channelId);
+				}
+				if (legacyUser) {
+					CHANNEL_ID_CACHE.set(legacyUser, channelId);
+				}
+				return channelId;
+			}
+		} catch (error) {
+			console.info('Channel ID resolution attempt failed', { url, reason: error?.message });
+		}
+	}
+
+	if (handle) {
+		CHANNEL_ID_CACHE.set(handle, null);
+	}
+	if (legacyUser) {
+		CHANNEL_ID_CACHE.set(legacyUser, null);
+	}
+	return null;
 }
 
 function formatRelativeTime(timestamp) {
