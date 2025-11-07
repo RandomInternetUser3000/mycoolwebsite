@@ -1,4 +1,4 @@
-const ver = "Version 0.9.11 Public Beta";
+const ver = "Version 0.9.5 Public Beta";
 const COMMENTS_API_URL = '/api/comments';
 const COMMENTS_STORAGE_KEY = 'coolman-comments';
 const ANALYTICS_MODULE_URL = 'https://unpkg.com/@vercel/analytics/dist/analytics.mjs';
@@ -28,6 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
 	enhanceSocialButtons();
 	initNavGradient();
 	initBlogViewer();
+	initLatestUploadCard();
 	initShareButtons();
 	injectAnalytics();
 });
@@ -444,6 +445,264 @@ function initBlogViewer() {
 	}
 }
 
+async function initLatestUploadCard() {
+	const card = document.querySelector('[data-latest-video]');
+	if (!card) {
+		return;
+	}
+
+	const channelId = card.getAttribute('data-channel-id')?.trim();
+	const channelUser = card.getAttribute('data-channel-user')?.trim();
+	const channelUrl = channelUser
+		? `https://www.youtube.com/${channelUser}`
+		: channelId
+			? `https://www.youtube.com/channel/${channelId}`
+			: 'https://www.youtube.com';
+	const feedUrl = channelId
+		? `https://www.youtube.com/feeds/videos.xml?channel_id=${encodeURIComponent(channelId)}`
+		: channelUser
+			? `https://www.youtube.com/feeds/videos.xml?user=${encodeURIComponent(channelUser)}`
+			: null;
+
+	const titleEl = card.querySelector('[data-video-title]');
+	const thumbEl = card.querySelector('[data-video-thumb-slot]');
+	const linkEl = card.querySelector('[data-video-link]');
+	const publishedEl = card.querySelector('[data-video-published]');
+	const durationEl = card.querySelector('[data-video-duration]');
+
+	const markError = (message) => {
+		card.classList.add('now-playing--error');
+		thumbEl?.classList.remove('now-playing__thumb--skeleton');
+		if (thumbEl) {
+			thumbEl.style.removeProperty('background-image');
+			thumbEl.style.removeProperty('background-size');
+			thumbEl.style.removeProperty('background-position');
+		}
+		if (titleEl) {
+			titleEl.textContent = message;
+		}
+		if (publishedEl) {
+			publishedEl.hidden = true;
+			publishedEl.textContent = '';
+		}
+		if (durationEl) {
+			durationEl.hidden = true;
+			durationEl.textContent = '';
+		}
+		if (linkEl) {
+			linkEl.href = channelUrl;
+		}
+	};
+
+	if (!feedUrl) {
+		markError('Latest video coming soon — check out the full channel!');
+		return;
+	}
+
+	try {
+		const feedText = await fetchFeedWithFallback(feedUrl);
+		const parser = new DOMParser();
+		const doc = parser.parseFromString(feedText, 'application/xml');
+		if (doc.querySelector('parsererror')) {
+			throw new Error('Unable to parse YouTube feed');
+		}
+		const entry = doc.querySelector('entry');
+		if (!entry) {
+			markError('No uploads yet. Stay tuned!');
+			return;
+		}
+
+		const videoId = entry.getElementsByTagName('yt:videoId')[0]?.textContent?.trim();
+		const title = entry.getElementsByTagName('title')[0]?.textContent?.trim() ?? 'Latest upload';
+		const linkNode = Array.from(entry.getElementsByTagName('link')).find((node) =>
+			node.getAttribute('rel') === 'alternate'
+		);
+		const link = linkNode?.getAttribute('href') ?? entry.getElementsByTagName('link')[0]?.getAttribute('href') ??
+			(videoId ? `https://www.youtube.com/watch?v=${videoId}` : channelUrl);
+		const published = entry.getElementsByTagName('published')[0]?.textContent ?? '';
+		const thumbnail = entry.getElementsByTagName('media:thumbnail')[0]?.getAttribute('url') ??
+			(videoId ? `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg` : null);
+		const durationNode = entry.getElementsByTagName('yt:duration')[0] ?? entry.querySelector('yt\\:duration');
+		const durationSecondsRaw = durationNode?.getAttribute('seconds') ?? durationNode?.textContent;
+		const durationSeconds = parseDurationSeconds(durationSecondsRaw);
+
+		card.classList.remove('now-playing--error');
+		if (titleEl) {
+			titleEl.textContent = title;
+		}
+		if (thumbEl) {
+			thumbEl.classList.remove('now-playing__thumb--skeleton');
+			if (thumbnail) {
+				thumbEl.style.backgroundImage = `url("${thumbnail}")`;
+				thumbEl.style.backgroundSize = 'cover';
+				thumbEl.style.backgroundPosition = 'center';
+			} else {
+				thumbEl.style.removeProperty('background-image');
+				thumbEl.style.removeProperty('background-size');
+				thumbEl.style.removeProperty('background-position');
+			}
+		}
+		if (linkEl) {
+			linkEl.href = link;
+		}
+		if (publishedEl && published) {
+			const relative = formatRelativeTime(published);
+			if (relative) {
+				publishedEl.hidden = false;
+				publishedEl.textContent = relative;
+				const publishedDate = new Date(published);
+				if (!Number.isNaN(publishedDate.getTime())) {
+					publishedEl.dateTime = publishedDate.toISOString();
+				}
+			} else {
+				publishedEl.hidden = true;
+				publishedEl.textContent = '';
+			}
+		} else if (publishedEl) {
+			publishedEl.hidden = true;
+			publishedEl.textContent = '';
+		}
+		if (durationEl && Number.isFinite(durationSeconds) && durationSeconds > 0) {
+			const durationLabel = formatDurationLabel(Number(durationSeconds));
+			if (durationLabel) {
+				durationEl.hidden = false;
+				durationEl.textContent = durationLabel;
+			} else {
+				durationEl.hidden = true;
+				durationEl.textContent = '';
+			}
+		} else if (durationEl) {
+			durationEl.hidden = true;
+			durationEl.textContent = '';
+		}
+	} catch (error) {
+		console.error('Failed to load latest YouTube upload', error);
+		markError('Unable to fetch the latest video right now. Watch more on YouTube.');
+	}
+}
+
+async function fetchFeedWithFallback(url) {
+	try {
+		const response = await fetch(url, { headers: { Accept: 'application/atom+xml' } });
+		if (response.ok) {
+			return response.text();
+		}
+	} catch (error) {
+		// fall through to proxy
+	}
+
+	const proxiedUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
+	const response = await fetch(proxiedUrl, { headers: { Accept: 'application/atom+xml' } });
+	if (!response.ok) {
+		throw new Error(`Fallback request failed with status ${response.status}`);
+	}
+	return response.text();
+}
+
+function formatRelativeTime(timestamp) {
+	if (!timestamp) {
+		return '';
+	}
+
+	const date = new Date(timestamp);
+	if (Number.isNaN(date.getTime())) {
+		return '';
+	}
+
+	const now = new Date();
+	const diffMs = date.getTime() - now.getTime();
+	const diffSeconds = Math.round(diffMs / 1000);
+	const absSeconds = Math.abs(diffSeconds);
+	const formatter = typeof Intl?.RelativeTimeFormat === 'function'
+		? new Intl.RelativeTimeFormat('en', { numeric: 'auto' })
+		: null;
+	if (absSeconds < 30) {
+		return 'just now';
+	}
+	const ranges = [
+		{ limit: 60, divisor: 1, unit: 'second' },
+		{ limit: 3600, divisor: 60, unit: 'minute' },
+		{ limit: 86400, divisor: 3600, unit: 'hour' },
+		{ limit: 604800, divisor: 86400, unit: 'day' },
+		{ limit: 2629800, divisor: 604800, unit: 'week' },
+		{ limit: 31557600, divisor: 2629800, unit: 'month' },
+	];
+
+	for (const { limit, divisor, unit } of ranges) {
+		if (absSeconds < limit) {
+			const value = Math.round(diffSeconds / divisor);
+			return formatter ? formatter.format(value, unit) : describeRelativeFallback(value, unit);
+		}
+	}
+
+	const years = Math.round(diffSeconds / 31557600);
+	return formatter ? formatter.format(years, 'year') : describeRelativeFallback(years, 'year');
+}
+
+function describeRelativeFallback(value, unit) {
+	const absolute = Math.abs(value);
+	if (absolute === 0) {
+		return 'just now';
+	}
+	const suffix = absolute === 1 ? unit : `${unit}s`;
+	return value <= 0 ? `${absolute} ${suffix} ago` : `in ${absolute} ${suffix}`;
+}
+
+function parseDurationSeconds(value) {
+	if (value == null) {
+		return Number.NaN;
+	}
+
+	if (typeof value === 'number') {
+		return Number.isFinite(value) ? value : Number.NaN;
+	}
+
+	const trimmed = String(value).trim();
+	if (!trimmed) {
+		return Number.NaN;
+	}
+
+	const numeric = Number(trimmed);
+	if (Number.isFinite(numeric)) {
+		return numeric;
+	}
+
+	if (!trimmed.startsWith('PT')) {
+		return Number.NaN;
+	}
+
+	const isoBody = trimmed.slice(2);
+	const isoPattern = /(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/;
+	const [, hoursRaw, minutesRaw, secondsRaw] = isoPattern.exec(isoBody) || [];
+	const hours = Number(hoursRaw || 0);
+	const minutes = Number(minutesRaw || 0);
+	const seconds = Number(secondsRaw || 0);
+
+	return (hours * 3600) + (minutes * 60) + seconds;
+}
+
+function formatDurationLabel(seconds) {
+	if (!Number.isFinite(seconds) || seconds <= 0) {
+		return '';
+	}
+
+	const totalSeconds = Math.floor(seconds);
+	const hours = Math.floor(totalSeconds / 3600);
+	const minutes = Math.floor((totalSeconds % 3600) / 60);
+	const secs = totalSeconds % 60;
+
+	const parts = [];
+	if (hours > 0) {
+		parts.push(String(hours));
+		parts.push(String(minutes).padStart(2, '0'));
+	} else {
+		parts.push(String(minutes));
+	}
+	parts.push(String(secs).padStart(2, '0'));
+
+	return parts.join(':');
+}
+
 function openBlogModal(trigger) {
 	const slug = trigger.getAttribute('data-blog-open');
 	const template = document.getElementById(`blog-template-${slug}`);
@@ -785,36 +1044,6 @@ function normalizeComments(maybeComments) {
 			createdAt: comment?.createdAt ?? comment?.timestamp ?? new Date().toISOString(),
 		}))
 		.filter((comment) => comment.message.length > 0);
-}
-
-function formatRelativeTime(timestamp) {
-	const date = new Date(timestamp);
-	if (Number.isNaN(date.getTime())) {
-		return 'just now';
-	}
-
-	const now = Date.now();
-	const diffMs = date.getTime() - now;
-	const diffMinutes = diffMs / 60000;
-
-	const formatter = new Intl.RelativeTimeFormat(undefined, { numeric: 'auto' });
-	const thresholds = [
-		{ unit: 'year', value: 525600 },
-		{ unit: 'month', value: 43200 },
-		{ unit: 'week', value: 10080 },
-		{ unit: 'day', value: 1440 },
-		{ unit: 'hour', value: 60 },
-		{ unit: 'minute', value: 1 },
-	];
-
-	for (const threshold of thresholds) {
-		if (Math.abs(diffMinutes) >= threshold.value || threshold.unit === 'minute') {
-			const delta = Math.round(diffMinutes / threshold.value);
-			return formatter.format(delta, threshold.unit);
-		}
-	}
-
-	return date.toLocaleString();
 }
 
 function escapeHtml(value) {
