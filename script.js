@@ -1,4 +1,4 @@
-const ver = "Version 0.9.51 Public Beta";
+const ver = "Version 0.9.6 Public Beta";
 const COMMENTS_API_URL = '/api/comments';
 const COMMENTS_STORAGE_KEY = 'coolman-comments';
 const ANALYTICS_MODULE_URL = 'https://unpkg.com/@vercel/analytics/dist/analytics.mjs';
@@ -465,7 +465,7 @@ async function initLatestUploadCard() {
 	const titleEl = card.querySelector('[data-video-title]');
 	const thumbEl = card.querySelector('[data-video-thumb-slot]');
 	const linkEl = card.querySelector('[data-video-link]');
-	const publishedEl = card.querySelector('[data-video-published]');
+	const statsEl = card.querySelector('[data-video-stats]');
 	const durationEl = card.querySelector('[data-video-duration]');
 
 	const markError = (message) => {
@@ -479,9 +479,9 @@ async function initLatestUploadCard() {
 		if (titleEl) {
 			titleEl.textContent = message;
 		}
-		if (publishedEl) {
-			publishedEl.hidden = true;
-			publishedEl.textContent = '';
+		if (statsEl) {
+			statsEl.hidden = true;
+			statsEl.textContent = '';
 		}
 		if (durationEl) {
 			durationEl.hidden = true;
@@ -490,6 +490,7 @@ async function initLatestUploadCard() {
 		if (linkEl) {
 			linkEl.href = channelUrl;
 		}
+		delete card.dataset.latestVideoPublished;
 		};
 
 		if (!resolvedChannelId && !legacyUser && !normalizedHandle) {
@@ -584,6 +585,12 @@ async function initLatestUploadCard() {
 		const durationNode = entry.getElementsByTagName('yt:duration')[0] ?? entry.querySelector('yt\\:duration');
 		const durationSecondsRaw = durationNode?.getAttribute('seconds') ?? durationNode?.textContent;
 		const durationSeconds = parseDurationSeconds(durationSecondsRaw);
+		const statsNode = entry.getElementsByTagName('yt:statistics')[0] ??
+			entry.querySelector('yt\\:statistics') ??
+			entry.getElementsByTagName('media:statistics')[0] ??
+			entry.querySelector('media\\:statistics');
+		const viewCountRaw = statsNode?.getAttribute('viewCount') ?? statsNode?.getAttribute('views');
+		const viewCount = Number.parseInt(viewCountRaw ?? '', 10);
 
 		card.classList.remove('now-playing--error');
 		if (titleEl) {
@@ -604,22 +611,35 @@ async function initLatestUploadCard() {
 		if (linkEl) {
 			linkEl.href = link;
 		}
-		if (publishedEl && published) {
-			const relative = formatRelativeTime(published);
-			if (relative) {
-				publishedEl.hidden = false;
-				publishedEl.textContent = relative;
-				const publishedDate = new Date(published);
-				if (!Number.isNaN(publishedDate.getTime())) {
-					publishedEl.dateTime = publishedDate.toISOString();
-				}
+		let publishedIso = '';
+		if (published) {
+			const publishedDate = new Date(published);
+			if (!Number.isNaN(publishedDate.getTime())) {
+				publishedIso = publishedDate.toISOString();
+				card.dataset.latestVideoPublished = publishedIso;
 			} else {
-				publishedEl.hidden = true;
-				publishedEl.textContent = '';
+				delete card.dataset.latestVideoPublished;
 			}
-		} else if (publishedEl) {
-			publishedEl.hidden = true;
-			publishedEl.textContent = '';
+		} else {
+			delete card.dataset.latestVideoPublished;
+		}
+
+		if (statsEl) {
+			const relative = publishedIso ? formatRelativeTime(publishedIso) : published ? formatRelativeTime(published) : '';
+			const statsParts = [];
+			if (Number.isFinite(viewCount) && viewCount >= 0) {
+				statsParts.push(`${formatViewCount(viewCount)} views`);
+			}
+			if (relative) {
+				statsParts.push(relative);
+			}
+			if (statsParts.length) {
+				statsEl.hidden = false;
+				statsEl.textContent = statsParts.join(' · ');
+			} else {
+				statsEl.hidden = true;
+				statsEl.textContent = '';
+			}
 		}
 		if (durationEl && Number.isFinite(durationSeconds) && durationSeconds > 0) {
 			const durationLabel = formatDurationLabel(Number(durationSeconds));
@@ -880,6 +900,32 @@ function formatDurationLabel(seconds) {
 	parts.push(String(secs).padStart(2, '0'));
 
 	return parts.join(':');
+}
+
+function formatViewCount(count) {
+	if (!Number.isFinite(count) || count < 0) {
+		return '';
+	}
+
+	const absolute = Math.floor(count);
+	if (absolute < 1000) {
+		return absolute.toLocaleString('en');
+	}
+
+	const units = [
+		{ value: 1_000_000_000, suffix: 'B' },
+		{ value: 1_000_000, suffix: 'M' },
+		{ value: 1_000, suffix: 'K' },
+	];
+
+	for (const { value, suffix } of units) {
+		if (absolute >= value) {
+			const formatted = (absolute / value).toFixed(absolute >= value * 10 ? 0 : 1);
+			return `${Number(formatted)}${suffix}`;
+		}
+	}
+
+	return absolute.toLocaleString('en');
 }
 
 function openBlogModal(trigger) {

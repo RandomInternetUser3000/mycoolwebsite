@@ -691,10 +691,26 @@ ul {
 
 .now-playing__meta {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 0.75rem;
-  font-size: 0.85rem;
-  color: rgba(245, 247, 255, 0.65);
+  justify-content: center;
+  gap: 0.4rem;
+  text-align: center;
+  font-size: 0.9rem;
+  color: rgba(245, 247, 255, 0.72);
+}
+
+.now-playing__stats {
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.now-playing__duration {
+  font-size: 0.8rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  background: rgba(245, 247, 255, 0.12);
+  color: rgba(245, 247, 255, 0.75);
 }
 
 .now-playing__actions {
