@@ -285,8 +285,34 @@ img {
 }
 
 @media (min-width: 768px) {
+  .header-bar {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+  }
+
   .nav-wrapper {
     overflow-x: visible;
+    flex: initial;
+    width: auto;
+    justify-content: center;
+    margin: 0 auto;
+    grid-column: 2;
+  }
+
+  .site-logo {
+    order: 0;
+    margin: 0;
+    grid-column: 1;
+    justify-self: start;
+  }
+
+  .theme-toggle {
+    margin-left: 0;
+    grid-column: 3;
+    justify-self: end;
   }
 }
 
