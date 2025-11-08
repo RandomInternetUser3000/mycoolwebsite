@@ -482,6 +482,15 @@ ul {
   max-width: 500px;
   margin: 1rem auto;
   line-height: 1.8;
+  font-size: clamp(1rem, 2.1vw, 1.2rem);
+}
+
+ol {
+  text-align: left;
+  max-width: 500px;
+  margin: 1rem auto;
+  line-height: 1.8;
+  font-size: clamp(1rem, 2.1vw, 1.2rem);
 }
 
 .github-repo {
