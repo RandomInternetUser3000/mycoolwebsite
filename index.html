@@ -3,20 +3,67 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="COOLmanYT is a content creator and developer building Roblox experiences, coding projects, and weekly videos. Explore projects, blog posts, and the latest YouTube upload.">
+  <meta name="author" content="COOLmanYT">
+  <meta name="color-scheme" content="dark light">
   <link rel="icon" type="image/png" href="images/avatar.png" />
-  <title>COOLmanYT</title>
+  <link rel="apple-touch-icon" href="images/avatar.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="style.css">
+  <link rel="canonical" href="https://mycoolwebsite.vercel.app/">
+  <link rel="alternate" type="application/rss+xml" title="COOLmanYT Blog" href="feed.xml">
+  <title>COOLmanYT | Content Creator &amp; Developer</title>
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://mycoolwebsite.vercel.app/">
+  <meta property="og:title" content="COOLmanYT | Content Creator &amp; Developer">
+  <meta property="og:description" content="Follow COOLmanYT for Roblox builds, coding projects, and behind-the-scenes updates.">
+  <meta property="og:image" content="https://mycoolwebsite.vercel.app/images/avatar.png">
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="https://mycoolwebsite.vercel.app/">
+  <meta name="twitter:title" content="COOLmanYT | Content Creator &amp; Developer">
+  <meta name="twitter:description" content="Follow COOLmanYT for Roblox builds, coding projects, and behind-the-scenes updates.">
+  <meta name="twitter:image" content="https://mycoolwebsite.vercel.app/images/avatar.png">
+
+  <meta name="theme-color" content="#111627" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "COOLmanYT",
+    "alternateName": "COOLmanGamer",
+    "url": "https://mycoolwebsite.vercel.app",
+    "image": "https://mycoolwebsite.vercel.app/images/avatar.png",
+    "description": "Content creator and developer sharing Roblox builds, coding projects, and videos.",
+    "sameAs": [
+      "https://github.com/RandomInternetUser3000",
+      "https://www.youtube.com/@COOLmanGamer",
+      "https://discord.gg/SzHksR3QFj",
+      "https://www.roblox.com/users/2873599962/profile",
+      "https://www.reddit.com/user/COOLman_YT/"
+    ],
+    "knowsAbout": ["Roblox Development", "Lua", "HTML", "CSS", "JavaScript", "Python", "Video Editing"],
+    "jobTitle": "Content Creator"
+  }
+  </script>
 </head>
 <body class="home-page">
+  <a class="skip-link" href="#mainContent">Skip to main content</a>
   <div class="top-banner">
     <span>🛠️ <strong>Public Beta</strong> version of the website.</span>
     <a class="banner-button" href="https://github.com/RandomInternetUser3000/mycoolwebsite" target="_blank" rel="noopener noreferrer">Open Source GitHub Repository</a>
   </div>
 
-  <header class="site-header">
+  <header class="site-header" role="banner">
     <div class="header-bar">
       <div class="nav-wrapper">
-        <nav class="nav-links">
+        <nav class="nav-links" aria-label="Primary">
           <a href="index.html" class="nav-pill active">Home</a>
           <a href="about.html" class="nav-pill">About</a>
           <a href="projects.html" class="nav-pill">Projects</a>
@@ -33,7 +80,7 @@
     </div>
   </header>
 
-  <main>
+  <main id="mainContent" role="main">
     <h1 class="hero-title">COOLman's Cool Website 😎</h1>
     <p class="hero-description">Welcome to my personal website!<br>
       I create cool projects and love coding.<br>

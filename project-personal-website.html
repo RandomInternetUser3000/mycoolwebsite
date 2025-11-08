@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="A behind-the-scenes breakdown of COOLmanYT's personal website rebuild, covering accessibility upgrades, performance optimizations, and deployment flow.">
+  <meta name="author" content="COOLmanYT">
+  <meta name="color-scheme" content="dark light">
+  <link rel="icon" type="image/png" href="images/avatar.png">
+  <link rel="apple-touch-icon" href="images/avatar.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="style.css">
+  <link rel="canonical" href="https://mycoolwebsite.vercel.app/project-personal-website.html">
+  <link rel="alternate" type="application/rss+xml" title="COOLmanYT Blog" href="feed.xml">
+  <title>Website Rebuild – Project Notes | COOLmanYT</title>
+
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://mycoolwebsite.vercel.app/project-personal-website.html">
+  <meta property="og:title" content="COOLmanYT Website Rebuild – Project Notes">
+  <meta property="og:description" content="See how COOLmanYT rebuilt the personal site with semantic HTML, structured data, and a fast GitHub → Vercel workflow.">
+  <meta property="og:image" content="https://mycoolwebsite.vercel.app/images/placeholder2.svg">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="https://mycoolwebsite.vercel.app/project-personal-website.html">
+  <meta name="twitter:title" content="COOLmanYT Website Rebuild – Project Notes">
+  <meta name="twitter:description" content="See how COOLmanYT rebuilt the personal site with semantic HTML, structured data, and a fast GitHub → Vercel workflow.">
+  <meta name="twitter:image" content="https://mycoolwebsite.vercel.app/images/placeholder2.svg">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "CreativeWork",
+    "name": "COOLmanYT Personal Website",
+    "description": "Static site rebuilt with semantic HTML, accessibility affordances, structured metadata, and automated Vercel deployments.",
+    "url": "https://mycoolwebsite.vercel.app/project-personal-website.html",
+    "author": {
+      "@type": "Person",
+      "name": "COOLmanYT",
+      "url": "https://mycoolwebsite.vercel.app/"
+    },
+    "image": "https://mycoolwebsite.vercel.app/images/placeholder2.svg",
+    "dateCreated": "2024-09-01",
+    "inLanguage": "en",
+    "keywords": ["HTML", "CSS", "JavaScript", "Accessibility", "SEO", "Vercel"]
+  }
+  </script>
+</head>
+<body class="project-detail-page">
+  <a class="skip-link" href="#mainContent">Skip to main content</a>
+  <div class="top-banner">
+    <span>🛠️ <strong>Public Beta</strong> version of the website.</span>
+    <a class="banner-button" href="https://github.com/RandomInternetUser3000/mycoolwebsite" target="_blank" rel="noopener noreferrer">Open Source GitHub Repository</a>
+  </div>
+
+  <header class="site-header" role="banner">
+    <div class="header-bar">
+      <div class="nav-wrapper">
+        <nav class="nav-links" aria-label="Primary">
+          <a href="index.html" class="nav-pill">Home</a>
+          <a href="about.html" class="nav-pill">About</a>
+          <a href="projects.html" class="nav-pill active">Projects</a>
+          <a href="contact.html" class="nav-pill">Contact</a>
+          <a href="gallery.html" class="nav-pill">Gallery</a>
+          <a href="blog.html" class="nav-pill">Blog</a>
+        </nav>
+      </div>
+      <span class="site-logo">COOLmanYT</span>
+      <button type="button" class="theme-toggle" aria-label="Switch to light mode" aria-pressed="true">
+        <span class="toggle-icon">🌙</span>
+        <span class="toggle-text">Light mode</span>
+      </button>
+    </div>
+    <div class="social-links">
+      <a href="https://github.com/RandomInternetUser3000" target="_blank" rel="noopener noreferrer" class="social-button" data-label="GitHub">
+        <img src="images/github.png" alt="GitHub">
+        <span class="social-label">GitHub</span>
+      </a>
+      <a href="https://www.youtube.com/@COOLmanGamer" target="_blank" rel="noopener noreferrer" class="social-button" data-label="YouTube">
+        <img src="images/youtube.png" alt="YouTube">
+        <span class="social-label">YouTube</span>
+      </a>
+      <a href="https://discord.gg/SzHksR3QFj" target="_blank" rel="noopener noreferrer" class="social-button" data-label="Discord">
+        <img src="images/discord.png" alt="Discord">
+        <span class="social-label">Discord</span>
+      </a>
+      <a href="https://www.roblox.com/users/2873599962/profile" target="_blank" rel="noopener noreferrer" class="social-button" data-label="Roblox">
+        <img src="images/roblox2.png" alt="Roblox">
+        <span class="social-label">Roblox</span>
+      </a>
+      <a href="https://open.spotify.com/user/31px5awkcyikvgrfiiqkxem6oxni?si=fd36097626ff454f" target="_blank" rel="noopener noreferrer" class="social-button" data-label="Spotify">
+        <img src="images/spotify.png" alt="Spotify">
+        <span class="social-label">Spotify</span>
+      </a>
+      <a href="https://www.reddit.com/user/COOLman_YT/" target="_blank" rel="noopener noreferrer" class="social-button" data-label="Reddit">
+        <img src="images/reddit.png" alt="Reddit">
+        <span class="social-label">Reddit</span>
+      </a>
+    </div>
+  </header>
+
+  <main id="mainContent" role="main">
+    <article class="project-detail">
+      <header class="project-detail__header">
+        <p class="project-detail__eyebrow">Static site rebuild</p>
+        <h1>COOLmanYT Personal Website</h1>
+        <p class="lead">A fully static site tuned for accessibility, metadata coverage, and fast publishing. Designed to showcase projects, blog posts, and the latest content drops in one place.</p>
+        <dl class="project-detail__meta">
+          <div>
+            <dt>Status</dt>
+            <dd>Public beta</dd>
+          </div>
+          <div>
+            <dt>Role</dt>
+            <dd>Design · Development · Content strategy</dd>
+          </div>
+          <div>
+            <dt>Stack</dt>
+            <dd>HTML, CSS, Vanilla JS, GitHub, Vercel</dd>
+          </div>
+          <div>
+            <dt>Timeline</dt>
+            <dd>September 2024 → Present</dd>
+          </div>
+        </dl>
+        <div class="project-detail__actions">
+          <a href="https://github.com/RandomInternetUser3000/mycoolwebsite" target="_blank" rel="noopener noreferrer" class="button">View repository</a>
+          <a href="projects.html" class="button button--ghost">Back to projects</a>
+        </div>
+      </header>
+
+      <div class="project-detail__body">
+        <section class="project-detail__narrative">
+          <section>
+            <h2>Accessibility and structure first</h2>
+            <p>The rebuild puts semantic HTML and navigational shortcuts up front—skip links, proper landmarks, descriptive aria labels, and focus-visible styling keep the site usable with a keyboard or screen reader.</p>
+            <ul>
+              <li>Each page ships with complete Open Graph, Twitter Card, and JSON-LD metadata.</li>
+              <li>Headers and footers share consistent landmark roles so assistive tech never gets lost.</li>
+              <li>Focus outlines and animated skip links ensure rapid navigation even on mobile.</li>
+            </ul>
+          </section>
+
+          <section>
+            <h2>Simple tooling, fast iteration</h2>
+            <p>Changes land via GitHub branches and auto-deploy to Vercel. No build tooling means I can ship copy edits, new sections, or CSS tweaks directly from VS Code and validate within minutes.</p>
+            <ol>
+              <li>Track tasks in TODO lists, open branches for each batch of improvements.</li>
+              <li>Preview deploys on Vercel to validate metadata and responsive layout.</li>
+              <li>Promote to production once accessibility and SEO checks pass.</li>
+            </ol>
+          </section>
+        </section>
+
+        <aside class="project-detail__sidebar">
+          <figure class="project-detail__media">
+            <img src="images/placeholder2.svg" alt="Wireframe of the COOLmanYT homepage layout" width="800" height="600" loading="lazy" decoding="async">
+            <figcaption>Homepage wireframe highlighting hero, projects, and blog entry points.</figcaption>
+          </figure>
+
+          <section class="project-detail__panel">
+            <h2>Feature checklist</h2>
+            <ul>
+              <li>Skip links on every page.</li>
+              <li>Mobile nav with horizontal scroll restored.</li>
+              <li>Structured data for Person, Profile, and Blog pages.</li>
+              <li>Inline RSS link for future automation.</li>
+            </ul>
+          </section>
+
+          <section class="project-detail__panel">
+            <h2>Next enhancements</h2>
+            <ul>
+              <li>Project detail routing (this page!).</li>
+              <li>RSS feed generation for the blog.</li>
+              <li>Search and newsletter sign-up modules.</li>
+            </ul>
+          </section>
+        </aside>
+      </div>
+
+      <section class="project-detail__next">
+        <h2>Follow the changelog</h2>
+        <p>Most improvements start as notes in the <a href="blog.html">blog</a> before landing here. Expect responsive images, analytics, and a roadmap hub soon.</p>
+        <ul>
+          <li>Watch <a href="https://www.youtube.com/@COOLmanGamer" target="_blank" rel="noopener noreferrer">YouTube</a> for devlogs.</li>
+          <li>Track changes in the <a href="https://github.com/RandomInternetUser3000/mycoolwebsite" target="_blank" rel="noopener noreferrer">GitHub repo</a>.</li>
+        </ul>
+      </section>
+    </article>
+  </main>
+
+  <footer role="contentinfo">
+    Made with ♥️ by <strong>COOLmanYT</strong><br>
+    Website <a data-site-version-link href="https://github.com/RandomInternetUser3000/mycoolwebsite">Version<span data-site-version-number></span><span data-site-version-type></span></a><br>
+    Credits to <a href="https://zinheere.vercel.app">Zinheere</a>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

@@ -3,20 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/png" href="images/avatar.png" />
-    <title>Gallery - COOLmanYT</title>
+    <meta name="description" content="Browse behind-the-scenes screenshots, lighting tests, and concept art from COOLmanYT projects and videos.">
+    <meta name="author" content="COOLmanYT">
+    <meta name="color-scheme" content="dark light">
+    <link rel="icon" type="image/png" href="images/avatar.png">
+    <link rel="apple-touch-icon" href="images/avatar.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="style.css">
+    <link rel="canonical" href="https://mycoolwebsite.vercel.app/gallery.html">
+    <link rel="alternate" type="application/rss+xml" title="COOLmanYT Blog" href="feed.xml">
+    <title>Gallery - COOLmanYT</title>
+
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://mycoolwebsite.vercel.app/gallery.html">
+    <meta property="og:title" content="Gallery - COOLmanYT">
+    <meta property="og:description" content="Behind-the-scenes snapshots of Roblox builds, studio gear, and editing setups from COOLmanYT.">
+    <meta property="og:image" content="https://mycoolwebsite.vercel.app/images/avatar.png">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://mycoolwebsite.vercel.app/gallery.html">
+    <meta name="twitter:title" content="Gallery - COOLmanYT">
+    <meta name="twitter:description" content="Behind-the-scenes snapshots of Roblox builds, studio gear, and editing setups from COOLmanYT.">
+    <meta name="twitter:image" content="https://mycoolwebsite.vercel.app/images/avatar.png">
+
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "CollectionPage",
+        "name": "Gallery - COOLmanYT",
+        "description": "Behind-the-scenes snapshots of Roblox builds, studio gear, and editing setups from COOLmanYT.",
+        "url": "https://mycoolwebsite.vercel.app/gallery.html",
+        "isPartOf": {
+            "@type": "WebSite",
+            "name": "COOLmanYT",
+            "url": "https://mycoolwebsite.vercel.app/"
+        },
+        "image": [
+            "https://picsum.photos/seed/coolman1/1200/900",
+            "https://picsum.photos/seed/coolman2/1200/900",
+            "https://picsum.photos/seed/coolman3/1200/900",
+            "https://picsum.photos/seed/coolman4/1200/900",
+            "https://picsum.photos/seed/coolman5/1200/900",
+            "https://picsum.photos/seed/coolman6/1200/900"
+        ]
+    }
+    </script>
 </head>
 <body class="gallery-page">
+    <a class="skip-link" href="#mainContent">Skip to main content</a>
     <div class="top-banner">
         <span>🛠️ <strong>Public Beta</strong> version of the website.</span>
         <a class="banner-button" href="https://github.com/RandomInternetUser3000/mycoolwebsite" target="_blank" rel="noopener noreferrer">Open Source GitHub Repository</a>
     </div>
 
-    <header class="site-header">
+    <header class="site-header" role="banner">
         <div class="header-bar">
             <div class="nav-wrapper">
-                <nav class="nav-links">
+                <nav class="nav-links" aria-label="Primary">
                     <a href="index.html" class="nav-pill">Home</a>
                     <a href="about.html" class="nav-pill">About</a>
                     <a href="projects.html" class="nav-pill">Projects</a>
@@ -59,41 +103,85 @@
         </div>
     </header>
 
-    <main>
-        <h1>Gallery</h1>
-        <p>A snapshot collection of builds, thumbnails, and behind-the-scenes moments from my projects.</p>
+    <main id="mainContent" role="main">
+        <header>
+            <h1>Gallery</h1>
+            <p>A snapshot collection of builds, thumbnails, and behind-the-scenes moments from my projects.</p>
+        </header>
 
-        <div class="gallery-grid">
-            <figure class="gallery-item">
-                <img src="https://picsum.photos/seed/coolman1/800/600" alt="Roblox avatar build preview">
-                <span>Character concept art</span>
+        <div class="gallery-grid" role="list">
+            <figure class="gallery-item" role="listitem">
+                <img src="https://picsum.photos/seed/coolman1/800/600"
+                         srcset="https://picsum.photos/seed/coolman1/400/300 400w, https://picsum.photos/seed/coolman1/800/600 800w, https://picsum.photos/seed/coolman1/1200/900 1200w"
+                         sizes="(max-width: 600px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                         alt="Roblox avatar build preview"
+                         width="800"
+                         height="600"
+                         loading="lazy"
+                         decoding="async">
+                <figcaption>Character concept art</figcaption>
             </figure>
-            <figure class="gallery-item">
-                <img src="https://picsum.photos/seed/coolman2/800/600" alt="Game lobby lighting test">
-                <span>Lobby lighting test</span>
+            <figure class="gallery-item" role="listitem">
+                <img src="https://picsum.photos/seed/coolman2/800/600"
+                         srcset="https://picsum.photos/seed/coolman2/400/300 400w, https://picsum.photos/seed/coolman2/800/600 800w, https://picsum.photos/seed/coolman2/1200/900 1200w"
+                         sizes="(max-width: 600px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                         alt="Game lobby lighting test"
+                         width="800"
+                         height="600"
+                         loading="lazy"
+                         decoding="async">
+                <figcaption>Lobby lighting test</figcaption>
             </figure>
-            <figure class="gallery-item">
-                <img src="https://picsum.photos/seed/coolman3/800/600" alt="Prototype scripting screenshot">
-                <span>Prototype scripting board</span>
+            <figure class="gallery-item" role="listitem">
+                <img src="https://picsum.photos/seed/coolman3/800/600"
+                         srcset="https://picsum.photos/seed/coolman3/400/300 400w, https://picsum.photos/seed/coolman3/800/600 800w, https://picsum.photos/seed/coolman3/1200/900 1200w"
+                         sizes="(max-width: 600px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                         alt="Prototype scripting screenshot"
+                         width="800"
+                         height="600"
+                         loading="lazy"
+                         decoding="async">
+                <figcaption>Prototype scripting board</figcaption>
             </figure>
-            <figure class="gallery-item">
-                <img src="https://picsum.photos/seed/coolman4/800/600" alt="Content creation setup">
-                <span>Content creation desk</span>
+            <figure class="gallery-item" role="listitem">
+                <img src="https://picsum.photos/seed/coolman4/800/600"
+                         srcset="https://picsum.photos/seed/coolman4/400/300 400w, https://picsum.photos/seed/coolman4/800/600 800w, https://picsum.photos/seed/coolman4/1200/900 1200w"
+                         sizes="(max-width: 600px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                         alt="Content creation setup"
+                         width="800"
+                         height="600"
+                         loading="lazy"
+                         decoding="async">
+                <figcaption>Content creation desk</figcaption>
             </figure>
-            <figure class="gallery-item">
-                <img src="https://picsum.photos/seed/coolman5/800/600" alt="Video editing timeline">
-                <span>Editing an upcoming video</span>
+            <figure class="gallery-item" role="listitem">
+                <img src="https://picsum.photos/seed/coolman5/800/600"
+                         srcset="https://picsum.photos/seed/coolman5/400/300 400w, https://picsum.photos/seed/coolman5/800/600 800w, https://picsum.photos/seed/coolman5/1200/900 1200w"
+                         sizes="(max-width: 600px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                         alt="Video editing timeline"
+                         width="800"
+                         height="600"
+                         loading="lazy"
+                         decoding="async">
+                <figcaption>Editing an upcoming video</figcaption>
             </figure>
-            <figure class="gallery-item">
-                <img src="https://picsum.photos/seed/coolman6/800/600" alt="Roblox map fly-through">
-                <span>Map fly-through WIP</span>
+            <figure class="gallery-item" role="listitem">
+                <img src="https://picsum.photos/seed/coolman6/800/600"
+                         srcset="https://picsum.photos/seed/coolman6/400/300 400w, https://picsum.photos/seed/coolman6/800/600 800w, https://picsum.photos/seed/coolman6/1200/900 1200w"
+                         sizes="(max-width: 600px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                         alt="Roblox map fly-through"
+                         width="800"
+                         height="600"
+                         loading="lazy"
+                         decoding="async">
+                <figcaption>Map fly-through WIP</figcaption>
             </figure>
         </div>
     </main>
 
-    <footer>
+    <footer role="contentinfo">
         Made with ♥️ by <strong>COOLmanYT</strong><br>
-    Website <a data-site-version-link href="https://github.com/RandomInternetUser3000/mycoolwebsite">Version<span data-site-version-number></span><span data-site-version-type></span></a><br>
+        Website <a data-site-version-link href="https://github.com/RandomInternetUser3000/mycoolwebsite">Version<span data-site-version-number></span><span data-site-version-type></span></a><br>
         Credits to <a href="https://zinheere.vercel.app">Zinheere</a> <br>
     </footer>
 

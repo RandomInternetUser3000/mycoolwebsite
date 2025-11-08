@@ -3,20 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Explore COOLmanYT projects including Aurora Arena, the personal website, and the Shortform Toolkit for video editing.">
     <link rel="icon" type="image/png" href="images/avatar.png" />
-    <title>Projects - COOLmanYT</title>
+    <link rel="apple-touch-icon" href="images/avatar.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="style.css">
+    <link rel="canonical" href="https://mycoolwebsite.vercel.app/projects.html">
+    <title>Projects - COOLmanYT</title>
+
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://mycoolwebsite.vercel.app/projects.html">
+    <meta property="og:title" content="Projects by COOLmanYT">
+    <meta property="og:description" content="Aurora Arena, personal website, and Shortform Toolkit—see what COOLmanYT is building right now.">
+    <meta property="og:image" content="https://mycoolwebsite.vercel.app/images/avatar.png">
+
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:url" content="https://mycoolwebsite.vercel.app/projects.html">
+    <meta name="twitter:title" content="Projects by COOLmanYT">
+    <meta name="twitter:description" content="Aurora Arena, personal website, and Shortform Toolkit—see what COOLmanYT is building right now.">
+    <meta name="twitter:image" content="https://mycoolwebsite.vercel.app/images/avatar.png">
 </head>
 <body class="projects-page">
+    <a class="skip-link" href="#mainContent">Skip to main content</a>
     <div class="top-banner">
         <span>🛠️ <strong>Public Beta</strong> version of the website.</span>
         <a class="banner-button" href="https://github.com/RandomInternetUser3000/mycoolwebsite" target="_blank" rel="noopener noreferrer">Open Source GitHub Repository</a>
     </div>
 
-    <header class="site-header">
+    <header class="site-header" role="banner">
         <div class="header-bar">
             <div class="nav-wrapper">
-                <nav class="nav-links">
+                <nav class="nav-links" aria-label="Primary">
                     <a href="index.html" class="nav-pill">Home</a>
                     <a href="about.html" class="nav-pill">About</a>
                     <a href="projects.html" class="nav-pill active">Projects</a>
@@ -59,7 +77,7 @@
         </div>
     </header>
 
-    <main>
+    <main id="mainContent" role="main">
         <h1>My Projects</h1>
         <p>I'm currently working on some exciting projects.<br>From HTML headaches to Python problems, all my projects (including the most infuriating) is here. <br>
         And yes, this website counts as a project.</p>
@@ -79,7 +97,10 @@
                         <li><strong>Status:</strong> Private playtests underway</li>
                         <li><strong>Stack:</strong> Roblox Studio · Lua · Blender</li>
                     </ul>
-                    <a href="https://www.roblox.com/users/2873599962/profile" target="_blank" rel="noopener noreferrer" class="button">Join the Playtest List</a>
+                    <div class="project-card__actions">
+                        <a href="project-aurora-arena.html" class="button" data-project-open="aurora-arena">View case study</a>
+                        <a href="https://www.roblox.com/users/2873599962/profile" target="_blank" rel="noopener noreferrer" class="button button--ghost">Join the playtest list</a>
+                    </div>
                     </div>
                 </article>
                 <article class="project-card project-card--command">
@@ -91,7 +112,10 @@
                         <li><strong>Status:</strong>Pre-Release Beta</li>
                         <li><strong>Stack:</strong> HTML · CSS · JavaScript</li>
                     </ul>
-                    <a href="https://github.com/RandomInternetUser3000/mycoolwebsite" target="_blank" rel="noopener noreferrer" class="button">View Repository</a>
+                    <div class="project-card__actions">
+                        <a href="project-personal-website.html" class="button" data-project-open="personal-website">Read build notes</a>
+                        <a href="https://github.com/RandomInternetUser3000/mycoolwebsite" target="_blank" rel="noopener noreferrer" class="button button--ghost">View repository</a>
+                    </div>
                     </div>
                 </article>
                 <article class="project-card project-card--toolkit">
@@ -103,7 +127,10 @@
                         <li><strong>Status:</strong> Editing workflow tests</li>
                         <li><strong>Stack:</strong> Adobe Premiere · After Effects · ExtendScript</li>
                     </ul>
-                    <a href="https://www.youtube.com/@COOLmanGamer?sub_confirmation=1" target="_blank" rel="noopener noreferrer" class="button">Watch Sample Clips</a>
+                    <div class="project-card__actions">
+                        <a href="project-shortform-toolkit.html" class="button" data-project-open="shortform-toolkit">Explore roadmap</a>
+                        <a href="https://www.youtube.com/@COOLmanGamer?sub_confirmation=1" target="_blank" rel="noopener noreferrer" class="button button--ghost">Watch sample clips</a>
+                    </div>
                     </div>
                 </article>
             </div>
@@ -129,9 +156,307 @@
             </article>
         </section>
 
+        <section class="project-viewer" id="projectViewer" data-project-viewer hidden role="dialog" aria-modal="true" aria-labelledby="projectViewerTitle">
+            <div class="project-viewer__toolbar">
+                <h2 id="projectViewerTitle" class="project-viewer__title" data-project-title>Selected Project</h2>
+                <div class="project-viewer__controls">
+                    <button type="button"
+                            class="project-viewer__share button button--ghost"
+                            data-article-share
+                            data-project-toolbar-share
+                            data-share-base="projects.html"
+                            data-share-defer="true"
+                            data-share-success="Link copied!"
+                            data-share-error="Copy failed">
+                        <span data-share-label>Share</span>
+                    </button>
+                    <button type="button" class="project-viewer__close" data-project-close aria-label="Close project details">
+                        Close
+                    </button>
+                </div>
+            </div>
+            <div class="project-viewer__body">
+                <div class="project-viewer__content" data-project-content></div>
+            </div>
+        </section>
+
+        <template id="project-template-aurora-arena">
+            <article class="project-detail project-detail--modal" aria-labelledby="project-aurora-arena-heading">
+                <header class="project-detail__header">
+                    <p class="project-detail__eyebrow">Roblox experience</p>
+                    <h1 id="project-aurora-arena-heading">Aurora Arena</h1>
+                    <p class="lead">A timing-first combat arena focused on readable clashes, reactive arenas, and seasonal balance passes informed by real playtest data.</p>
+                    <dl class="project-detail__meta">
+                        <div>
+                            <dt>Status</dt>
+                            <dd>Private playtests underway</dd>
+                        </div>
+                        <div>
+                            <dt>Role</dt>
+                            <dd>Design · Programming · Live ops</dd>
+                        </div>
+                        <div>
+                            <dt>Stack</dt>
+                            <dd>Roblox Studio, Lua, Blender, Axiom Analytics</dd>
+                        </div>
+                        <div>
+                            <dt>Timeline</dt>
+                            <dd>May 2024 → Present</dd>
+                        </div>
+                    </dl>
+                    <div class="project-detail__actions">
+                        <a href="https://www.roblox.com/users/2873599962/profile" target="_blank" rel="noopener noreferrer" class="button">Join playtest waitlist</a>
+                        <button type="button" class="button button--ghost" data-article-share data-share-url="projects.html#aurora-arena" data-share-success="Link copied!" data-share-error="Copy failed">
+                            <span data-share-label>Copy link</span>
+                        </button>
+                    </div>
+                </header>
+
+                <div class="project-detail__body">
+                    <section class="project-detail__narrative">
+                        <section>
+                            <h2>Designing for precision without punishing latency</h2>
+                            <p>Every weapon in Aurora Arena is built from a modular ability system. Abilities own their hit windows, stamina taxes, VFX, and camera work, then plug into a shared state machine. That gives me predictable timings while letting me tune each move in isolation.</p>
+                            <ul>
+                                <li>Client-side prediction with server authority keeps hits feeling immediate without desync.</li>
+                                <li>Animation events broadcast intent frames ahead so blocks and dodges stay readable.</li>
+                                <li>Dynamic slow-mo and bloom respond to successful parries to reward timing mastery.</li>
+                            </ul>
+                        </section>
+
+                        <section>
+                            <h2>Telemetry that guides weekly patches</h2>
+                            <p>A lightweight analytics pipeline tracks hit accuracy, combo drop rates, and stamina waste per session. I review the dashboards after each private playtest and ship balance patches on Mondays.</p>
+                            <ol>
+                                <li>Capture granular combat stats per player session.</li>
+                                <li>Tag test cohorts to spot skill-based imbalances.</li>
+                                <li>Automate patch notes from Git commits so testers see what changed.</li>
+                            </ol>
+                        </section>
+                    </section>
+
+                    <aside class="project-detail__sidebar">
+                        <figure class="project-detail__media">
+                            <img src="images/placeholder1.svg" alt="Aurora Arena greybox concept art" width="800" height="600" loading="lazy" decoding="async">
+                            <figcaption>Greybox arena used during early hit registration tests.</figcaption>
+                        </figure>
+
+                        <section class="project-detail__panel">
+                            <h2>Milestones</h2>
+                            <ol>
+                                <li>Combat rewrite with modular abilities (August 2024)</li>
+                                <li>Telemetry dashboards for playtest feedback (October 2024)</li>
+                                <li>Seasonal event framework with live map swaps (January 2025)</li>
+                            </ol>
+                        </section>
+
+                        <section class="project-detail__panel">
+                            <h2>What I'm testing next</h2>
+                            <ul>
+                                <li>Directional dodges with bespoke camera easing.</li>
+                                <li>Weapon perks that swap UI states mid-match.</li>
+                                <li>Live service events tied to community map votes.</li>
+                            </ul>
+                        </section>
+                    </aside>
+                </div>
+
+                <section class="project-detail__next">
+                    <h2>How to support the project</h2>
+                    <p>Playtest slots rotate monthly. Join the waitlist, drop feedback in Discord, or follow devlogs on the <a href="blog.html">blog</a> to see combat breakdowns.</p>
+                    <ul>
+                        <li>Hop into the <a href="https://discord.gg/SzHksR3QFj" target="_blank" rel="noopener noreferrer">Discord</a> for balance voting.</li>
+                        <li>Watch latest systems tests on YouTube to see how the arena evolves.</li>
+                        <li>Share your combos and clips so I can analyze real player flow.</li>
+                    </ul>
+                </section>
+            </article>
+        </template>
+
+        <template id="project-template-personal-website">
+            <article class="project-detail project-detail--modal" aria-labelledby="project-personal-website-heading">
+                <header class="project-detail__header">
+                    <p class="project-detail__eyebrow">Static site rebuild</p>
+                    <h1 id="project-personal-website-heading">COOLmanYT Personal Website</h1>
+                    <p class="lead">A fully static site tuned for accessibility, metadata coverage, and fast publishing. Designed to showcase projects, blog posts, and the latest content drops in one place.</p>
+                    <dl class="project-detail__meta">
+                        <div>
+                            <dt>Status</dt>
+                            <dd>Public beta</dd>
+                        </div>
+                        <div>
+                            <dt>Role</dt>
+                            <dd>Design · Development · Content strategy</dd>
+                        </div>
+                        <div>
+                            <dt>Stack</dt>
+                            <dd>HTML, CSS, Vanilla JS, GitHub, Vercel</dd>
+                        </div>
+                        <div>
+                            <dt>Timeline</dt>
+                            <dd>September 2024 → Present</dd>
+                        </div>
+                    </dl>
+                    <div class="project-detail__actions">
+                        <a href="https://github.com/RandomInternetUser3000/mycoolwebsite" target="_blank" rel="noopener noreferrer" class="button">View repository</a>
+                        <button type="button" class="button button--ghost" data-article-share data-share-url="projects.html#personal-website" data-share-success="Link copied!" data-share-error="Copy failed">
+                            <span data-share-label>Copy link</span>
+                        </button>
+                    </div>
+                </header>
+
+                <div class="project-detail__body">
+                    <section class="project-detail__narrative">
+                        <section>
+                            <h2>Accessibility and structure first</h2>
+                            <p>The rebuild puts semantic HTML and navigational shortcuts up front—skip links, proper landmarks, descriptive aria labels, and focus-visible styling keep the site usable with a keyboard or screen reader.</p>
+                            <ul>
+                                <li>Each page ships with complete Open Graph, Twitter Card, and JSON-LD metadata.</li>
+                                <li>Headers and footers share consistent landmark roles so assistive tech never gets lost.</li>
+                                <li>Focus outlines and animated skip links ensure rapid navigation even on mobile.</li>
+                            </ul>
+                        </section>
+
+                        <section>
+                            <h2>Simple tooling, fast iteration</h2>
+                            <p>Changes land via GitHub branches and auto-deploy to Vercel. No build tooling means I can ship copy edits, new sections, or CSS tweaks directly from VS Code and validate within minutes.</p>
+                            <ol>
+                                <li>Track tasks in TODO lists, open branches for each batch of improvements.</li>
+                                <li>Preview deploys on Vercel to validate metadata and responsive layout.</li>
+                                <li>Promote to production once accessibility and SEO checks pass.</li>
+                            </ol>
+                        </section>
+                    </section>
+
+                    <aside class="project-detail__sidebar">
+                        <figure class="project-detail__media">
+                            <img src="images/placeholder2.svg" alt="Wireframe of the COOLmanYT homepage layout" width="800" height="600" loading="lazy" decoding="async">
+                            <figcaption>Homepage wireframe highlighting hero, projects, and blog entry points.</figcaption>
+                        </figure>
+
+                        <section class="project-detail__panel">
+                            <h2>Feature checklist</h2>
+                            <ul>
+                                <li>Skip links on every page.</li>
+                                <li>Mobile nav with horizontal scroll restored.</li>
+                                <li>Structured data for Person, Profile, and Blog pages.</li>
+                                <li>Inline RSS link for future automation.</li>
+                            </ul>
+                        </section>
+
+                        <section class="project-detail__panel">
+                            <h2>Next enhancements</h2>
+                            <ul>
+                                <li>Project detail routing (this viewer!).</li>
+                                <li>RSS feed generation for the blog.</li>
+                                <li>Search and newsletter sign-up modules.</li>
+                            </ul>
+                        </section>
+                    </aside>
+                </div>
+
+                <section class="project-detail__next">
+                    <h2>Follow the changelog</h2>
+                    <p>Most improvements start as notes in the <a href="blog.html">blog</a> before landing here. Expect responsive images, analytics, and a roadmap hub soon.</p>
+                    <ul>
+                        <li>Watch <a href="https://www.youtube.com/@COOLmanGamer" target="_blank" rel="noopener noreferrer">YouTube</a> for devlogs.</li>
+                        <li>Track changes in the <a href="https://github.com/RandomInternetUser3000/mycoolwebsite" target="_blank" rel="noopener noreferrer">GitHub repo</a>.</li>
+                    </ul>
+                </section>
+            </article>
+        </template>
+
+        <template id="project-template-shortform-toolkit">
+            <article class="project-detail project-detail--modal" aria-labelledby="project-shortform-toolkit-heading">
+                <header class="project-detail__header">
+                    <p class="project-detail__eyebrow">Editing workflow</p>
+                    <h1 id="project-shortform-toolkit-heading">Shortform Toolkit</h1>
+                    <p class="lead">Preset packs, motion templates, and ExtendScript automations that cut the busywork out of shipping daily Shorts and Reels.</p>
+                    <dl class="project-detail__meta">
+                        <div>
+                            <dt>Status</dt>
+                            <dd>Editing workflow tests</dd>
+                        </div>
+                        <div>
+                            <dt>Role</dt>
+                            <dd>Video editor · Motion designer · Automation tinkerer</dd>
+                        </div>
+                        <div>
+                            <dt>Stack</dt>
+                            <dd>Adobe Premiere Pro, After Effects, ExtendScript, Notion</dd>
+                        </div>
+                        <div>
+                            <dt>Timeline</dt>
+                            <dd>February 2023 → Present</dd>
+                        </div>
+                    </dl>
+                    <div class="project-detail__actions">
+                        <a href="https://www.youtube.com/@COOLmanGamer?sub_confirmation=1" target="_blank" rel="noopener noreferrer" class="button">Watch sample clips</a>
+                        <button type="button" class="button button--ghost" data-article-share data-share-url="projects.html#shortform-toolkit" data-share-success="Link copied!" data-share-error="Copy failed">
+                            <span data-share-label>Copy link</span>
+                        </button>
+                    </div>
+                </header>
+
+                <div class="project-detail__body">
+                    <section class="project-detail__narrative">
+                        <section>
+                            <h2>Reusable building blocks</h2>
+                            <p>Every clip starts from a library of motion templates—intros, subscribe wipes, text callouts, and caption decks. They snap into a sequence, inherit brand colors, and expose only the controls I tweak per video.</p>
+                            <ul>
+                                <li>Motion presets exported from After Effects via Essential Graphics.</li>
+                                <li>Sound design beds layered in and auto-leveled for platform loudness targets.</li>
+                                <li>Text styles mapped to Notion content so scripts paste in formatted.</li>
+                            </ul>
+                        </section>
+
+                        <section>
+                            <h2>Automation wherever repetition exists</h2>
+                            <p>ExtendScript handles tedious steps: caption timing, export queue naming, and thumbnail frame grabs. Scripts expose prompts so I can still make creative calls while shaving minutes off each batch.</p>
+                            <ol>
+                                <li>Batch import game captures and auto-create sequences per day.</li>
+                                <li>Generate captions from scripts and align to beat markers.</li>
+                                <li>Kick off multi-platform exports with consistent filename slugs.</li>
+                            </ol>
+                        </section>
+                    </section>
+
+                    <aside class="project-detail__sidebar">
+                        <figure class="project-detail__media">
+                            <img src="images/thumbsup.png" alt="Storyboard for a short-form video" width="800" height="600" loading="lazy" decoding="async">
+                            <figcaption>Storyboard view for a batch of Shorts using the toolkit templates.</figcaption>
+                        </figure>
+
+                        <section class="project-detail__panel">
+                            <h2>Toolkit contents</h2>
+                            <ul>
+                                <li>15 motion templates with editable color and text styles.</li>
+                                <li>Reusable sound design beds arranged by energy level.</li>
+                                <li>Export macros for vertical, square, and landscape outputs.</li>
+                            </ul>
+                        </section>
+
+                        <section class="project-detail__panel">
+                            <h2>Planned additions</h2>
+                            <ul>
+                                <li>Premiere Productions setup for multi-editor collaboration.</li>
+                                <li>Auto captioning with Whisper plus styling in After Effects.</li>
+                                <li>Notion integration for asset status tracking.</li>
+                            </ul>
+                        </section>
+                    </aside>
+                </div>
+
+                <section class="project-detail__next">
+                    <h2>Want early access?</h2>
+                    <p>The toolkit isn't public yet. DM me on <a href="https://discord.gg/SzHksR3QFj" target="_blank" rel="noopener noreferrer">Discord</a> if you want to test-drive the presets or collaborate on automation ideas.</p>
+                </section>
+            </article>
+        </template>
+
     </main>
 
-    <footer>
+    <footer role="contentinfo">
         Made with ♥️ by <strong>COOLmanYT</strong><br>
     Website <a data-site-version-link href="https://github.com/RandomInternetUser3000/mycoolwebsite">Version<span data-site-version-number></span><span data-site-version-type></span></a><br>
         Credits to <a href="https://zinheere.vercel.app">Zinheere</a> <br>
