@@ -3,20 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Meet COOLmanYT, a student content creator and programmer building Roblox experiences, coding projects, and weekly videos.">
+    <meta name="author" content="COOLmanYT">
     <link rel="icon" type="image/png" href="images/avatar.png" />
-    <title>About Me - COOLmanYT</title>
+    <link rel="apple-touch-icon" href="images/avatar.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="style.css">
+    <link rel="canonical" href="https://mycoolwebsite.vercel.app/about.html">
+    <title>About Me - COOLmanYT</title>
+
+    <meta property="og:type" content="profile">
+    <meta property="og:url" content="https://mycoolwebsite.vercel.app/about.html">
+    <meta property="og:title" content="About COOLmanYT">
+    <meta property="og:description" content="Student programmer, Roblox dev, and content creator sharing the journey.">
+    <meta property="og:image" content="https://mycoolwebsite.vercel.app/images/avatar.png">
+
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:url" content="https://mycoolwebsite.vercel.app/about.html">
+    <meta name="twitter:title" content="About COOLmanYT">
+    <meta name="twitter:description" content="Student programmer, Roblox dev, and content creator sharing the journey.">
+    <meta name="twitter:image" content="https://mycoolwebsite.vercel.app/images/avatar.png">
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "ProfilePage",
+      "mainEntity": {
+        "@type": "Person",
+        "name": "COOLmanYT",
+        "alternateName": "COOLmanGamer",
+        "url": "https://mycoolwebsite.vercel.app",
+        "image": "https://mycoolwebsite.vercel.app/images/avatar.png",
+        "sameAs": [
+          "https://github.com/RandomInternetUser3000",
+          "https://www.youtube.com/@COOLmanGamer",
+          "https://discord.gg/SzHksR3QFj",
+          "https://www.roblox.com/users/2873599962/profile"
+        ],
+        "knowsAbout": ["Roblox Studio", "Lua", "HTML", "CSS", "Python", "Video Editing"],
+        "hasOccupation": {
+          "@type": "Occupation",
+          "name": "Student & Content Creator"
+        }
+      }
+    }
+    </script>
 </head>
 <body class="about-page">
+  <a class="skip-link" href="#mainContent">Skip to main content</a>
   <div class="top-banner">
     <span>🛠️ <strong>Public Beta</strong> version of the website.</span>
     <a class="banner-button" href="https://github.com/RandomInternetUser3000/mycoolwebsite" target="_blank" rel="noopener noreferrer">Open Source GitHub Repository</a>
   </div>
 
-  <header class="site-header">
+  <header class="site-header" role="banner">
     <div class="header-bar">
       <div class="nav-wrapper">
-        <nav class="nav-links">
+        <nav class="nav-links" aria-label="Primary">
           <a href="index.html" class="nav-pill">Home</a>
           <a href="about.html" class="nav-pill active">About</a>
           <a href="projects.html" class="nav-pill">Projects</a>
@@ -59,7 +103,7 @@
     </div>
   </header>
 
-  <main>
+  <main id="mainContent" role="main">
     <div class="main-content">
       <img src="images/avatar.png" alt="COOLmanYT Avatar">
       <div class="text-section">
@@ -97,7 +141,7 @@
     </section>
   </main>
 
-  <footer>
+  <footer role="contentinfo">
     Made with ♥️ by <strong>COOLmanYT</strong><br>
   Website <a data-site-version-link href="https://github.com/RandomInternetUser3000/mycoolwebsite">Version<span data-site-version-number></span><span data-site-version-type></span></a><br>
     Credits to <a href="https://zinheere.vercel.app">Zinheere</a> <br>
