@@ -644,6 +644,41 @@ button:focus-visible {
   margin-top: 1.5rem;
 }
 
+.playlist-section {
+  width: min(960px, 100%);
+  margin: clamp(2.5rem, 6vw, 4rem) auto;
+  padding: clamp(1.5rem, 4vw, 2rem);
+  border-radius: 24px;
+  border: 1px solid var(--outline);
+  background: var(--surface-strong);
+  box-shadow: var(--shadow-soft);
+  display: grid;
+  gap: clamp(1.25rem, 3vw, 1.75rem);
+}
+
+.playlist-section__intro {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.playlist-section__intro h2 {
+  margin: 0;
+  font-size: clamp(1.6rem, 4vw, 2rem);
+}
+
+.playlist-section__intro p {
+  margin: 0;
+  color: var(--text-secondary);
+  max-width: 60ch;
+}
+
+.playlist-section__embed iframe {
+  width: 100%;
+  min-height: 320px;
+  border: 0;
+  box-shadow: var(--shadow-soft);
+}
+
 .project-card__actions {
   display: flex;
   flex-wrap: wrap;
@@ -954,6 +989,10 @@ button:focus-visible {
 
   .project-viewer__title {
     font-size: clamp(1.25rem, 5vw, 1.6rem);
+  }
+
+  .playlist-section {
+    padding: clamp(1rem, 7vw, 1.5rem);
   }
 
   .project-detail {

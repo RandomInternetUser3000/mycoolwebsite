@@ -1,4 +1,4 @@
-const ver = "Version 0.9.7 Public Beta";
+const ver = "Version 0.9.8 Public Beta";
 const COMMENTS_API_URL = '/api/comments';
 const COMMENTS_STORAGE_KEY = 'coolman-comments';
 const ANALYTICS_MODULE_URL = 'https://unpkg.com/@vercel/analytics/dist/analytics.mjs';
@@ -353,9 +353,13 @@ function enableContactForm() {
 	const handleSubmit = async (event) => {
 		event.preventDefault();
 
-		const fallbackToNativeSubmit = () => {
+		const fallbackToNativeSubmit = (notice = 'Redirecting to Formspree to finish your submission…') => {
+			if (statusElement) {
+				statusElement.textContent = notice;
+				statusElement.classList.remove('success', 'error');
+			}
 			contactForm.removeEventListener('submit', handleSubmit);
-			contactForm.submit();
+			window.setTimeout(() => contactForm.submit(), 16);
 		};
 
 		if (!endpoint) {
@@ -389,23 +393,25 @@ function enableContactForm() {
 				contactForm.reset();
 			} else {
 				const data = await response.json().catch(() => null);
+				const shouldFallback =
+					response.type === 'opaqueredirect' ||
+					response.status === 0 ||
+					[302, 303, 307, 308, 400, 401, 403, 404, 405, 409, 410, 422, 429, 500, 502, 503, 504].includes(response.status);
+				if (shouldFallback) {
+					fallbackToNativeSubmit('Opening Formspree to complete the CAPTCHA…');
+					return;
+				}
+
 				const errorMessage = data?.errors?.[0]?.message || 'Something went wrong. Please try again later.';
 				if (statusElement) {
 					statusElement.textContent = errorMessage;
 					statusElement.classList.add('error');
 				}
-
-				const shouldFallback = response.status >= 500 || response.status === 401 || response.status === 403;
-				if (shouldFallback) {
-					window.setTimeout(fallbackToNativeSubmit, 100);
-				}
 			}
 		} catch (error) {
-			if (statusElement) {
-				statusElement.textContent = 'Network error. Please check your connection and try again.';
-				statusElement.classList.add('error');
-			}
-			window.setTimeout(fallbackToNativeSubmit, 100);
+			console.warn('Contact form fetch failed, falling back to default submission', error);
+			fallbackToNativeSubmit();
+			return;
 		} finally {
 			submitButton.disabled = false;
 			submitButton.textContent = 'Send Message';
@@ -744,6 +750,7 @@ async function initLatestUploadCard() {
 	const linkEl = card.querySelector('[data-video-link]');
 	const statsEl = card.querySelector('[data-video-stats]');
 	const durationEl = card.querySelector('[data-video-duration]');
+	const feedValidator = (text) => /<entry[\s>]/i.test(text) || /<feed[\s>]/i.test(text);
 
 	const markError = (message) => {
 		card.classList.add('now-playing--error');
@@ -790,7 +797,7 @@ async function initLatestUploadCard() {
 	let lastFeedError = null;
 	const attemptFeed = async (candidate) => {
 		try {
-			return await fetchFeedWithFallback(candidate.url);
+			return await fetchFeedWithFallback(candidate.url, 'application/atom+xml', feedValidator);
 		} catch (error) {
 			lastFeedError = error;
 			console.info('YouTube feed attempt failed', { url: candidate.url, reason: error?.message });
@@ -937,22 +944,50 @@ async function initLatestUploadCard() {
 	}
 }
 
-async function fetchFeedWithFallback(url, accept = 'application/atom+xml') {
-	try {
-		const response = await fetch(url, { headers: { Accept: accept } });
-		if (response.ok) {
-			return response.text();
+async function fetchFeedWithFallback(url, accept = 'application/atom+xml', validator = null) {
+	const ensureHttpsWrapped = (rawUrl) => {
+		if (/^https?:\/\//i.test(rawUrl)) {
+			return rawUrl;
 		}
-	} catch (error) {
-		// fall through to proxy
+		return `https://${rawUrl}`;
+	};
+
+	const attempts = [
+		{ label: 'direct', build: (target) => target },
+		{
+			label: 'allorigins',
+			build: (target) => `https://api.allorigins.win/raw?url=${encodeURIComponent(target)}`,
+		},
+		{
+			label: 'r.jina.ai',
+			build: (target) => `https://r.jina.ai/${ensureHttpsWrapped(target)}`,
+		},
+	];
+
+	let lastError = null;
+	for (const attempt of attempts) {
+		const attemptUrl = attempt.build(url);
+		try {
+			const response = await fetch(attemptUrl, {
+				headers: { Accept: accept },
+				cache: 'no-store',
+			});
+			if (!response.ok) {
+				lastError = new Error(`${attempt.label} responded with status ${response.status}`);
+				continue;
+			}
+			const text = await response.text();
+			if (validator && !validator(text)) {
+				lastError = new Error(`${attempt.label} response failed validation`);
+				continue;
+			}
+			return text;
+		} catch (error) {
+			lastError = error;
+		}
 	}
 
-	const proxiedUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
-	const response = await fetch(proxiedUrl, { headers: { Accept: accept } });
-	if (!response.ok) {
-		throw new Error(`Fallback request failed with status ${response.status}`);
-	}
-	return response.text();
+	throw lastError ?? new Error('All fetch attempts failed');
 }
 
 function parseChannelUserInput(input) {
@@ -1046,9 +1081,11 @@ async function resolveChannelId(channelUser) {
 		);
 	}
 
+	const htmlValidator = (text) => /"channelId":"UC[0-9A-Za-z_-]{21}[0-9A-Za-z_-]"/.test(text) || /"externalId":"UC[0-9A-Za-z_-]{21}[0-9A-Za-z_-]"/.test(text);
+
 	for (const url of candidateUrls) {
 		try {
-			const html = await fetchFeedWithFallback(url, acceptHeader);
+			const html = await fetchFeedWithFallback(url, acceptHeader, htmlValidator);
 			const match = html.match(/"channelId":"(UC[0-9A-Za-z_-]{21}[0-9A-Za-z_-])"/);
 			const externalMatch = match ?? html.match(/"externalId":"(UC[0-9A-Za-z_-]{21}[0-9A-Za-z_-])"/);
 			const channelId = externalMatch?.[1];
