@@ -1,3 +1,10 @@
+.hero-outro {
+  margin: 0 auto clamp(1.5rem, 5vw, 2.5rem);
+  max-width: min(70ch, 90%);
+  text-align: center;
+  color: var(--text-secondary);
+}
+
 @import url('https://fonts.googleapis.com/css2?family=Funnel+Sans:ital,wght@0,300..800;1,300..800&display=swap');
 
 :root {
@@ -641,7 +648,7 @@ button:focus-visible {
 }
 
 .hero-socials {
-  margin-top: 1.5rem;
+  margin-top: 2.5rem;
 }
 
 .playlist-section {
@@ -659,6 +666,8 @@ button:focus-visible {
 .playlist-section__intro {
   display: grid;
   gap: 0.65rem;
+  justify-items: center;
+  text-align: center;
 }
 
 .playlist-section__intro h2 {
@@ -669,7 +678,7 @@ button:focus-visible {
 .playlist-section__intro p {
   margin: 0;
   color: var(--text-secondary);
-  max-width: 60ch;
+  max-width: min(60ch, 100%);
 }
 
 .playlist-section__embed iframe {
