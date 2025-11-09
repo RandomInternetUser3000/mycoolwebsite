@@ -879,7 +879,7 @@ button:focus-visible {
 }
 
 .project-detail__narrative h2 {
-  font-size: clamp(1.35rem, 2.6vw, 1.7rem);
+  font-size: clamp(1.5rem, 3vw, 2rem);
   margin: 0;
   color: var(--text-primary);
 }
@@ -936,7 +936,7 @@ button:focus-visible {
 
 .project-detail__panel h2 {
   margin: 0;
-  font-size: 1.1rem;
+  font-size: clamp(1.3rem, 2.4vw, 1.6rem);
   color: var(--text-primary);
 }
 
@@ -964,7 +964,7 @@ button:focus-visible {
 
 .project-detail__next h2 {
   margin: 0;
-  font-size: 1.2rem;
+  font-size: clamp(1.45rem, 2.8vw, 1.9rem);
   color: var(--text-primary);
 }
 
