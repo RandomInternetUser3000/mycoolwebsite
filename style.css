@@ -563,14 +563,6 @@ button:focus-visible {
   filter: none;
   flex-shrink: 0;
 }
-.social-button .support-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: clamp(30px, 5vw, 34px);
-  height: clamp(30px, 5vw, 34px);
-  font-size: clamp(1.6rem, 4vw, 2rem);
-}
 
 .social-button::after {
   content: attr(data-tooltip);
@@ -647,8 +639,17 @@ button:focus-visible {
   gap: 1rem;
 }
 
-.support-section .social-button {
+.support-section a {
   align-self: center;
+}
+
+.support-section img {
+  display: block;
+  max-width: 320px;
+  width: 100%;
+  height: auto;
+  border-radius: 12px;
+  box-shadow: var(--shadow-soft);
 }
 
 /* Compact social buttons inside headers retain square footprint */
