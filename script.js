@@ -1,4 +1,4 @@
-const ver = "Version 0.9.931 Public Beta";
+const ver = "Version 0.9.932 Public Beta";
 const COMMENTS_API_URL = '/api/comments';
 const COMMENTS_STORAGE_KEY = 'coolman-comments';
 const ANALYTICS_MODULE_URL = 'https://unpkg.com/@vercel/analytics/dist/analytics.mjs';
@@ -970,7 +970,6 @@ async function initLatestUploadCard() {
 		const pipedBases = [
 			'https://piped.video/api/v1/channel/',
 			'https://piped.mha.fi/api/v1/channel/',
-			'https://piped.lunar.icu/api/v1/channel/',
 		];
 
 		for (const identifier of uniqueIdentifiers) {
@@ -1195,7 +1194,6 @@ async function fetchFeedWithFallback(url, accept = 'application/atom+xml', valid
 	};
 
 	const attempts = [
-		{ label: 'direct', build: (target) => target },
 		{
 			label: 'allorigins',
 			build: (target) => `https://api.allorigins.win/raw?url=${encodeURIComponent(ensureHttpsWrapped(target))}`,
@@ -1204,15 +1202,12 @@ async function fetchFeedWithFallback(url, accept = 'application/atom+xml', valid
 			label: 'r.jina.ai',
 			build: (target) => `https://r.jina.ai/${ensureHttpsWrapped(target)}`,
 		},
-		{
-			label: 'cors.isomorphic-git',
-			build: (target) => `https://cors.isomorphic-git.org/${ensureHttpsWrapped(target)}`,
-		},
-		{
-			label: 'thingproxy',
-			build: (target) => `https://thingproxy.freeboard.io/fetch/${ensureHttpsWrapped(target)}`,
-		},
 	];
+
+	const isLocalHost = typeof window !== 'undefined' && /^(localhost|127\.0\.0\.1)$/i.test(window.location.hostname ?? '');
+	if (isLocalHost) {
+		attempts.unshift({ label: 'direct', build: (target) => target });
+	}
 
 	let lastError = null;
 	for (const attempt of attempts) {
