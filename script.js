@@ -1,4 +1,4 @@
-const ver = "Version 0.9.933 Public Beta";
+const ver = "Version 0.9.934 Public Beta";
 const COMMENTS_API_URL = '/api/comments';
 const COMMENTS_STORAGE_KEY = 'coolman-comments';
 const ANALYTICS_MODULE_URL = 'https://unpkg.com/@vercel/analytics/dist/analytics.mjs';
@@ -30,6 +30,7 @@ const projectViewerState = {
 };
 
 const CHANNEL_ID_CACHE = new Map();
+const RELEASE_COUNTDOWN_TARGET = '2025-12-05T22:00:00Z'; // 6 Dec 2025 at 09:00 AEDT
 
 document.addEventListener('DOMContentLoaded', () => {
 	applyInitialTheme();
@@ -42,6 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
 	initNavGradient();
 	initProjectViewer();
 	initBlogViewer();
+		initReleaseCountdown();
 	initLatestUploadCard();
 	initShareButtons();
 	injectAnalytics();
@@ -728,6 +730,61 @@ function initBlogViewer() {
 	if (blogViewerState.commentForm) {
 		blogViewerState.commentForm.addEventListener('submit', handleCommentSubmit);
 	}
+}
+
+function initReleaseCountdown() {
+	const container = document.querySelector('[data-release-countdown]');
+	if (!container) {
+		return;
+	}
+
+	const timerTarget = container.querySelector('[data-countdown-timer]');
+	if (!timerTarget) {
+		return;
+	}
+
+	const releaseDate = new Date(RELEASE_COUNTDOWN_TARGET);
+	if (Number.isNaN(releaseDate.getTime())) {
+		timerTarget.textContent = 'Countdown unavailable';
+		return;
+	}
+
+	const formatTwoDigits = (value) => String(value).padStart(2, '0');
+	const completeCountdown = () => {
+		timerTarget.textContent = 'It\'s release day!';
+		container.classList.add('release-countdown--complete');
+	};
+
+	let intervalId = null;
+	const updateCountdown = () => {
+		const now = new Date();
+		const diffMs = releaseDate.getTime() - now.getTime();
+		if (diffMs <= 0) {
+			completeCountdown();
+			if (intervalId !== null) {
+				window.clearInterval(intervalId);
+				intervalId = null;
+			}
+			return;
+		}
+
+		const totalSeconds = Math.floor(diffMs / 1000);
+		const days = Math.floor(totalSeconds / 86400);
+		const hours = Math.floor((totalSeconds % 86400) / 3600);
+		const minutes = Math.floor((totalSeconds % 3600) / 60);
+		const seconds = totalSeconds % 60;
+		timerTarget.textContent = `${days}d ${formatTwoDigits(hours)}h ${formatTwoDigits(minutes)}m ${formatTwoDigits(seconds)}s`;
+	};
+
+	updateCountdown();
+	intervalId = window.setInterval(updateCountdown, 1000);
+	const cleanup = () => {
+		if (intervalId !== null) {
+			window.clearInterval(intervalId);
+			intervalId = null;
+		}
+	};
+	window.addEventListener('beforeunload', cleanup, { once: true });
 }
 
 async function initLatestUploadCard() {
