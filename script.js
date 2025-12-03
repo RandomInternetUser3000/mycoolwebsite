@@ -1,4 +1,4 @@
-const ver = "Version 0.9.934 Public Beta";
+const ver = "Version 0.9.94 Pre-Release";
 const COMMENTS_API_URL = '/api/comments';
 const COMMENTS_STORAGE_KEY = 'coolman-comments';
 const ANALYTICS_MODULE_URL = 'https://unpkg.com/@vercel/analytics/dist/analytics.mjs';
@@ -750,6 +750,7 @@ function initReleaseCountdown() {
 	}
 
 	const formatTwoDigits = (value) => String(value).padStart(2, '0');
+	const formatThreeDigits = (value) => String(value).padStart(3, '0');
 	const completeCountdown = () => {
 		timerTarget.textContent = 'It\'s release day!';
 		container.classList.add('release-countdown--complete');
@@ -773,11 +774,12 @@ function initReleaseCountdown() {
 		const hours = Math.floor((totalSeconds % 86400) / 3600);
 		const minutes = Math.floor((totalSeconds % 3600) / 60);
 		const seconds = totalSeconds % 60;
-		timerTarget.textContent = `${days}d ${formatTwoDigits(hours)}h ${formatTwoDigits(minutes)}m ${formatTwoDigits(seconds)}s`;
+		const milliseconds = Math.floor(diffMs % 1000);
+		timerTarget.textContent = `${days}d ${formatTwoDigits(hours)}h ${formatTwoDigits(minutes)}m ${formatTwoDigits(seconds)}s ${formatThreeDigits(milliseconds)}ms`;
 	};
 
 	updateCountdown();
-	intervalId = window.setInterval(updateCountdown, 1000);
+	intervalId = window.setInterval(updateCountdown, 100);
 	const cleanup = () => {
 		if (intervalId !== null) {
 			window.clearInterval(intervalId);
