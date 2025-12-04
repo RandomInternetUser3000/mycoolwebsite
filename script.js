@@ -1,4 +1,4 @@
-const ver = "Version 0.9.94 Pre-Release";
+const ver = "Version 0.9.95 Pre-Release";
 const COMMENTS_API_URL = '/api/comments';
 const COMMENTS_STORAGE_KEY = 'coolman-comments';
 const ANALYTICS_MODULE_URL = 'https://unpkg.com/@vercel/analytics/dist/analytics.mjs';
@@ -41,9 +41,16 @@ document.addEventListener('DOMContentLoaded', () => {
 	enhanceSocialButtons();
 	enableHorizontalScrollNav();
 	initNavGradient();
-	initProjectViewer();
-	initBlogViewer();
-		initReleaseCountdown();
+	
+	// Lazy-load heavy features only if their triggers are present
+	if (document.querySelector('[data-project-open]')) {
+		initProjectViewer();
+	}
+	if (document.querySelector('[data-blog-open]')) {
+		initBlogViewer();
+	}
+	
+	initReleaseCountdown();
 	initLatestUploadCard();
 	initShareButtons();
 	injectAnalytics();
@@ -750,9 +757,8 @@ function initReleaseCountdown() {
 	}
 
 	const formatTwoDigits = (value) => String(value).padStart(2, '0');
-	const formatThreeDigits = (value) => String(value).padStart(3, '0');
 	const completeCountdown = () => {
-		timerTarget.textContent = 'It\'s release day!';
+		timerTarget.textContent = 'RELEASEEEEEEEEEEEEEEEE!!!';
 		container.classList.add('release-countdown--complete');
 	};
 
@@ -774,12 +780,11 @@ function initReleaseCountdown() {
 		const hours = Math.floor((totalSeconds % 86400) / 3600);
 		const minutes = Math.floor((totalSeconds % 3600) / 60);
 		const seconds = totalSeconds % 60;
-		const milliseconds = Math.floor(diffMs % 1000);
-		timerTarget.textContent = `${days}d ${formatTwoDigits(hours)}h ${formatTwoDigits(minutes)}m ${formatTwoDigits(seconds)}s ${formatThreeDigits(milliseconds)}ms`;
+		timerTarget.textContent = `${days}d ${formatTwoDigits(hours)}h ${formatTwoDigits(minutes)}m ${formatTwoDigits(seconds)}s`;
 	};
 
 	updateCountdown();
-	intervalId = window.setInterval(updateCountdown, 100);
+	intervalId = window.setInterval(updateCountdown, 1000);
 	const cleanup = () => {
 		if (intervalId !== null) {
 			window.clearInterval(intervalId);
