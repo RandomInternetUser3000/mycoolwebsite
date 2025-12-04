@@ -1,4 +1,4 @@
-const ver = "Version 0.9.951 Pre-Release";
+const ver = "Version 0.9.952 Pre-Release";
 const COMMENTS_API_URL = '/api/comments';
 const COMMENTS_STORAGE_KEY = 'coolman-comments';
 const ANALYTICS_MODULE_URL = 'https://unpkg.com/@vercel/analytics/dist/analytics.mjs';

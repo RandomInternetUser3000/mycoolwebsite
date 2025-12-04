@@ -679,6 +679,7 @@ button:focus-visible {
   border: 1px solid rgba(255, 255, 255, 0.06);
   background: linear-gradient(135deg, rgba(15, 18, 36, 0.92), rgba(43, 19, 57, 0.72));
   box-shadow: 0 18px 30px rgba(6, 8, 18, 0.45);
+  color: #fff;
   display: grid;
   gap: clamp(1.25rem, 3vw, 1.75rem);
 }
@@ -697,7 +698,7 @@ button:focus-visible {
 
 .playlist-section__intro p {
   margin: 0;
-  color: var(--text-secondary);
+  color: rgba(255, 255, 255, 0.78);
   max-width: min(60ch, 100%);
 }
 
