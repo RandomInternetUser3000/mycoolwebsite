@@ -1,71 +1,74 @@
 # My Personal Website
 
-This repository powers the public site for COOLmanYT — a hub for project write-ups, devlogs, the latest video content, and ways to get in touch. The site is intentionally as lightweight as possible: plain HTML, modern CSS, and a single JavaScript file handle all the interactions so the pages stay fast on every device. It only took 69 commits (noice) to get to an almost completed website.
+This repo powers COOLmanYT's public site: a static, no-build playground for project write-ups, devlogs, embeds, and ways to get in touch. Everything ships as plain HTML, modern CSS, and one JavaScript file so deploys stay instant and debugging stays human.
 
-## ✨ Highlights
-- **Accessible navigation** with a scrollable pill menu, skip links, keyboard focus states, and reduced-motion safeguards.
-- **Dynamic “Latest Upload” card** that resolves the YouTube channel feed through resilient fallbacks and shows thumbnail, stats, and duration.
-- **Inline readers** for blog posts and project case studies so visitors can dive into long-form content without leaving the index pages.
-- **Formspree-powered contact form** with progressive enhancement: inline status messaging when CORS allows, instant fallback to the Formspree CAPTCHA when needed.
-- **Spotify playlist embed** on the homepage for the people who want to see what my music taste is like (toby fox and minecraft is goated and no one can change my opinion other than breakcore).
-- **Unified social buttons** across every page (GitHub, YouTube, Discord, Roblox, Spotify, Reddit, and Steam) with consistent tooltips and accessible labels.
-- **Structured metadata** (Open Graph, Twitter, JSON-LD) across every page to keep previews and SEO tidy.
+## Highlights
+- Accessible navigation with skip links, scrollable pill menus, strong focus outlines, and reduced-motion safeguards.
+- Release countdown and "My Favourite Songs" cards that now share the same glassy gradients in dark and light themes.
+- Dynamic "Latest Upload" panel that fetches the newest YouTube video via channel handle/ID fallbacks, thumbnails, stats, and durations.
+- Lazy-loaded heavy modules in `script.js`, so project/blog viewers, share buttons, and analytics logic only run when the relevant DOM exists.
+- Formspree-powered contact form with inline status messaging plus an automatic fallback when CORS blocks AJAX submissions.
+- Structured metadata (Open Graph, Twitter, JSON-LD) across every page to keep previews and SEO tidy.
 
-## 🗂️ Repository Layout
+## Repository Layout
 
 ```
 mycoolwebsite/
-├── index.html                     # Homepage with hero, latest upload, playlist embed
-├── about.html                     # Meet-the-creator page (paired with about.css)
-├── projects.html                  # Project gallery + inline modal viewer
-├── blog.html                      # Blog listing + reader modal + templates
-├── contact.html                   # Contact methods and Formspree form
-├── gallery.html                   # Screenshot grid + light narrative
-├── social-media-ban.html          # Latest standalone article (direct linkable)
-├── project-aurora-arena.html      # Deep-dive page for Aurora Arena
-├── project-personal-website.html  # Deep-dive page for the site rebuild
-├── project-shortform-toolkit.html # Deep-dive page for the Shorts toolkit
-├── style.css                      # Global styling, utilities, responsive tweaks
-├── script.js                      # Theme toggle, modals, latest video fetch, contact form logic
-├── about.css, contact.css         # Page-specific styling supplements
-├── images/                        # Site imagery and icons (GitHub, Steam, etc.)
-└── README.md                      # You're here, good job!
+├── index.html                   # Homepage + hero, latest video, countdown, playlist
+├── about.html                   # Meet-the-creator page (paired with about.css)
+├── projects.html                # Project gallery + inline viewer templates
+├── blog.html                    # Blog listing + inline reader templates
+├── contact.html                 # Contact channels + Formspree form
+├── gallery.html                 # Screenshot grid + light narrative
+├── style.css                    # Global styles + component systems
+├── script.js                    # Theme toggle, countdown, lazy initializers, forms
+├── about.css                    # Extra styles for /about
+├── contact.css                  # Extra styles for /contact
+├── blog/                        # Standalone blog entries
+│   └── social-media-ban.html    # Protest essay with refreshed relative paths
+├── projects/                    # Project deep dives (direct links)
+│   ├── project-aurora-arena.html
+│   ├── project-personal-website.html
+│   └── project-shortform-toolkit.html
+├── images/                      # Icons, avatars, placeholders
+└── README.md                    # You are here :)
 ```
 
-## 🛠️ Local Development
+> Legacy root-level `project-*.html` and `social-media-ban.html` files were relocated into `projects/` and `blog/`. Update bookmarks if you had them saved.
 
-1. **Clone** the repo and open it in VS Code (or your editor of choice).
-2. **Serve the files** with any static server so relative paths work:
-	- VS Code Live Server
-	- `npx serve` (Node)
-	- `python -m http.server` (Python)
-3. Visit `http://localhost:PORT/index.html` and iterate. Because everything is static, no build step is required.
+## Local Development
 
-> Tip: When testing the contact form locally, Formspree may require a CAPTCHA redirect. The script will auto-fallback to the native submission after showing a “Redirecting to Formspree…” message.
-> Another Tip: This was generated with AI so do what you will with that information.
+1. Clone the repo and open it in VS Code (or your editor of choice).
+2. Serve the files with any static server so relative paths work:
+   - VS Code Live Server
+   - `npx serve`
+   - `python -m http.server`
+3. Visit `http://localhost:PORT/index.html`, edit, refresh. No build pipeline required.
 
-## ✍️ Updating Content
+> Tip: When testing the contact form locally, Formspree may require a CAPTCHA redirect. The script flashes a "Redirecting to Formspree..." message and then posts the fallback form automatically.
 
-- **Latest YouTube upload** — update the `data-channel-user` (or optionally `data-channel-id`) attributes on the `data-latest-video` section in `index.html`. The script resolves handles, channel IDs, and legacy usernames automatically.
-- **Blog posts** — add a new `<article class="blog-card">` in `blog.html` and a matching `<template id="blog-template-your-slug">` with the full article content.
-- **Projects** — extend the grid in `projects.html` and create a corresponding `<template id="project-template-your-slug">` so the inline viewer can render it. Standalone HTML pages can live alongside for direct links.
-- **Social buttons** — add or edit anchors inside the `.social-links` blocks in each page header (and the hero footer on `index.html`). Icons live in `images/`, so dropping in a file like `images/steam.png` is all you need before referencing it.
-- **Images** — drop assets into `images/` and reference them relatively (e.g., `images/avatar.png`). Remember to include alt text.
+## Updating Content
 
-## 🚀 Deploying
+- Latest YouTube upload — update the `data-channel-user` (or optional `data-channel-id`) on the `[data-latest-video]` block in `index.html`. The script resolves handles, IDs, or legacy usernames automatically.
+- Blog posts — add cards + templates inside `blog.html` for inline reading, and place dedicated permalink pages inside `blog/` with `../` asset paths (see `blog/social-media-ban.html`).
+- Projects — extend `projects.html` with new cards + `<template>` blocks, and drop long-form write-ups into `projects/your-page.html` so you can share direct URLs.
+- Social buttons — edit the `.social-links` clusters on each page (plus the hero footer). Icons live under `images/`; remember alt text.
+- Images — drop optimized assets into `images/` and reference them relatively (`images/avatar.png`).
 
-The site is optimized for static hosting providers like Vercel, Netlify, or GitHub Pages. Deploy the repository root as-is; no build command is necessary. Remember to invalidate caches (or bump the version string in `script.js`) after shipping sizable changes so visitors load fresh assets.
+## Deploying
 
-## 🔖 Versioning
+The site loves static hosts: Vercel, Netlify, Cloudflare Pages, GitHub Pages—pick your favorite. Deploy the repo root as-is. After shipping notable changes, bump the `ver` constant in `script.js` so the footer badge (and CDN caches) reflect the new release.
 
-The global constant `ver` in `script.js` controls the version badge rendered in the footer. Increment it whenever you cut a new release so visitors — and you — can spot the deployed revision at a glance.
+## Versioning
 
-## 🤝 Contributing
+`script.js` exports `ver` for the footer badge and telemetry. Increment it every time you cut a release-worthy change so you can trace which build is live.
 
-Open to suggestions and tweaks! Feel free to fork, open an issue, or submit a pull request. If you add a new interactive feature, keep accessibility top-of-mind and stay within the plain HTML/CSS/JS stack so the deploys remain frictionless. And if you know me in real life, feel free to find and fund me. XD
+## Contributing
+
+Ideas, bug reports, nitpicks? Open an issue or PR. Please keep new features accessible, resist dropping frameworks into the stack, and make sure interactive pieces degrade gracefully without JavaScript. If you know me IRL, bribe me with a slushie and I will probably merge even faster. XD
 
 ---
 
-Thanks for visiting, reading, or hacking on the site. Hope you enjoyed, and to my fellow coders, I hope your code runs as smooth as butter AND you understand how your code works so you can improve it without exploding your brains out.
+Thanks for reading and/or snooping. May your gradients always line up and your countdown timers always end with "RELEASEEEEEEEEEEEEEEEE!!!"
 
-*Content generated by GPT 5 (mostly)*.
+*Content sprinkled together with GPT-5.1-Codex (Preview).* 
