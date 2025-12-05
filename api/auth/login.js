@@ -1,6 +1,6 @@
 import { createStateToken, buildStateCookie, requiredEnv } from '../../lib/server/auth.js';
 
-export const config = { runtime: 'nodejs18.x' };
+export const config = { runtime: 'nodejs' };
 
 export default async function handler(req, res) {
   if (req.method !== 'GET') {
