@@ -1,4 +1,4 @@
-const ver = "Version 0.9.9721 Pre-Release";
+const ver = "Version 0.9.973 Pre-Release";
 const COMMENTS_API_URL = '/api/comments';
 const COMMENTS_STORAGE_KEY = 'coolman-comments';
 const DEFAULT_SITE_SETTINGS = {

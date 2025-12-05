@@ -155,7 +155,7 @@
           <li>Deploy, then bump <code>ver</code> in <code>script.js</code> if needed.</li>
         </ol>
         <div class="admin-quick-links">
-          <a href="blog/content/" class="button button--small">Open content folder</a>
+          <a href="https://github.com/RandomInternetUser3000/mycoolwebsite/tree/main/blog/content" class="button button--small" target="_blank" rel="noopener noreferrer">Open content folder</a>
           <a href="README.md" class="button button--ghost button--small">Read workflow docs</a>
         </div>
       </article>
@@ -318,6 +318,53 @@
       </div>
     </section>
 
+    <section class="admin-form-card" data-site-settings hidden>
+      <div class="admin-card__header">
+        <div>
+          <p class="tag-pill">Sitewide</p>
+          <h2>Banner, Countdown, Footer</h2>
+        </div>
+        <div class="admin-inline-actions">
+          <span class="admin-card__status" data-site-settings-status>Loading…</span>
+          <button type="button" class="button button--ghost button--small" data-site-settings-refresh>Refresh</button>
+        </div>
+      </div>
+      <form class="admin-form" data-site-settings-form>
+        <div class="admin-form__field admin-form__checkbox">
+          <label><input type="checkbox" name="bannerEnabled"> Show top banner</label>
+        </div>
+        <div class="admin-form__field">
+          <label for="bannerText">Banner text</label>
+          <input type="text" id="bannerText" name="bannerText" placeholder="🛠️ Pre-Release version of the website. (RELEASE SOON!)">
+        </div>
+        <div class="admin-form__field">
+          <label for="bannerLink">Banner button link</label>
+          <input type="url" id="bannerLink" name="bannerLink" placeholder="https://github.com/RandomInternetUser3000/mycoolwebsite">
+        </div>
+        <div class="admin-form__field">
+          <label for="releaseCountdownTarget">Countdown target (UTC)</label>
+          <input type="datetime-local" id="releaseCountdownTarget" name="releaseCountdownTarget">
+          <p class="admin-help-text">Used by the home page release countdown.</p>
+        </div>
+        <div class="admin-form__field">
+          <label for="footerText">Footer text</label>
+          <input type="text" id="footerText" name="footerText" placeholder="Made with ♥️ by COOLmanYT">
+        </div>
+        <div class="admin-form__field admin-form__field--full">
+          <label for="footerHtml">Footer HTML (optional)</label>
+          <textarea id="footerHtml" name="footerHtml" rows="3" placeholder="<strong>COOLmanYT</strong> — credits, links, etc."></textarea>
+          <p class="admin-help-text">Stores in <code>content/site-settings.json</code>. Frontend can choose text or HTML.</p>
+        </div>
+        <div class="admin-form__actions">
+          <button type="button" class="button button--ghost" data-site-settings-save>Save settings</button>
+          <p class="admin-help-text" data-site-settings-feedback></p>
+        </div>
+      </form>
+      <div class="admin-alert" data-site-settings-warning hidden>
+        <p>Editing isn’t configured. Set <code>ALLOWLIST_GITHUB_TOKEN</code> so the panel can commit to <code>content/site-settings.json</code>.</p>
+      </div>
+    </section>
+
     <section class="admin-table-card admin-allowlist" data-allowlist-section hidden>
       <div class="admin-card__header">
         <div>
@@ -388,6 +435,13 @@
     const authName = document.querySelector('[data-auth-username]');
     const authAvatar = document.querySelector('[data-auth-avatar]');
     const allowlistSection = document.querySelector('[data-allowlist-section]');
+    const siteSettingsSection = document.querySelector('[data-site-settings]');
+    const siteSettingsForm = document.querySelector('[data-site-settings-form]');
+    const siteSettingsStatus = document.querySelector('[data-site-settings-status]');
+    const siteSettingsRefreshBtn = document.querySelector('[data-site-settings-refresh]');
+    const siteSettingsSaveBtn = document.querySelector('[data-site-settings-save]');
+    const siteSettingsFeedback = document.querySelector('[data-site-settings-feedback]');
+    const siteSettingsWarning = document.querySelector('[data-site-settings-warning]');
 
     if (!form) return;
 
@@ -728,6 +782,7 @@
       updateAuthMeta(payload.user);
       initAllowlistControls(payload);
       initDistributionCard(payload.distribution);
+      initSiteSettings();
     }
 
     async function handleLogout(event) {
@@ -871,6 +926,117 @@
             return `<li><span>${escapeHtml(user)}</span>${removeButton}</li>`;
           })
           .join('');
+      }
+    }
+
+    function initSiteSettings() {
+      if (!siteSettingsSection || !siteSettingsForm) return;
+      siteSettingsSection.removeAttribute('hidden');
+      if (siteSettingsSection.dataset.bound === 'true') {
+        loadSiteSettings();
+        return;
+      }
+      siteSettingsSection.dataset.bound = 'true';
+
+      if (siteSettingsRefreshBtn) {
+        siteSettingsRefreshBtn.addEventListener('click', (event) => {
+          if (event) event.preventDefault();
+          loadSiteSettings();
+        });
+      }
+
+      if (siteSettingsSaveBtn) {
+        siteSettingsSaveBtn.addEventListener('click', handleSiteSettingsSave);
+      }
+
+      loadSiteSettings();
+    }
+
+    async function loadSiteSettings() {
+      if (siteSettingsStatus) siteSettingsStatus.textContent = 'Loading…';
+      if (siteSettingsFeedback) siteSettingsFeedback.textContent = '';
+      try {
+        const res = await fetch('/api/admin/site-settings');
+        const payload = await res.json();
+        if (!res.ok) {
+          throw new Error(payload.error || `Load failed (${res.status})`);
+        }
+        fillSiteSettingsForm(payload.data || {});
+        if (siteSettingsStatus) {
+          siteSettingsStatus.textContent = payload.source ? `Loaded from ${payload.source}` : 'Loaded';
+        }
+        if (siteSettingsWarning) siteSettingsWarning.setAttribute('hidden', 'true');
+        if (siteSettingsSaveBtn) siteSettingsSaveBtn.removeAttribute('disabled');
+      } catch (error) {
+        if (siteSettingsStatus) siteSettingsStatus.textContent = 'Failed to load';
+        if (siteSettingsFeedback) siteSettingsFeedback.textContent = error.message || 'Could not load settings.';
+        if (siteSettingsSaveBtn) siteSettingsSaveBtn.setAttribute('disabled', 'true');
+      }
+    }
+
+    function fillSiteSettingsForm(data) {
+      if (!siteSettingsForm) return;
+      const bannerEnabled = siteSettingsForm.querySelector('input[name="bannerEnabled"]');
+      const bannerText = siteSettingsForm.querySelector('input[name="bannerText"]');
+      const bannerLink = siteSettingsForm.querySelector('input[name="bannerLink"]');
+      const countdown = siteSettingsForm.querySelector('input[name="releaseCountdownTarget"]');
+      const footerText = siteSettingsForm.querySelector('input[name="footerText"]');
+      const footerHtml = siteSettingsForm.querySelector('textarea[name="footerHtml"]');
+
+      if (bannerEnabled) bannerEnabled.checked = Boolean(data.bannerEnabled);
+      if (bannerText) bannerText.value = data.bannerText || '';
+      if (bannerLink) bannerLink.value = data.bannerLink || '';
+      if (countdown) {
+        countdown.value = toDateTimeLocal(data.releaseCountdownTarget || '');
+      }
+      if (footerText) footerText.value = data.footerText || '';
+      if (footerHtml) footerHtml.value = data.footerHtml || '';
+    }
+
+    function toDateTimeLocal(value) {
+      if (!value) return '';
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return '';
+      const iso = date.toISOString();
+      return iso.slice(0, 16);
+    }
+
+    async function handleSiteSettingsSave(event) {
+      if (event) event.preventDefault();
+      if (!siteSettingsForm) return;
+      const formData = new FormData(siteSettingsForm);
+      const payload = {
+        bannerEnabled: formData.get('bannerEnabled') === 'on',
+        bannerText: (formData.get('bannerText') || '').toString().trim(),
+        bannerLink: (formData.get('bannerLink') || '').toString().trim(),
+        releaseCountdownTarget: (formData.get('releaseCountdownTarget') || '').toString().trim(),
+        footerText: (formData.get('footerText') || '').toString().trim(),
+        footerHtml: (formData.get('footerHtml') || '').toString().trim(),
+      };
+      if (siteSettingsStatus) siteSettingsStatus.textContent = 'Saving…';
+      if (siteSettingsFeedback) siteSettingsFeedback.textContent = '';
+      try {
+        const res = await fetch('/api/admin/site-settings', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        const json = await res.json();
+        if (!res.ok) {
+          const errorMessage = json.error || `Save failed (${res.status})`;
+          errorMessage.statusCode = res.status;
+          throw Object.assign(new Error(errorMessage), { statusCode: res.status });
+        }
+        fillSiteSettingsForm(json.data || payload);
+        if (siteSettingsStatus) siteSettingsStatus.textContent = 'Saved';
+        if (siteSettingsFeedback) siteSettingsFeedback.textContent = 'Settings updated.';
+        if (siteSettingsWarning) siteSettingsWarning.setAttribute('hidden', 'true');
+      } catch (error) {
+        if (siteSettingsStatus) siteSettingsStatus.textContent = 'Save failed';
+        if (siteSettingsFeedback) siteSettingsFeedback.textContent = error.message || 'Could not save settings.';
+        if (error.statusCode === 501) {
+          if (siteSettingsWarning) siteSettingsWarning.removeAttribute('hidden');
+        }
       }
     }
 

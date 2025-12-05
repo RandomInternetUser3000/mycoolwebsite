@@ -11,7 +11,7 @@ const BLOG_HTML_PATH = path.join(BLOG_DIR, 'index.html');
 const BLOG_OUTPUT_DIR = BLOG_DIR;
 const GENERATED_DIR = path.join(BLOG_DIR, '.generated');
 const FEED_PATH = path.join(BLOG_DIR, 'feed.xml');
-const SITE_ORIGIN = process.env.SITE_ORIGIN || 'https://mycoolwebsite.vercel.app';
+const SITE_ORIGIN = process.env.SITE_ORIGIN || process.env.SITE_BASE_URL || 'https://coolmanyt.vercel.app';
 const DISCORD_WEBHOOK_URL = process.env.DISCORD_WEBHOOK_URL || '';
 const DEFAULT_OG_IMAGE = `${SITE_ORIGIN}/images/avatar.png`;
 
