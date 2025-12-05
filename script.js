@@ -1,4 +1,4 @@
-const ver = "Version 0.9.971 Pre-Release";
+const ver = "Version 0.9.9711 Pre-Release";
 const COMMENTS_API_URL = '/api/comments';
 const COMMENTS_STORAGE_KEY = 'coolman-comments';
 const DEFAULT_SITE_SETTINGS = {
@@ -6,6 +6,7 @@ const DEFAULT_SITE_SETTINGS = {
 };
 const SITE_SETTINGS_PATH = 'content/site-settings.json';
 let siteSettings = { ...DEFAULT_SITE_SETTINGS };
+const RELEASE_COUNTDOWN_TARGET = siteSettings.releaseCountdownTarget;
 // Vercel Web Analytics configuration
 const ANALYTICS_MODULE_URL = 'https://cdn.vercel-analytics.com/v1/script.js';
 const VERCEL_ANALYTICS_MODULE_ESM = 'https://unpkg.com/@vercel/analytics@latest/dist/analytics.mjs';
