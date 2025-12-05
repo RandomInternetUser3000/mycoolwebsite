@@ -1,12 +1,14 @@
-const ver = "Version 0.9.973 Pre-Release";
+const ver = "Version 1.0.0";
 const COMMENTS_API_URL = '/api/comments';
 const COMMENTS_STORAGE_KEY = 'coolman-comments';
 const DEFAULT_SITE_SETTINGS = {
 	releaseCountdownTarget: '2025-12-05T22:00:00Z',
+	countdownEnabled: true,
+	countdownHeading: 'Release Countdown',
+	countdownNote: 'Counting down to 6 December 2025 at 9:00 AM AEDT. (Official releace date may differ)',
 };
 const SITE_SETTINGS_PATH = 'content/site-settings.json';
 let siteSettings = { ...DEFAULT_SITE_SETTINGS };
-const RELEASE_COUNTDOWN_TARGET = siteSettings.releaseCountdownTarget;
 // Vercel Web Analytics configuration
 const ANALYTICS_MODULE_URL = 'https://cdn.vercel-analytics.com/v1/script.js';
 const VERCEL_ANALYTICS_MODULE_ESM = 'https://unpkg.com/@vercel/analytics@latest/dist/analytics.mjs';
@@ -39,7 +41,23 @@ const projectViewerState = {
 
 const CHANNEL_ID_CACHE = new Map();
 
-document.addEventListener('DOMContentLoaded', () => {
+async function hydrateSiteSettings() {
+	try {
+		const res = await fetch(`${SITE_SETTINGS_PATH}?ts=${Date.now()}`);
+		if (!res.ok) {
+			throw new Error(`Site settings fetch failed (${res.status})`);
+		}
+		const data = await res.json();
+		if (data && typeof data === 'object') {
+			siteSettings = { ...DEFAULT_SITE_SETTINGS, ...data };
+		}
+	} catch (error) {
+		console.warn('Falling back to default site settings', error);
+		siteSettings = { ...DEFAULT_SITE_SETTINGS };
+	}
+}
+
+document.addEventListener('DOMContentLoaded', async () => {
 	applyInitialTheme();
 	setupThemeToggle();
 	fadeInPage();
@@ -56,7 +74,8 @@ document.addEventListener('DOMContentLoaded', () => {
 	if (document.querySelector('[data-blog-open]')) {
 		initBlogViewer();
 	}
-	
+
+	await hydrateSiteSettings();
 	initReleaseCountdown();
 	initLatestUploadCard();
 	initShareButtons();
@@ -752,12 +771,37 @@ function initReleaseCountdown() {
 		return;
 	}
 
+	const labelTarget = container.querySelector('[data-countdown-label]');
 	const timerTarget = container.querySelector('[data-countdown-timer]');
+	const noteTarget = container.querySelector('[data-countdown-note]');
 	if (!timerTarget) {
 		return;
 	}
 
-	const releaseDate = new Date(RELEASE_COUNTDOWN_TARGET);
+	const countdownEnabled = siteSettings.countdownEnabled !== false;
+	if (!countdownEnabled) {
+		container.setAttribute('hidden', 'true');
+		container.setAttribute('aria-hidden', 'true');
+		return;
+	}
+
+	container.removeAttribute('hidden');
+	container.removeAttribute('aria-hidden');
+
+	if (labelTarget && siteSettings.countdownHeading) {
+		labelTarget.textContent = siteSettings.countdownHeading;
+	}
+	if (noteTarget) {
+		if (siteSettings.countdownNote) {
+			noteTarget.textContent = siteSettings.countdownNote;
+			noteTarget.removeAttribute('hidden');
+		} else {
+			noteTarget.setAttribute('hidden', 'true');
+		}
+	}
+
+	const releaseTarget = siteSettings.releaseCountdownTarget || DEFAULT_SITE_SETTINGS.releaseCountdownTarget;
+	const releaseDate = new Date(releaseTarget);
 	if (Number.isNaN(releaseDate.getTime())) {
 		timerTarget.textContent = 'Countdown unavailable';
 		return;

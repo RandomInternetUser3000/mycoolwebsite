@@ -4,5 +4,8 @@
   "bannerText": "🛠️ Pre-Release version of the website. (RELEASE SOON!)",
   "bannerLink": "https://github.com/RandomInternetUser3000/mycoolwebsite",
   "footerText": "Made with ♥️ by COOLmanYT",
-  "footerHtml": ""
+  "footerHtml": "",
+  "countdownEnabled": true,
+  "countdownHeading": "Release Countdown",
+  "countdownNote": "Counting down to 6 December 2025 at 9:00 AM AEDT. (Official releace date may differ)"
 }

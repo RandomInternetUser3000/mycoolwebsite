@@ -145,5 +145,14 @@ function sanitizeSettings(input) {
   if (typeof input.footerHtml === 'string') {
     next.footerHtml = input.footerHtml;
   }
+  if (typeof input.countdownEnabled === 'boolean') {
+    next.countdownEnabled = input.countdownEnabled;
+  }
+  if (typeof input.countdownHeading === 'string') {
+    next.countdownHeading = input.countdownHeading;
+  }
+  if (typeof input.countdownNote === 'string') {
+    next.countdownNote = input.countdownNote;
+  }
   return next;
 }

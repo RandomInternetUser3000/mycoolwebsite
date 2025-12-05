@@ -341,10 +341,21 @@
           <label for="bannerLink">Banner button link</label>
           <input type="url" id="bannerLink" name="bannerLink" placeholder="https://github.com/RandomInternetUser3000/mycoolwebsite">
         </div>
+        <div class="admin-form__field admin-form__checkbox">
+          <label><input type="checkbox" name="countdownEnabled" checked> Show countdown</label>
+        </div>
         <div class="admin-form__field">
           <label for="releaseCountdownTarget">Countdown target (UTC)</label>
           <input type="datetime-local" id="releaseCountdownTarget" name="releaseCountdownTarget">
           <p class="admin-help-text">Used by the home page release countdown.</p>
+        </div>
+        <div class="admin-form__field">
+          <label for="countdownHeading">Countdown heading (above timer)</label>
+          <input type="text" id="countdownHeading" name="countdownHeading" placeholder="Release Countdown">
+        </div>
+        <div class="admin-form__field">
+          <label for="countdownNote">Countdown note (below timer)</label>
+          <textarea id="countdownNote" name="countdownNote" rows="2" placeholder="Counting down to 6 December 2025 at 9:00 AM AEDT. (Official releace date may differ)"></textarea>
         </div>
         <div class="admin-form__field">
           <label for="footerText">Footer text</label>
@@ -979,16 +990,22 @@
       const bannerEnabled = siteSettingsForm.querySelector('input[name="bannerEnabled"]');
       const bannerText = siteSettingsForm.querySelector('input[name="bannerText"]');
       const bannerLink = siteSettingsForm.querySelector('input[name="bannerLink"]');
+      const countdownEnabled = siteSettingsForm.querySelector('input[name="countdownEnabled"]');
       const countdown = siteSettingsForm.querySelector('input[name="releaseCountdownTarget"]');
+      const countdownHeading = siteSettingsForm.querySelector('input[name="countdownHeading"]');
+      const countdownNote = siteSettingsForm.querySelector('textarea[name="countdownNote"]');
       const footerText = siteSettingsForm.querySelector('input[name="footerText"]');
       const footerHtml = siteSettingsForm.querySelector('textarea[name="footerHtml"]');
 
       if (bannerEnabled) bannerEnabled.checked = Boolean(data.bannerEnabled);
       if (bannerText) bannerText.value = data.bannerText || '';
       if (bannerLink) bannerLink.value = data.bannerLink || '';
+      if (countdownEnabled) countdownEnabled.checked = data.countdownEnabled !== false;
       if (countdown) {
         countdown.value = toDateTimeLocal(data.releaseCountdownTarget || '');
       }
+      if (countdownHeading) countdownHeading.value = data.countdownHeading || '';
+      if (countdownNote) countdownNote.value = data.countdownNote || '';
       if (footerText) footerText.value = data.footerText || '';
       if (footerHtml) footerHtml.value = data.footerHtml || '';
     }
@@ -1009,7 +1026,10 @@
         bannerEnabled: formData.get('bannerEnabled') === 'on',
         bannerText: (formData.get('bannerText') || '').toString().trim(),
         bannerLink: (formData.get('bannerLink') || '').toString().trim(),
+        countdownEnabled: formData.get('countdownEnabled') === 'on',
         releaseCountdownTarget: (formData.get('releaseCountdownTarget') || '').toString().trim(),
+        countdownHeading: (formData.get('countdownHeading') || '').toString().trim(),
+        countdownNote: (formData.get('countdownNote') || '').toString().trim(),
         footerText: (formData.get('footerText') || '').toString().trim(),
         footerHtml: (formData.get('footerHtml') || '').toString().trim(),
       };
