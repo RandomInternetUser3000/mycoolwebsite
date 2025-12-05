@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="{{DESCRIPTION}}">
+  <meta name="author" content="COOLmanYT">
+  <meta name="color-scheme" content="dark light">
+  <link rel="icon" type="image/png" href="../images/avatar.png">
+  <link rel="apple-touch-icon" href="../images/avatar.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="../style.css">
+  <link rel="canonical" href="{{CANONICAL}}">
+  <title>{{TITLE}} | COOLmanYT</title>
+
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="{{CANONICAL}}">
+  <meta property="og:title" content="{{TITLE}}">
+  <meta property="og:description" content="{{DESCRIPTION}}">
+  <meta property="og:image" content="{{OG_IMAGE}}">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="{{CANONICAL}}">
+  <meta name="twitter:title" content="{{TITLE}}">
+  <meta name="twitter:description" content="{{DESCRIPTION}}">
+  <meta name="twitter:image" content="{{OG_IMAGE}}">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "{{TITLE}}",
+    "description": "{{DESCRIPTION}}",
+    "author": {
+      "@type": "Person",
+      "name": "COOLmanYT",
+      "url": "https://mycoolwebsite.vercel.app"
+    },
+    "datePublished": "{{PUBLISH_ISO}}",
+    "dateModified": "{{UPDATED_ISO}}",
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "{{CANONICAL}}"
+    }
+  }
+  </script>
+</head>
+<body class="blog-article-page">
+  <a class="skip-link" href="#mainContent">Skip to main content</a>
+  <div class="top-banner">
+    <span>🛠️ <strong>Pre-Release</strong> version of the website. (RELEASE SOON!)</span>
+    <a class="banner-button" href="https://github.com/RandomInternetUser3000/mycoolwebsite" target="_blank" rel="noopener noreferrer">Open Source GitHub Repository</a>
+    <a class="banner-button" href="../index.html#release-countdown">View Countdown</a>
+  </div>
+
+  <header class="site-header" role="banner">
+    <div class="header-bar">
+      <div class="nav-wrapper">
+        <nav class="nav-links" aria-label="Primary">
+          <a href="../index.html" class="nav-pill">Home</a>
+          <a href="../about.html" class="nav-pill">About</a>
+          <a href="../projects.html" class="nav-pill">Projects</a>
+          <a href="../contact.html" class="nav-pill">Contact</a>
+          <a href="../gallery.html" class="nav-pill">Gallery</a>
+          <a href="../blog/index.html" class="nav-pill active">Blog</a>
+        </nav>
+      </div>
+      <span class="site-logo">COOLmanYT</span>
+      <button type="button" class="theme-toggle" aria-label="Switch to light mode" aria-pressed="true">
+        <span class="toggle-icon">🌙</span>
+        <span class="toggle-text">Light mode</span>
+      </button>
+    </div>
+    <div class="social-links">
+      <a href="https://github.com/RandomInternetUser3000" target="_blank" rel="noopener noreferrer" class="social-button" data-label="GitHub">
+        <img src="../images/github.png" alt="GitHub">
+        <span class="social-label">GitHub</span>
+      </a>
+      <a href="https://www.youtube.com/@COOLmanGamer" target="_blank" rel="noopener noreferrer" class="social-button" data-label="YouTube">
+        <img src="../images/youtube.png" alt="YouTube">
+        <span class="social-label">YouTube</span>
+      </a>
+      <a href="https://discord.gg/SzHksR3QFj" target="_blank" rel="noopener noreferrer" class="social-button" data-label="Discord">
+        <img src="../images/discord.png" alt="Discord">
+        <span class="social-label">Discord</span>
+      </a>
+      <a href="https://www.roblox.com/users/2873599962/profile" target="_blank" rel="noopener noreferrer" class="social-button" data-label="Roblox">
+        <img src="../images/roblox2.png" alt="Roblox">
+        <span class="social-label">Roblox</span>
+      </a>
+      <a href="https://open.spotify.com/user/31px5awkcyikvgrfiiqkxem6oxni?si=fd36097626ff454f" target="_blank" rel="noopener noreferrer" class="social-button" data-label="Spotify">
+        <img src="../images/spotify.png" alt="Spotify">
+        <span class="social-label">Spotify</span>
+      </a>
+      <a href="https://www.reddit.com/user/COOLman_YT/" target="_blank" rel="noopener noreferrer" class="social-button" data-label="Reddit">
+        <img src="../images/reddit.png" alt="Reddit">
+        <span class="social-label">Reddit</span>
+      </a>
+      <a href="https://steamcommunity.com/id/coolmanyt1" target="_blank" rel="noopener noreferrer" class="social-button" data-label="Steam">
+        <img src="../images/steam.png" alt="Steam">
+        <span class="social-label">Steam</span>
+      </a>
+    </div>
+  </header>
+
+  <main id="mainContent" role="main">
+    <article class="blog-article-wrapper">
+      <header class="blog-article-header">
+        <div class="blog-article-meta">
+          <span class="tag-pill">{{TAG}}</span>
+          <time datetime="{{PUBLISH_ISO}}">{{DATE_DISPLAY}}</time>
+          <span>{{READING_TIME}}</span>
+        </div>
+        <h1>{{TITLE}}</h1>
+        <p class="lead">{{SUMMARY}}</p>
+      </header>
+      <div class="blog-article-content">
+        {{HERO_MEDIA}}
+        {{CONTENT}}
+      </div>
+      <footer class="blog-article-footer">
+        <span>{{FOOTER_NOTE}}</span>
+        <div class="article-actions">
+          <button type="button" data-article-share data-share-slug="{{SLUG}}" data-share-url="{{CANONICAL}}" data-share-success="Link copied!">Share</button>
+          <a href="../blog/index.html">Back to Blog</a>
+        </div>
+      </footer>
+    </article>
+  </main>
+
+  <footer role="contentinfo">
+    Made with ♥️ by <strong>COOLmanYT</strong><br>
+    Website <a data-site-version-link href="https://github.com/RandomInternetUser3000/mycoolwebsite">Version<span data-site-version-number></span><span data-site-version-type></span></a><br>
+    Credits to <a href="https://zinheere.vercel.app">Zinheere</a><br>
+  </footer>
+
+  <script defer src="https://cdn.commento.io/js/commento.js"></script>
+  <script src="../script.js"></script>
+</body>
+</html>

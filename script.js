@@ -1,6 +1,11 @@
-const ver = "Version 0.9.952 Pre-Release";
+const ver = "Version 0.9.97 Pre-Release";
 const COMMENTS_API_URL = '/api/comments';
 const COMMENTS_STORAGE_KEY = 'coolman-comments';
+const DEFAULT_SITE_SETTINGS = {
+	releaseCountdownTarget: '2025-12-05T22:00:00Z',
+};
+const SITE_SETTINGS_PATH = 'content/site-settings.json';
+let siteSettings = { ...DEFAULT_SITE_SETTINGS };
 // Vercel Web Analytics configuration
 const ANALYTICS_MODULE_URL = 'https://cdn.vercel-analytics.com/v1/script.js';
 const VERCEL_ANALYTICS_MODULE_ESM = 'https://unpkg.com/@vercel/analytics@latest/dist/analytics.mjs';
@@ -32,7 +37,6 @@ const projectViewerState = {
 };
 
 const CHANNEL_ID_CACHE = new Map();
-const RELEASE_COUNTDOWN_TARGET = '2025-12-05T22:00:00Z'; // 6 Dec 2025 at 09:00 AEDT
 
 document.addEventListener('DOMContentLoaded', () => {
 	applyInitialTheme();
@@ -1573,7 +1577,7 @@ function openBlogModal(trigger) {
 	}
 
 	const shareButton = blogViewerState.contentHost?.querySelector('[data-article-share]');
-	setupShareButton(shareButton, slug, 'blog.html');
+	setupShareButton(shareButton, slug, 'blog/index.html');
 
 	const heading = blogViewerState.contentHost?.querySelector('h1');
 	if (heading) {
@@ -1718,12 +1722,12 @@ function updateShareLabel(button, target, message) {
 function resolveShareUrl(slug, baseOverride = '') {
 	const hasSlug = Boolean(slug);
 	try {
-		const basePath = baseOverride || 'blog.html';
+		const basePath = baseOverride || 'blog/index.html';
 		const base = new URL(basePath, window.location.href);
 		base.hash = hasSlug ? slug : '';
 		return base.href;
 	} catch (error) {
-		const fallbackBase = baseOverride || 'blog.html';
+		const fallbackBase = baseOverride || 'blog/index.html';
 		if (hasSlug) {
 			const separator = fallbackBase.includes('#') ? '' : '#';
 			return `${fallbackBase}${separator}${slug}`;

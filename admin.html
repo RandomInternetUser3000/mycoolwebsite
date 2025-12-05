@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Internal admin tools for COOLmanYT: generate blog posts, review manifest stats, and keep the content pipeline tidy.">
+  <meta name="author" content="COOLmanYT">
+  <meta name="color-scheme" content="dark light">
+  <link rel="icon" type="image/png" href="images/avatar.png">
+  <link rel="apple-touch-icon" href="images/avatar.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="style.css">
+  <link rel="canonical" href="https://mycoolwebsite.vercel.app/admin.html">
+  <title>Admin Panel - COOLmanYT</title>
+
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://mycoolwebsite.vercel.app/admin.html">
+  <meta property="og:title" content="COOLmanYT Admin Panel">
+  <meta property="og:description" content="Generate markdown front matter, inspect blog stats, and keep content workflows moving.">
+  <meta property="og:image" content="https://mycoolwebsite.vercel.app/images/avatar.png">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="https://mycoolwebsite.vercel.app/admin.html">
+  <meta name="twitter:title" content="COOLmanYT Admin Panel">
+  <meta name="twitter:description" content="Generate markdown front matter, inspect blog stats, and keep content workflows moving.">
+  <meta name="twitter:image" content="https://mycoolwebsite.vercel.app/images/avatar.png">
+</head>
+<body class="admin-page">
+  <a class="skip-link" href="#mainContent">Skip to main content</a>
+  <div class="top-banner">
+    <span>🛠️ <strong>Pre-Release</strong> version of the website. (RELEASE SOON!)</span>
+    <a class="banner-button" href="https://github.com/RandomInternetUser3000/mycoolwebsite" target="_blank" rel="noopener noreferrer">Open Source GitHub Repository</a>
+    <a class="banner-button" href="index.html#release-countdown">View Countdown</a>
+  </div>
+
+  <header class="site-header" role="banner">
+    <div class="header-bar">
+      <div class="nav-wrapper">
+        <nav class="nav-links" aria-label="Primary">
+          <a href="index.html" class="nav-pill">Home</a>
+          <a href="about.html" class="nav-pill">About</a>
+          <a href="projects.html" class="nav-pill">Projects</a>
+          <a href="contact.html" class="nav-pill">Contact</a>
+          <a href="gallery.html" class="nav-pill">Gallery</a>
+          <a href="blog/index.html" class="nav-pill">Blog</a>
+        </nav>
+      </div>
+      <span class="site-logo">COOLmanYT</span>
+      <button type="button" class="theme-toggle" aria-label="Switch to light mode" aria-pressed="true">
+        <span class="toggle-icon">🌙</span>
+        <span class="toggle-text">Light mode</span>
+      </button>
+    </div>
+    <div class="social-links">
+      <a href="https://github.com/RandomInternetUser3000" target="_blank" rel="noopener noreferrer" class="social-button" data-label="GitHub">
+        <img src="images/github.png" alt="GitHub">
+        <span class="social-label">GitHub</span>
+      </a>
+      <a href="https://www.youtube.com/@COOLmanGamer" target="_blank" rel="noopener noreferrer" class="social-button" data-label="YouTube">
+        <img src="images/youtube.png" alt="YouTube">
+        <span class="social-label">YouTube</span>
+      </a>
+      <a href="https://discord.gg/SzHksR3QFj" target="_blank" rel="noopener noreferrer" class="social-button" data-label="Discord">
+        <img src="images/discord.png" alt="Discord">
+        <span class="social-label">Discord</span>
+      </a>
+      <a href="https://www.roblox.com/users/2873599962/profile" target="_blank" rel="noopener noreferrer" class="social-button" data-label="Roblox">
+        <img src="images/roblox2.png" alt="Roblox">
+        <span class="social-label">Roblox</span>
+      </a>
+      <a href="https://open.spotify.com/user/31px5awkcyikvgrfiiqkxem6oxni?si=fd36097626ff454f" target="_blank" rel="noopener noreferrer" class="social-button" data-label="Spotify">
+        <img src="images/spotify.png" alt="Spotify">
+        <span class="social-label">Spotify</span>
+      </a>
+      <a href="https://www.reddit.com/user/COOLman_YT/" target="_blank" rel="noopener noreferrer" class="social-button" data-label="Reddit">
+        <img src="images/reddit.png" alt="Reddit">
+        <span class="social-label">Reddit</span>
+      </a>
+      <a href="https://steamcommunity.com/id/coolmanyt1" target="_blank" rel="noopener noreferrer" class="social-button" data-label="Steam">
+        <img src="images/steam.png" alt="Steam">
+        <span class="social-label">Steam</span>
+      </a>
+    </div>
+  </header>
+
+  <section class="admin-lock" data-auth-guard>
+    <div class="admin-lock__card">
+      <p class="tag-pill">Restricted</p>
+      <h1>Sign in required</h1>
+      <p>Only approved GitHub accounts can unlock this admin panel. Sign in to continue.</p>
+      <div class="admin-lock__actions">
+        <button type="button" class="button" data-trigger-login>Sign in with GitHub</button>
+        <button type="button" class="button button--ghost" data-trigger-refresh hidden>Retry</button>
+      </div>
+      <p class="admin-help-text" data-auth-error></p>
+    </div>
+  </section>
+
+  <main id="mainContent" role="main" data-admin-shell hidden>
+    <section class="admin-hero">
+      <div>
+        <p class="tag-pill">Internal Tools</p>
+        <h1>Admin Panel</h1>
+        <p>Draft markdown front matter, review manifest stats, and keep the blog pipeline unblocked without touching half a dozen files manually.</p>
+      </div>
+      <div class="admin-hero__actions">
+        <a href="blog/index.html" class="button">Open Blog</a>
+        <button type="button" class="button button--ghost" data-copy-build>Copy build command</button>
+        <div class="admin-auth-meta" data-auth-meta hidden>
+          <img src="images/avatar.png" alt="Signed-in avatar" data-auth-avatar>
+          <div>
+            <p class="admin-auth-label">Signed in as</p>
+            <strong data-auth-username>—</strong>
+          </div>
+          <button type="button" class="button button--ghost button--small" data-trigger-logout>Sign out</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="admin-grid" aria-label="Quick controls">
+      <article class="admin-card">
+        <div class="admin-card__header">
+          <h2>Post Stats</h2>
+          <span class="admin-card__status" data-manifest-status>Loading…</span>
+        </div>
+        <dl class="admin-stats">
+          <div>
+            <dt>Total</dt>
+            <dd data-stat-total>—</dd>
+          </div>
+          <div>
+            <dt>Published</dt>
+            <dd data-stat-published>—</dd>
+          </div>
+          <div>
+            <dt>Drafts</dt>
+            <dd data-stat-drafts>—</dd>
+          </div>
+          <div>
+            <dt>Standalones</dt>
+            <dd data-stat-standalone>—</dd>
+          </div>
+        </dl>
+      </article>
+
+      <article class="admin-card">
+        <div class="admin-card__header">
+          <h2>Workflow Checklist</h2>
+        </div>
+        <ol class="admin-steps">
+          <li>Write content under <code>blog/content/&lt;slug&gt;.md</code>.</li>
+          <li>Run <code>npm run build:blog</code> to regenerate listings, RSS, and manifests.</li>
+          <li>Review diffs (especially <code>blog/index.html</code>) and commit.</li>
+          <li>Deploy, then bump <code>ver</code> in <code>script.js</code> if needed.</li>
+        </ol>
+        <div class="admin-quick-links">
+          <a href="blog/content/" class="button button--small">Open content folder</a>
+          <a href="README.md" class="button button--ghost button--small">Read workflow docs</a>
+        </div>
+      </article>
+
+      <article class="admin-card admin-card--distribution">
+        <div class="admin-card__header">
+          <h2>Distribution</h2>
+          <span class="admin-card__status" data-distribution-status>Loading…</span>
+        </div>
+        <div class="admin-distribution" data-distribution>
+          <div class="admin-distribution__item">
+            <p class="admin-label">RSS Feed</p>
+            <code data-rss-url>—</code>
+            <div class="admin-quick-links">
+              <a href="blog/feed.xml" class="button button--small" target="_blank" rel="noopener" data-open-rss>Open feed</a>
+              <button type="button" class="button button--ghost button--small" data-copy-rss>Copy URL</button>
+            </div>
+          </div>
+          <div class="admin-distribution__item">
+            <p class="admin-label">Discord Webhook</p>
+            <p class="admin-help-text" data-webhook-status>Not configured</p>
+            <button type="button" class="button button--small" data-webhook-test data-label="Send test ping" disabled>Send test ping</button>
+            <p class="admin-help-text">Set <code>DISCORD_WEBHOOK_URL</code> so builds broadcast automatically.</p>
+          </div>
+        </div>
+        <p class="admin-help-text" data-distribution-feedback></p>
+      </article>
+    </section>
+
+    <section class="admin-form-card">
+      <div class="admin-card__header">
+        <div>
+          <p class="tag-pill">Generator</p>
+          <h2>Blog Post Builder</h2>
+        </div>
+        <span class="admin-card__status" data-generator-status>Autosaves locally</span>
+      </div>
+      <form class="admin-form" data-blog-form>
+        <div class="admin-form__field">
+          <label for="title">Title *</label>
+          <input type="text" id="title" name="title" placeholder="Lighting Makeover Checklist" required>
+        </div>
+        <div class="admin-form__field">
+          <label for="displayTitle">Display Title</label>
+          <input type="text" id="displayTitle" name="displayTitle" placeholder="Lighting Makeover Checklist (COMING SOON)">
+        </div>
+        <div class="admin-form__field">
+          <label for="slug">Slug *</label>
+          <input type="text" id="slug" name="slug" placeholder="lighting-makeover-checklist" required>
+        </div>
+        <div class="admin-form__field">
+          <label for="tag">Tag</label>
+          <input type="text" id="tag" name="tag" value="Update">
+        </div>
+        <div class="admin-form__field">
+          <label for="cardCta">Card CTA</label>
+          <input type="text" id="cardCta" name="cardCta" value="Continue reading">
+        </div>
+        <div class="admin-form__field">
+          <label for="readingTime">Reading Time</label>
+          <input type="text" id="readingTime" name="readingTime" placeholder="5 minute read">
+        </div>
+        <div class="admin-form__field">
+          <label for="summary">Summary *</label>
+          <textarea id="summary" name="summary" rows="3" placeholder="One or two sentences that appear on the card." required></textarea>
+        </div>
+        <div class="admin-form__field admin-form__field--full">
+          <label for="highlights">Card Highlights (one per line)</label>
+          <textarea id="highlights" name="cardHighlights" rows="3" placeholder="Lighting tricks that instantly add depth"></textarea>
+        </div>
+        <div class="admin-form__field">
+          <label for="date">Published Date *</label>
+          <input type="date" id="date" name="date" required>
+        </div>
+        <div class="admin-form__field">
+          <label for="updated">Updated Date</label>
+          <input type="date" id="updated" name="updated">
+        </div>
+        <div class="admin-form__field">
+          <label for="status">Status</label>
+          <select id="status" name="status">
+            <option value="published">Published</option>
+            <option value="draft">Draft</option>
+            <option value="Coming Soon">Coming Soon</option>
+          </select>
+        </div>
+        <div class="admin-form__field">
+          <label for="shareBase">Share Base URL</label>
+          <input type="text" id="shareBase" name="shareBase" value="blog/index.html">
+        </div>
+        <p class="admin-help-text">Store media under <code>images/blog/</code> or paste a full URL.</p>
+        <div class="admin-form__field">
+          <label for="cardImage">Card Image</label>
+          <input type="text" id="cardImage" name="cardImage" placeholder="images/blog/lighting-card.jpg">
+        </div>
+        <div class="admin-form__field">
+          <label for="cardImageAlt">Card Image Alt Text</label>
+          <input type="text" id="cardImageAlt" name="cardImageAlt" placeholder="Lighting setup preview thumbnail">
+        </div>
+        <div class="admin-form__field">
+          <label for="heroImage">Hero Image</label>
+          <input type="text" id="heroImage" name="heroImage" placeholder="images/blog/lighting-hero.jpg">
+        </div>
+        <div class="admin-form__field">
+          <label for="heroImageAlt">Hero Image Alt Text</label>
+          <input type="text" id="heroImageAlt" name="heroImageAlt" placeholder="Volumetric fog drifting across skyline">
+        </div>
+        <div class="admin-form__field admin-form__field--full">
+          <label for="ogImage">Open Graph Image</label>
+          <input type="text" id="ogImage" name="ogImage" placeholder="https://cdn.example.com/lighting-og.png">
+          <p class="admin-help-text">Leave blank to reuse the hero or card image.</p>
+        </div>
+        <div class="admin-form__field admin-form__checkbox">
+          <label><input type="checkbox" name="featured"> Featured</label>
+        </div>
+        <div class="admin-form__field admin-form__checkbox">
+          <label><input type="checkbox" name="standalone"> Generate standalone page</label>
+        </div>
+        <div class="admin-form__field">
+          <label for="standaloneNote">Standalone footer note</label>
+          <input type="text" id="standaloneNote" name="standaloneNote" placeholder="Updated Nov 3, 2025">
+        </div>
+        <div class="admin-form__field">
+          <label for="secondaryActionLabel">Secondary Action Label</label>
+          <input type="text" id="secondaryActionLabel" name="secondaryActionLabel" placeholder="View Source">
+        </div>
+        <div class="admin-form__field">
+          <label for="secondaryActionUrl">Secondary Action URL</label>
+          <input type="url" id="secondaryActionUrl" name="secondaryActionUrl" placeholder="https://github.com/...">
+        </div>
+        <div class="admin-form__field admin-form__field--full">
+          <label for="body">Markdown body (optional)</label>
+          <textarea id="body" name="body" rows="6" placeholder="## Headline\n\nStart writing here..."></textarea>
+        </div>
+        <div class="admin-form__actions">
+          <button type="reset" class="button button--ghost">Reset</button>
+        </div>
+      </form>
+      <div class="admin-preview">
+        <div class="admin-card__header">
+          <h3>Front Matter Preview</h3>
+          <button type="button" class="button button--small" data-copy-frontmatter>Copy snippet</button>
+        </div>
+        <pre aria-live="polite"><code data-frontmatter-preview>Fill out the form to generate front matter…</code></pre>
+        <p class="admin-help-text">Save this as <code>blog/content/&lt;slug&gt;.md</code>, then run <code>npm run build:blog</code>.</p>
+        <p class="admin-help-text" data-copy-feedback></p>
+      </div>
+    </section>
+
+    <section class="admin-table-card" aria-live="polite">
+      <div class="admin-card__header">
+        <div>
+          <p class="tag-pill">Manifest</p>
+          <h2>Existing Posts</h2>
+        </div>
+        <button type="button" class="button button--ghost button--small" data-refresh-manifest>Refresh</button>
+      </div>
+      <div class="admin-table" data-post-table>
+        <p>Loading manifest…</p>
+      </div>
+    </section>
+
+    <section class="admin-table-card admin-allowlist" data-allowlist-section hidden>
+      <div class="admin-card__header">
+        <div>
+          <p class="tag-pill">Access Control</p>
+          <h2>Allowed GitHub Users</h2>
+        </div>
+        <button type="button" class="button button--ghost button--small" data-refresh-allowlist>Refresh</button>
+      </div>
+      <p class="admin-help-text" data-allowlist-description>Manage who can unlock this admin view. Updates commit directly to the repository’s allow list file.</p>
+      <div class="admin-allowlist__content" data-allowlist-content>
+        <ul class="admin-allowlist__list" data-allowlist-list>
+          <li>Loading…</li>
+        </ul>
+        <p class="admin-help-text" data-allowlist-empty hidden>No users on the allow list yet.</p>
+        <form class="admin-allowlist__form" data-allowlist-form>
+          <label for="allowlistUsername">GitHub username</label>
+          <div class="admin-allowlist__form-row">
+            <input type="text" id="allowlistUsername" name="username" placeholder="randominternetuser3000" autocomplete="off" required>
+            <button type="submit" class="button button--small" data-allowlist-add>Add user</button>
+          </div>
+        </form>
+        <p class="admin-help-text" data-allowlist-feedback></p>
+      </div>
+      <div class="admin-alert" data-allowlist-warning hidden>
+        <p>Allow list editing isn’t configured. Set <code>ALLOWLIST_GITHUB_TOKEN</code> (repo scope) so the panel can commit updates automatically.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer role="contentinfo">
+    Made with ♥️ by <strong>COOLmanYT</strong><br>
+    Website <a data-site-version-link href="https://github.com/RandomInternetUser3000/mycoolwebsite">Version<span data-site-version-number></span><span data-site-version-type></span></a><br>
+    Credits to <a href="https://zinheere.vercel.app">Zinheere</a><br>
+  </footer>
+
+  <script src="script.js"></script>
+  <script>
+  (function() {
+    const form = document.querySelector('[data-blog-form]');
+    const preview = document.querySelector('[data-frontmatter-preview]');
+    const copyBtn = document.querySelector('[data-copy-frontmatter]');
+    const copyFeedback = document.querySelector('[data-copy-feedback]');
+    const manifestStatus = document.querySelector('[data-manifest-status]');
+    const statsEls = {
+      total: document.querySelector('[data-stat-total]'),
+      published: document.querySelector('[data-stat-published]'),
+      drafts: document.querySelector('[data-stat-drafts]'),
+      standalone: document.querySelector('[data-stat-standalone]'),
+    };
+    const table = document.querySelector('[data-post-table]');
+    const refreshBtn = document.querySelector('[data-refresh-manifest]');
+    const buildBtn = document.querySelector('[data-copy-build]');
+    const distributionCard = document.querySelector('[data-distribution]');
+    const distributionStatus = document.querySelector('[data-distribution-status]');
+    const distributionFeedback = document.querySelector('[data-distribution-feedback]');
+    const rssDisplay = document.querySelector('[data-rss-url]');
+    const rssOpenBtn = document.querySelector('[data-open-rss]');
+    const rssCopyBtn = document.querySelector('[data-copy-rss]');
+    const webhookStatusEl = document.querySelector('[data-webhook-status]');
+    const webhookTestBtn = document.querySelector('[data-webhook-test]');
+    const shell = document.querySelector('[data-admin-shell]');
+    const authGuard = document.querySelector('[data-auth-guard]');
+    const authMeta = document.querySelector('[data-auth-meta]');
+    const loginBtn = document.querySelector('[data-trigger-login]');
+    const refreshAuthBtn = document.querySelector('[data-trigger-refresh]');
+    const logoutBtn = document.querySelector('[data-trigger-logout]');
+    const authError = document.querySelector('[data-auth-error]');
+    const authName = document.querySelector('[data-auth-username]');
+    const authAvatar = document.querySelector('[data-auth-avatar]');
+    const allowlistSection = document.querySelector('[data-allowlist-section]');
+
+    if (!form) return;
+
+    const titleInput = form.querySelector('[name="title"]');
+    const slugInput = form.querySelector('[name="slug"]');
+    const dateInput = form.querySelector('[name="date"]');
+    let userEditedSlug = false;
+
+    if (dateInput) {
+      dateInput.value = new Date().toISOString().slice(0, 10);
+    }
+
+    titleInput.addEventListener('input', () => {
+      if (!userEditedSlug) {
+        slugInput.value = slugify(titleInput.value);
+      }
+      updatePreview();
+    });
+
+    slugInput.addEventListener('input', () => {
+      userEditedSlug = true;
+      slugInput.value = slugify(slugInput.value);
+      updatePreview();
+    });
+
+    form.addEventListener('input', updatePreview);
+
+    form.addEventListener('reset', () => {
+      userEditedSlug = false;
+      setTimeout(() => {
+        if (dateInput) {
+          dateInput.value = new Date().toISOString().slice(0, 10);
+        }
+        preview.textContent = 'Fill out the form to generate front matter…';
+        copyFeedback.textContent = '';
+      }, 0);
+    });
+
+    copyBtn.addEventListener('click', () => {
+      const text = preview.textContent.trim();
+      if (!text) return;
+      copyToClipboard(text, copyFeedback);
+    });
+
+    buildBtn?.addEventListener('click', () => {
+      copyToClipboard('npm run build:blog', copyFeedback, 'Build command copied!');
+    });
+
+    refreshBtn?.addEventListener('click', loadManifest);
+    loginBtn?.addEventListener('click', () => {
+      window.location.href = '/api/auth/login';
+    });
+    refreshAuthBtn?.addEventListener('click', () => {
+      refreshAuthBtn.disabled = true;
+      initAuthFlow();
+    });
+    logoutBtn?.addEventListener('click', handleLogout);
+
+    updatePreview();
+    loadManifest();
+    initAuthFlow();
+
+    async function loadManifest() {
+      manifestStatus.textContent = 'Loading…';
+      table.innerHTML = '<p>Loading manifest…</p>';
+      try {
+        const res = await fetch(`blog/.generated/blog-manifest.json?ts=${Date.now()}`);
+        if (!res.ok) throw new Error(`Request failed (${res.status})`);
+        const payload = await res.json();
+        const posts = Array.isArray(payload) ? payload : (payload.posts || []);
+        renderManifest(posts);
+        manifestStatus.textContent = `Synced ${new Date().toLocaleTimeString()}`;
+      } catch (error) {
+        console.warn('Manifest load failed', error);
+        manifestStatus.textContent = 'Failed to load';
+        table.innerHTML = `<p class="admin-error">Could not read blog/.generated/blog-manifest.json. Run <code>npm run build:blog</code> and refresh.</p>`;
+        Object.values(statsEls).forEach((el) => (el.textContent = '—'));
+      }
+    }
+
+    function renderManifest(posts) {
+      if (!posts.length) {
+        table.innerHTML = '<p>No posts found. Add markdown files under blog/content/ and rebuild.</p>';
+        Object.values(statsEls).forEach((el) => (el.textContent = '0'));
+        return;
+      }
+
+      const publishedCount = posts.filter((post) => (post.status || '').toLowerCase() === 'published').length;
+      const draftCount = posts.length - publishedCount;
+      const standaloneCount = posts.filter((post) => post.standalone).length;
+
+      statsEls.total.textContent = posts.length;
+      statsEls.published.textContent = publishedCount;
+      statsEls.drafts.textContent = draftCount;
+      statsEls.standalone.textContent = standaloneCount;
+
+      const rows = posts
+        .sort((a, b) => new Date(b.date || b.datePublished || 0) - new Date(a.date || a.datePublished || 0))
+        .map((post) => {
+          const status = (post.status || '').toLowerCase();
+          const label = status ? status.charAt(0).toUpperCase() + status.slice(1) : 'Published';
+          return `<tr>
+            <td data-label="Title">${escapeHtml(post.title || post.slug)}</td>
+            <td data-label="Slug"><code>${escapeHtml(post.slug)}</code></td>
+            <td data-label="Status"><span class="admin-pill admin-pill--${status || 'published'}">${escapeHtml(label)}</span></td>
+            <td data-label="Date">${escapeHtml(formatDate(post.date || post.datePublished))}</td>
+            <td data-label="Standalone">${post.standalone ? 'Yes' : 'No'}</td>
+          </tr>`;
+        })
+        .join('');
+
+      table.innerHTML = `<div class="admin-table__scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Slug</th>
+              <th>Status</th>
+              <th>Date</th>
+              <th>Standalone</th>
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>`;
+    }
+
+    function updatePreview() {
+      const data = collectFormData(new FormData(form));
+      preview.textContent = buildFrontMatter(data);
+    }
+
+    function collectFormData(formData) {
+      const highlights = (formData.get('cardHighlights') || '')
+        .split('\n')
+        .map((item) => item.trim())
+        .filter(Boolean);
+
+      return {
+        title: (formData.get('title') || '').trim(),
+        displayTitle: (formData.get('displayTitle') || '').trim(),
+        slug: (formData.get('slug') || '').trim() || slugify(formData.get('title') || ''),
+        tag: (formData.get('tag') || 'Update').trim(),
+        cardCta: (formData.get('cardCta') || 'Continue reading').trim(),
+        readingTime: (formData.get('readingTime') || '').trim(),
+        summary: (formData.get('summary') || '').trim(),
+        highlights,
+        date: formData.get('date') || new Date().toISOString().slice(0, 10),
+        updated: formData.get('updated') || '',
+        status: (formData.get('status') || 'published').trim(),
+        shareBase: (formData.get('shareBase') || 'blog/index.html').trim(),
+        cardImage: (formData.get('cardImage') || '').trim(),
+        cardImageAlt: (formData.get('cardImageAlt') || '').trim(),
+        heroImage: (formData.get('heroImage') || '').trim(),
+        heroImageAlt: (formData.get('heroImageAlt') || '').trim(),
+        ogImage: (formData.get('ogImage') || formData.get('heroImage') || formData.get('cardImage') || '').toString().trim(),
+        featured: formData.get('featured') === 'on',
+        standalone: formData.get('standalone') === 'on',
+        standaloneNote: (formData.get('standaloneNote') || '').trim(),
+        secondaryActionLabel: (formData.get('secondaryActionLabel') || '').trim(),
+        secondaryActionUrl: (formData.get('secondaryActionUrl') || '').trim(),
+        body: formData.get('body')?.trim() || '## New Section\n\nWrite your update here.\n',
+      };
+    }
+
+    function buildFrontMatter(data) {
+      if (!data.title || !data.slug) {
+        return 'Fill out the title and slug to generate front matter…';
+      }
+
+      const lines = ['---'];
+      lines.push(`slug: ${data.slug}`);
+      lines.push(`title: ${escapeYaml(data.title)}`);
+      if (data.displayTitle) {
+        lines.push(`displayTitle: ${escapeYaml(data.displayTitle)}`);
+      }
+      lines.push(`tag: ${escapeYaml(data.tag)}`);
+      lines.push(`date: ${data.date}`);
+      if (data.updated) {
+        lines.push(`updated: ${data.updated}`);
+      }
+      if (data.readingTime) {
+        lines.push(`readingTime: ${escapeYaml(data.readingTime)}`);
+      }
+      lines.push(`summary: ${escapeMultiline(data.summary)}`);
+      if (data.highlights.length) {
+        lines.push('cardHighlights:');
+        data.highlights.forEach((item) => lines.push(`  - ${escapeYaml(item)}`));
+      }
+      lines.push(`cardCta: ${escapeYaml(data.cardCta)}`);
+      lines.push(`featured: ${data.featured}`);
+      lines.push(`standalone: ${data.standalone}`);
+      lines.push(`shareBase: ${data.shareBase}`);
+      if (data.cardImage) {
+        lines.push(`cardImage: ${escapeYaml(data.cardImage)}`);
+        if (data.cardImageAlt) {
+          lines.push(`cardImageAlt: ${escapeYaml(data.cardImageAlt)}`);
+        }
+      }
+      if (data.heroImage) {
+        lines.push(`heroImage: ${escapeYaml(data.heroImage)}`);
+        if (data.heroImageAlt) {
+          lines.push(`heroImageAlt: ${escapeYaml(data.heroImageAlt)}`);
+        }
+      }
+      if (data.ogImage) {
+        lines.push(`ogImage: ${escapeYaml(data.ogImage)}`);
+      }
+      lines.push(`status: ${escapeYaml(data.status)}`);
+      if (data.secondaryActionLabel && data.secondaryActionUrl) {
+        lines.push(`secondaryActionLabel: ${escapeYaml(data.secondaryActionLabel)}`);
+        lines.push(`secondaryActionUrl: ${escapeYaml(data.secondaryActionUrl)}`);
+      }
+      if (data.standaloneNote) {
+        lines.push(`standaloneNote: ${escapeMultiline(data.standaloneNote)}`);
+      }
+      lines.push('---');
+      lines.push('');
+      lines.push(data.body);
+      return lines.join('\n');
+    }
+
+    function slugify(value = '') {
+      return value
+        .toString()
+        .trim()
+        .toLowerCase()
+        .replace(/[^a-z0-9-]+/g, '-')
+        .replace(/--+/g, '-')
+        .replace(/^-+|-+$/g, '');
+    }
+
+    function formatDate(value) {
+      if (!value) return '—';
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return value;
+      return date.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+    }
+
+    function escapeHtml(value = '') {
+      return value
+        .toString()
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    function escapeYaml(value = '') {
+      if (!value) return '""';
+      const safe = value.replace(/"/g, '\\"');
+      return `"${safe}"`;
+    }
+
+    function escapeMultiline(value = '') {
+      if (!value) return '""';
+      const sanitized = value.replace(/"/g, '\\"');
+      if (sanitized.includes('\n')) {
+        const lines = sanitized.split('\n').map((line) => line.trimEnd());
+        return `|\n  ${lines.join('\n  ')}`;
+      }
+      return `"${sanitized}"`;
+    }
+
+    function copyToClipboard(text, feedbackEl, successMessage = 'Front matter copied!') {
+      if (!navigator.clipboard) {
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        if (feedbackEl) {
+          feedbackEl.textContent = successMessage;
+          setTimeout(() => (feedbackEl.textContent = ''), 4000);
+        }
+        return;
+      }
+      navigator.clipboard.writeText(text).then(() => {
+        if (feedbackEl) {
+          feedbackEl.textContent = successMessage;
+          setTimeout(() => (feedbackEl.textContent = ''), 4000);
+        }
+      }).catch(() => {
+        if (feedbackEl) {
+          feedbackEl.textContent = 'Clipboard blocked. Select the text manually.';
+        }
+      });
+    }
+
+    async function initAuthFlow() {
+      if (!shell || !authGuard) {
+        return;
+      }
+      lockAdmin('Checking your session…');
+      try {
+        const res = await fetch('/api/session', { headers: { Accept: 'application/json' } });
+        if (!res.ok) {
+          throw new Error(`Session request failed (${res.status})`);
+        }
+        const payload = await res.json();
+        if (payload.authenticated) {
+          unlockAdmin(payload);
+        } else {
+          lockAdmin('Sign in with GitHub to continue.');
+        }
+      } catch (error) {
+        console.warn('Auth flow failed', error);
+        lockAdmin('Could not verify your session. Try again.');
+        refreshAuthBtn?.removeAttribute('hidden');
+        refreshAuthBtn?.removeAttribute('disabled');
+      }
+    }
+
+    function lockAdmin(message) {
+      if (!authGuard) return;
+      shell?.setAttribute('hidden', 'true');
+      authGuard.removeAttribute('hidden');
+      authError.textContent = message || '';
+      authMeta?.setAttribute('hidden', 'true');
+      distributionStatus?.textContent = 'Locked';
+      if (distributionFeedback) {
+        distributionFeedback.textContent = '';
+      }
+    }
+
+    function unlockAdmin(payload) {
+      authGuard?.setAttribute('hidden', 'true');
+      shell?.removeAttribute('hidden');
+      authMeta?.removeAttribute('hidden');
+      refreshAuthBtn?.setAttribute('hidden', 'true');
+      updateAuthMeta(payload.user);
+      initAllowlistControls(payload);
+      initDistributionCard(payload.distribution);
+    }
+
+    async function handleLogout(event) {
+      event?.preventDefault();
+      try {
+        await fetch('/api/auth/logout', { method: 'POST' });
+      } finally {
+        window.location.reload();
+      }
+    }
+
+    function updateAuthMeta(user) {
+      if (!user) return;
+      if (authName) {
+        authName.textContent = user.name || user.login;
+      }
+      if (authAvatar) {
+        authAvatar.src = user.avatarUrl || 'images/avatar.png';
+      }
+    }
+
+    function initAllowlistControls(sessionData) {
+      if (!allowlistSection) return;
+      const listEl = allowlistSection.querySelector('[data-allowlist-list]');
+      const form = allowlistSection.querySelector('[data-allowlist-form]');
+      const feedback = allowlistSection.querySelector('[data-allowlist-feedback]');
+      const warning = allowlistSection.querySelector('[data-allowlist-warning]');
+      const emptyState = allowlistSection.querySelector('[data-allowlist-empty]');
+      const allowlistRefreshBtn = allowlistSection.querySelector('[data-refresh-allowlist]');
+      const input = form?.querySelector('input[name="username"]');
+      const submit = form?.querySelector('[data-allowlist-add]');
+      let cachedUsers = Array.isArray(sessionData.allowlist) ? sessionData.allowlist : [];
+      const editingEnabled = Boolean(sessionData.canEditAllowlist);
+      const alreadyInitialized = allowlistSection.dataset.allowlistInit === 'true';
+      allowlistSection.dataset.allowlistInit = 'true';
+
+      allowlistSection.removeAttribute('hidden');
+      renderAllowlist(cachedUsers);
+
+      if (!editingEnabled) {
+        warning?.removeAttribute('hidden');
+        input?.setAttribute('disabled', 'true');
+        submit?.setAttribute('disabled', 'true');
+      } else {
+        warning?.setAttribute('hidden', 'true');
+        input?.removeAttribute('disabled');
+        submit?.removeAttribute('disabled');
+      }
+
+      if (alreadyInitialized) {
+        return;
+      }
+
+      allowlistRefreshBtn?.addEventListener('click', async () => {
+        allowlistRefreshBtn.disabled = true;
+        const latest = await fetch('/api/admin/allowlist');
+        allowlistRefreshBtn.disabled = false;
+        if (!latest.ok) {
+          feedback.textContent = 'Failed to refresh allow list.';
+          return;
+        }
+        const payload = await latest.json();
+        cachedUsers = payload.users || cachedUsers;
+        renderAllowlist(cachedUsers);
+        feedback.textContent = 'Allow list refreshed.';
+      });
+
+      form?.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        if (!editingEnabled) return;
+        const formData = new FormData(form);
+        const username = (formData.get('username') || '').toString().trim();
+        if (!username) return;
+        feedback.textContent = 'Adding user…';
+        submit.disabled = true;
+        try {
+          const res = await fetch('/api/admin/allowlist', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username }),
+          });
+          const payload = await res.json();
+          if (!res.ok) {
+            feedback.textContent = payload.error || 'Failed to add user.';
+            return;
+          }
+          cachedUsers = payload.users || cachedUsers;
+          renderAllowlist(cachedUsers);
+          feedback.textContent = payload.message || 'User added';
+          form.reset();
+        } catch (error) {
+          feedback.textContent = 'Unexpected error adding user.';
+        } finally {
+          submit.disabled = false;
+        }
+      });
+
+      allowlistSection.addEventListener('click', async (event) => {
+        const target = event.target.closest('[data-remove-user]');
+        if (!target || !editingEnabled) {
+          return;
+        }
+        const username = target.dataset.removeUser;
+        if (!username) return;
+        target.disabled = true;
+        feedback.textContent = 'Removing user…';
+        try {
+          const res = await fetch('/api/admin/allowlist', {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username }),
+          });
+          const payload = await res.json();
+          if (!res.ok) {
+            feedback.textContent = payload.error || 'Failed to remove user.';
+            return;
+          }
+          cachedUsers = payload.users || cachedUsers;
+          renderAllowlist(cachedUsers);
+          feedback.textContent = payload.message || 'User removed';
+        } catch (error) {
+          feedback.textContent = 'Unexpected error removing user.';
+        } finally {
+          target.disabled = false;
+        }
+      });
+
+      function renderAllowlist(users) {
+        if (!listEl) return;
+        if (!users.length) {
+          listEl.innerHTML = '';
+          emptyState?.removeAttribute('hidden');
+          return;
+        }
+        emptyState?.setAttribute('hidden', 'true');
+        listEl.innerHTML = users
+          .map((user) => {
+            const removeButton = editingEnabled
+              ? `<button type="button" class="button button--ghost button--tiny" data-remove-user="${user}">Remove</button>`
+              : '';
+            return `<li><span>${escapeHtml(user)}</span>${removeButton}</li>`;
+          })
+          .join('');
+      }
+    }
+
+    function initDistributionCard(distribution = {}) {
+      if (!distributionCard) return;
+      if (distributionStatus) {
+        distributionStatus.textContent = 'Synced';
+      }
+      const rssUrl = distribution.rssUrl || `${window.location.origin.replace(/\/$/, '')}/blog/feed.xml`;
+      if (rssDisplay) {
+        rssDisplay.textContent = rssUrl;
+      }
+      if (rssOpenBtn) {
+        rssOpenBtn.href = rssUrl;
+      }
+      if (rssCopyBtn) {
+        rssCopyBtn.dataset.rss = rssUrl;
+      }
+      const webhookConfigured = Boolean(distribution.webhookConfigured);
+      if (webhookStatusEl) {
+        webhookStatusEl.textContent = webhookConfigured ? 'Webhook connected' : 'Not configured';
+      }
+      if (webhookTestBtn) {
+        webhookTestBtn.disabled = !webhookConfigured;
+      }
+      if (distributionCard.dataset.bound === 'true') {
+        return;
+      }
+      rssCopyBtn?.addEventListener('click', handleRssCopy);
+      webhookTestBtn?.addEventListener('click', handleWebhookTest);
+      distributionCard.dataset.bound = 'true';
+    }
+
+    function handleRssCopy(event) {
+      event?.preventDefault();
+      if (!rssCopyBtn?.dataset.rss) return;
+      copyToClipboard(rssCopyBtn.dataset.rss, distributionFeedback, 'RSS URL copied');
+    }
+
+    async function handleWebhookTest(event) {
+      event?.preventDefault();
+      if (!webhookTestBtn) return;
+      const originalLabel = webhookTestBtn.dataset.label || webhookTestBtn.textContent || 'Send test ping';
+      webhookTestBtn.disabled = true;
+      webhookTestBtn.textContent = 'Sending…';
+      if (distributionFeedback) {
+        distributionFeedback.textContent = 'Sending webhook ping…';
+      }
+      try {
+        const res = await fetch('/api/admin/webhook-test', { method: 'POST' });
+        const payload = await res.json().catch(() => ({}));
+        if (!res.ok) {
+          throw new Error(payload.error || `Webhook failed (${res.status})`);
+        }
+        if (distributionFeedback) {
+          distributionFeedback.textContent = payload.message || 'Webhook ping sent!';
+        }
+      } catch (error) {
+        if (distributionFeedback) {
+          distributionFeedback.textContent = error.message || 'Webhook ping failed.';
+        }
+      } finally {
+        webhookTestBtn.textContent = originalLabel;
+        webhookTestBtn.disabled = false;
+      }
+    }
+  })();
+  </script>
+</body>
+</html>
