@@ -1,7 +1,7 @@
 import { getSessionFromRequest } from '../../lib/server/auth.js';
 import { sendJson, methodNotAllowed } from '../../lib/server/http.js';
 
-export const config = { runtime: 'nodejs18.x' };
+export const config = { runtime: 'nodejs' };
 
 export default async function handler(req, res) {
   if (req.method === 'OPTIONS') {
