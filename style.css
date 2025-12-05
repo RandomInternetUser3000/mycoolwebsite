@@ -2523,10 +2523,10 @@ body.modal-open {
   backdrop-filter: blur(12px);
 }
 
-.light-mode .admin-card,
-.light-mode .admin-form-card,
-.light-mode .admin-table-card,
-.light-mode .admin-preview {
+.theme-light .admin-card,
+.theme-light .admin-form-card,
+.theme-light .admin-table-card,
+.theme-light .admin-preview {
   background: rgba(255, 255, 255, 0.9);
   border-color: rgba(0, 0, 0, 0.08);
 }
@@ -2617,9 +2617,9 @@ body.modal-open {
   font: inherit;
 }
 
-.light-mode .admin-form input,
-.light-mode .admin-form textarea,
-.light-mode .admin-form select {
+.theme-light .admin-form input,
+.theme-light .admin-form textarea,
+.theme-light .admin-form select {
   background: rgba(255, 255, 255, 0.95);
   border-color: rgba(0, 0, 0, 0.08);
 }
@@ -2640,7 +2640,7 @@ body.modal-open {
   white-space: pre-wrap;
 }
 
-.light-mode .admin-preview pre {
+.theme-light .admin-preview pre {
   background: rgba(0, 0, 0, 0.05);
 }
 
@@ -2668,8 +2668,8 @@ body.modal-open {
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-.light-mode .admin-table th,
-.light-mode .admin-table td {
+.theme-light .admin-table th,
+.theme-light .admin-table td {
   border-color: rgba(0, 0, 0, 0.08);
 }
 
@@ -2680,7 +2680,7 @@ body.modal-open {
   font-size: 0.85rem;
 }
 
-.light-mode .admin-table code {
+.theme-light .admin-table code {
   background: rgba(17, 22, 39, 0.08);
 }
 
@@ -2733,7 +2733,7 @@ body.modal-open {
   text-align: center;
 }
 
-.light-mode .admin-lock__card {
+.theme-light .admin-lock__card {
   background: rgba(255, 255, 255, 0.9);
   border-color: rgba(0, 0, 0, 0.12);
 }
