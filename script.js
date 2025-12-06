@@ -1,3 +1,5 @@
+import { injectSpeedInsights } from '@vercel/speed-insights';
+
 const ver = "Version 1.0.1";
 const COMMENTS_API_URL = '/api/comments';
 const COMMENTS_STORAGE_KEY = 'coolman-comments';
@@ -63,6 +65,9 @@ async function hydrateSiteSettings() {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
+	// Initialize Vercel Speed Insights for performance monitoring
+	injectSpeedInsights();
+	
 	applyInitialTheme();
 	setupThemeToggle();
 	fadeInPage();

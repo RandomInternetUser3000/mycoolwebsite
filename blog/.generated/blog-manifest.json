@@ -1,52 +1,68 @@
-{
-  "generatedAt": "2025-10-19T00:00:00.000Z",
-  "posts": [
-    {
-      "slug": "building-my-website-using-gpt5-codex",
-      "title": "Building my Website using GPT-5 Codex (and some brains)",
-      "tag": "Featured",
-      "status": "published",
-      "datePublished": "2025-10-19T00:00:00.000Z",
-      "dateUpdated": "2025-10-24T00:00:00.000Z",
-      "readingMinutes": 7,
-      "summary": "I created this entire website with a mix of GitHub Copilot, GPT-5 Codex, and my own stubbornness. Here is how the prototypes evolved into the current release candidate."
-    },
-    {
-      "slug": "lighting-makeover-checklist",
-      "title": "Lighting Makeover Checklist (PLACEHOLDER)",
-      "tag": "Devlog",
-      "status": "draft",
-      "datePublished": "2025-10-05T00:00:00.000Z",
-      "readingMinutes": 3,
-      "summary": "Ten tweaks that instantly made my Roblox worlds moodier, from volumetric fog presets to shadow map tweaks."
-    },
-    {
-      "slug": "what-daily-shorts-taught-me",
-      "title": "What Daily Shorts Taught Me (PLACEHOLDER)",
-      "tag": "Video",
-      "status": "draft",
-      "datePublished": "2025-09-29T00:00:00.000Z",
-      "readingMinutes": 2,
-      "summary": "Compressing 30 days of highlights into bite-sized edits improved my storytelling and production workflow."
-    },
-    {
-      "slug": "vs-code-extensions-i-swear-by",
-      "title": "VS Code Extensions I Swear By (PLACEHOLDER)",
-      "tag": "Toolkit",
-      "status": "draft",
-      "datePublished": "2025-09-10T00:00:00.000Z",
-      "readingMinutes": 2,
-      "summary": "A curated list of extensions that keep me shipping faster when I swap between scripting and video editing."
-    },
-    {
-      "slug": "social-media-ban",
-      "title": "Australian Social Media Ban",
-      "tag": "Reflection",
-      "status": "published",
-      "datePublished": "2025-11-08T00:00:00.000Z",
-      "dateUpdated": "2025-11-08T00:00:00.000Z",
-      "readingMinutes": 10,
-      "summary": "I dive deep into why Australia's proposed social media ban for under-16s is such a catastrophic mistake and how it affects everyone."
-    }
-  ]
-}
+[
+  {
+    "slug": "social-media-ban",
+    "title": "Social Media Ban",
+    "tag": "Reflection",
+    "date": "2025-11-08T00:00:00.000Z",
+    "updated": null,
+    "summary": "I dive deep into why Australia's proposed social media ban for under-16s is such a catastrophic mistake and how it affects everyone.",
+    "featured": false,
+    "standalone": true,
+    "status": "Published"
+  },
+  {
+    "slug": "building-my-website-using-gpt5-codex",
+    "title": "Building my Website using GPT-5 Codex (and some brains)",
+    "tag": "Featured",
+    "date": "2025-10-19T00:00:00.000Z",
+    "updated": "2025-10-24T00:00:00.000Z",
+    "summary": "I created this entire website with a mix of GitHub Copilot, GPT-5 Codex, and my own stubbornness. Here is how the prototypes evolved into the current release candidate.",
+    "featured": true,
+    "standalone": false,
+    "status": ""
+  },
+  {
+    "slug": "lighting-makeover-checklist",
+    "title": "Lighting Makeover Checklist",
+    "tag": "Devlog",
+    "date": "2025-10-05T00:00:00.000Z",
+    "updated": null,
+    "summary": "Ten tweaks that instantly made my Roblox worlds moodier, from volumetric fog presets to shadow map tweaks.",
+    "featured": false,
+    "standalone": false,
+    "status": "Draft"
+  },
+  {
+    "slug": "what-daily-shorts-taught-me",
+    "title": "What Daily Shorts Taught Me",
+    "tag": "Video",
+    "date": "2025-09-29T00:00:00.000Z",
+    "updated": null,
+    "summary": "Compressing 30 days of highlights into bite-sized edits improved my storytelling and production workflow.",
+    "featured": false,
+    "standalone": false,
+    "status": "Draft"
+  },
+  {
+    "slug": "vs-code-extensions-i-swear-by",
+    "title": "VS Code Extensions I Swear By",
+    "tag": "Toolkit",
+    "date": "2025-09-10T00:00:00.000Z",
+    "updated": null,
+    "summary": "A curated list of extensions that keep me shipping faster when I swap between scripting and video editing.",
+    "featured": false,
+    "standalone": false,
+    "status": "Draft"
+  },
+  {
+    "slug": "balancing-school-and-builds",
+    "title": "Balancing School and Builds",
+    "tag": "Planning",
+    "date": "2025-08-21T00:00:00.000Z",
+    "updated": null,
+    "summary": "The Notion template and sprint rhythm I use to stay focused on class while shipping new game content.",
+    "featured": false,
+    "standalone": false,
+    "status": "Coming Soon"
+  }
+]
