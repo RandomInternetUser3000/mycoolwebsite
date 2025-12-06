@@ -1,12 +1,12 @@
 {
-  "releaseCountdownTarget": "2025-12-05T00:00",
+  "releaseCountdownTarget": "2025-12-04T13:00",
   "bannerEnabled": true,
   "bannerText": "🎉Website Release!",
   "bannerLink": "https://github.com/RandomInternetUser3000/mycoolwebsite",
   "bannerButtonText": "Open Source Repo",
   "footerText": "Made with ♥️ by COOLmanYT",
   "footerHtml": "",
-  "countdownEnabled": false,
+  "countdownEnabled": true,
   "countdownHeading": "Release Countdown",
   "countdownNote": ""
 }
