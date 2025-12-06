@@ -1,0 +1,9 @@
+{
+  "messageTemplate": "New blog update: **{title}** — {summary}\n{url}",
+  "embedTemplate": {
+    "title": "{title}",
+    "description": "{summary}\n{url}",
+    "color": 5793266
+  },
+  "webhooks": []
+}

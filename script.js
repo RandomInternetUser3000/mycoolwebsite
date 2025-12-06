@@ -1,4 +1,4 @@
-const ver = "Version 1.0.1";
+const ver = "Version 1.0.15";
 const COMMENTS_API_URL = '/api/comments';
 const COMMENTS_STORAGE_KEY = 'coolman-comments';
 const DEFAULT_SITE_SETTINGS = {
@@ -7,9 +7,9 @@ const DEFAULT_SITE_SETTINGS = {
 	bannerText: '🎉 Website Release!',
 	bannerLink: 'https://github.com/RandomInternetUser3000/mycoolwebsite',
 	bannerButtonText: 'Open Source Repo',
-	countdownEnabled: true,
+	countdownEnabled: false,
 	countdownHeading: 'Release Countdown',
-	countdownNote: 'Counting down to 6 December 2025 at 9:00 AM AEDT. (Official releace date may differ)',
+	countdownNote: '',
 };
 const SITE_SETTINGS_PATH = '/api/admin/site-settings';
 let siteSettings = { ...DEFAULT_SITE_SETTINGS };
@@ -1085,8 +1085,54 @@ async function initLatestUploadCard() {
 		}
 	};
 
+	const attemptApiLatest = async () => {
+		const params = new URLSearchParams();
+		if (resolvedChannelId) {
+			params.set('channelId', resolvedChannelId);
+		}
+		if (normalizedHandle) {
+			params.set('handle', normalizedHandle);
+		} else if (channelUserRaw) {
+			params.set('channelUser', channelUserRaw);
+		}
+		const query = params.toString();
+		const endpoint = `/api/youtube/latest${query ? `?${query}` : ''}`;
+		try {
+			const response = await fetch(endpoint, {
+				headers: { Accept: 'application/json' },
+				cache: 'no-store',
+			});
+			if (!response.ok) {
+				return false;
+			}
+			const payload = await response.json().catch(() => null);
+			if (!payload || !payload.videoId) {
+				return false;
+			}
+			if (payload.channelId && !resolvedChannelId) {
+				resolvedChannelId = payload.channelId;
+				updateChannelUrl();
+			}
+			applyVideoData({
+				title: payload.title,
+				url: payload.url || (payload.videoId ? `https://www.youtube.com/watch?v=${payload.videoId}` : ''),
+				thumbnail: payload.thumbnail,
+				publishedAt: payload.publishedAt,
+				durationSeconds: payload.durationSeconds,
+				viewCount: payload.viewCount,
+			});
+			return true;
+		} catch (error) {
+			return false;
+		}
+	};
+
 	if (!resolvedChannelId && !legacyUser && !normalizedHandle) {
 		markError('Latest video coming soon — check out the full channel!');
+		return;
+	}
+
+	if (await attemptApiLatest()) {
 		return;
 	}
 

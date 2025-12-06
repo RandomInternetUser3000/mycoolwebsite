@@ -92,6 +92,7 @@ The admin dashboard at `/admin.html` now requires GitHub OAuth plus an allow lis
    - `GITHUB_OWNER` / `GITHUB_REPO` (defaults already match this repo)
    - `ALLOWLIST_BRANCH` if your default branch isn’t `main`
    - `DISCORD_WEBHOOK_URL` (optional) — lets blog builds broadcast to Discord and powers the admin “Send test ping” button
+   - `YOUTUBE_API_KEY` (optional) — speeds up the homepage “Latest Upload” card by calling the YouTube Data API (`search.list` + `videos.list`), with feed/piped fallbacks when absent
 3. **Seed the allow list** inside `content/admin-allowlist.json`. Only usernames in this file can finish the OAuth flow.
 4. *(Optional but recommended)* **Enable in-dashboard allow list edits** by setting `ALLOWLIST_GITHUB_TOKEN` to a GitHub Personal Access Token with `repo` scope. Pair it with `ALLOWLIST_COMMIT_NAME` / `ALLOWLIST_COMMIT_EMAIL` if you want custom commit metadata. The admin panel uses these values to update `content/admin-allowlist.json`, so you can add/remove users without touching the repo manually.
 

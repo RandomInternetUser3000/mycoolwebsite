@@ -12,8 +12,8 @@ const BLOG_OUTPUT_DIR = BLOG_DIR;
 const GENERATED_DIR = path.join(BLOG_DIR, '.generated');
 const FEED_PATH = path.join(BLOG_DIR, 'feed.xml');
 const SITE_ORIGIN = process.env.SITE_ORIGIN || process.env.SITE_BASE_URL || 'https://coolmanyt.vercel.app';
-const DISCORD_WEBHOOK_URL = process.env.DISCORD_WEBHOOK_URL || '';
 const DEFAULT_OG_IMAGE = `${SITE_ORIGIN}/images/avatar.png`;
+const WEBHOOK_CONFIG_PATH = path.join(ROOT, 'content', 'webhooks.json');
 
 const MARKERS = {
 	featured: {
@@ -63,7 +63,7 @@ async function main() {
 	await generateStandalonePages(posts.filter((post) => post.standalone));
 	await generateManifest(posts);
 	await generateFeed(posts.filter((post) => post.isPublished));
-	await maybePingDiscord(posts[0]);
+	await maybeSendWebhooks(posts[0]);
 
 	console.log(`Blog build complete (${posts.length} posts).`);
 }
@@ -356,31 +356,73 @@ ${items}
 	console.log(`Generated RSS feed at ${FEED_PATH}`);
 }
 
-async function maybePingDiscord(post) {
-	if (!DISCORD_WEBHOOK_URL || !post) {
-		return;
-	}
-
+async function maybeSendWebhooks(post) {
+	if (!post) return;
+	const config = await loadWebhookConfig();
+	const hooks = Array.isArray(config.webhooks) && config.webhooks.length ? config.webhooks : (process.env.DISCORD_WEBHOOK_URL ? [{ id: 'env', label: 'Env webhook', url: process.env.DISCORD_WEBHOOK_URL }] : []);
+	if (!hooks.length) return;
 	if (typeof fetch !== 'function') {
-		console.warn('Discord webhook skipped: fetch is not available in this Node runtime.');
+		console.warn('Webhooks skipped: fetch is not available in this Node runtime.');
 		return;
 	}
 
-	const payload = {
-		username: 'COOLmanYT Blog Bot',
-		content: `New blog update: **${post.title}** — ${post.summary}\n${post.canonical}`,
-	};
+	const tokens = buildWebhookTokens(post);
+	const message = applyTemplate(config.messageTemplate || 'New blog update: **{title}** — {summary}\n{url}', tokens);
+	const embedTemplate = config.embedTemplate || null;
+	const embed = embedTemplate ? applyEmbedTemplate(embedTemplate, tokens) : null;
+	const payload = embed ? { content: message, embeds: [embed] } : { content: message };
 
+	await Promise.allSettled(
+		hooks.map(async (hook) => {
+			try {
+				await fetch(hook.url, {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify(payload),
+				});
+				console.log(`Webhook sent: ${hook.label || hook.id}`);
+			} catch (error) {
+				console.warn(`Webhook failed for ${hook.label || hook.id}:`, error.message);
+			}
+		}),
+	);
+}
+
+async function loadWebhookConfig() {
 	try {
-		await fetch(DISCORD_WEBHOOK_URL, {
-			method: 'POST',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify(payload),
-		});
-		console.log('Discord webhook triggered.');
+		const raw = await fs.readFile(WEBHOOK_CONFIG_PATH, 'utf8');
+		return JSON.parse(raw);
 	} catch (error) {
-		console.warn('Failed to send Discord webhook:', error.message);
+		return {};
 	}
+}
+
+function buildWebhookTokens(post) {
+	return {
+		title: post.title,
+		summary: post.summary,
+		url: post.canonical,
+		tag: post.tag,
+		date: post.isoDate,
+	};
+}
+
+function applyTemplate(str, tokens) {
+	return String(str || '').replace(/\{(\w+)\}/g, (_, key) => tokens[key] ?? `{${key}}`);
+}
+
+function applyEmbedTemplate(template, tokens) {
+	if (!template || typeof template !== 'object') return null;
+	const clone = JSON.parse(JSON.stringify(template));
+	const walk = (node) => {
+		if (typeof node === 'string') return applyTemplate(node, tokens);
+		if (Array.isArray(node)) return node.map(walk);
+		if (node && typeof node === 'object') {
+			return Object.fromEntries(Object.entries(node).map(([k, v]) => [k, walk(v)]));
+		}
+		return node;
+	};
+	return walk(clone);
 }
 
 function replaceSection(source, markers, replacement) {

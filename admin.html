@@ -183,6 +183,46 @@
         </div>
         <p class="admin-help-text" data-distribution-feedback></p>
       </article>
+
+      <article class="admin-card admin-card--distribution" data-webhook-card hidden>
+        <div class="admin-card__header">
+          <div>
+            <p class="tag-pill">Notifications</p>
+            <h2>Webhook Manager</h2>
+          </div>
+          <span class="admin-card__status" data-webhook-config-status>Loading…</span>
+        </div>
+        <div class="admin-form">
+          <div class="admin-form__field admin-form__field--full">
+            <label for="webhookMessage">Message template</label>
+            <textarea id="webhookMessage" name="messageTemplate" rows="3" data-webhook-message placeholder="New blog update: **{title}** — {summary}\n{url}"></textarea>
+            <p class="admin-help-text">Use tokens: <code>{title}</code>, <code>{summary}</code>, <code>{url}</code>, <code>{tag}</code>, <code>{date}</code>.</p>
+          </div>
+          <div class="admin-form__field admin-form__field--full">
+            <label for="webhookEmbed">Embed template (JSON)</label>
+            <textarea id="webhookEmbed" name="embedTemplate" rows="6" data-webhook-embed placeholder='{"title":"{title}","description":"{summary}\n{url}","color":5793266}'></textarea>
+            <p class="admin-help-text">Optional Discord embed payload. Strings support the same tokens.</p>
+          </div>
+          <div class="admin-form__field">
+            <label for="webhookLabel">Label</label>
+            <input type="text" id="webhookLabel" data-webhook-label placeholder="Announcements" />
+          </div>
+          <div class="admin-form__field">
+            <label for="webhookUrl">Webhook URL</label>
+            <input type="url" id="webhookUrl" data-webhook-url placeholder="https://discord.com/api/webhooks/..." />
+          </div>
+          <div class="admin-form__actions">
+            <button type="button" class="button button--ghost" data-webhook-add>Add webhook</button>
+            <button type="button" class="button" data-webhook-save>Save changes</button>
+            <p class="admin-help-text" data-webhook-feedback></p>
+          </div>
+          <div class="admin-allowlist__content" data-webhook-list>
+            <ul class="admin-allowlist__list" data-webhook-items>
+              <li>Loading…</li>
+            </ul>
+          </div>
+        </div>
+      </article>
     </section>
 
     <section class="admin-form-card">
@@ -499,6 +539,17 @@ Body here." data-blog-editor-content></textarea>
     const blogEditorSaveBtn = document.querySelector('[data-blog-editor-save]');
     const blogEditorDeleteBtn = document.querySelector('[data-blog-editor-delete]');
     let blogEditorSha = null;
+    const webhookCard = document.querySelector('[data-webhook-card]');
+    const webhookStatus = document.querySelector('[data-webhook-config-status]');
+    const webhookMessage = document.querySelector('[data-webhook-message]');
+    const webhookEmbed = document.querySelector('[data-webhook-embed]');
+    const webhookLabel = document.querySelector('[data-webhook-label]');
+    const webhookUrl = document.querySelector('[data-webhook-url]');
+    const webhookAddBtn = document.querySelector('[data-webhook-add]');
+    const webhookSaveBtn = document.querySelector('[data-webhook-save]');
+    const webhookList = document.querySelector('[data-webhook-items]');
+    const webhookFeedback = document.querySelector('[data-webhook-feedback]');
+    let webhookConfig = { webhooks: [], messageTemplate: '', embedTemplate: {} };
 
     if (!form) return;
 
@@ -570,6 +621,7 @@ Body here." data-blog-editor-content></textarea>
     loadManifest();
     initAuthFlow();
     initBlogEditor();
+    initWebhookManager();
 
     async function loadManifest() {
       manifestStatus.textContent = 'Loading…';
@@ -1304,6 +1356,147 @@ Body here." data-blog-editor-content></textarea>
         webhookTestBtn.textContent = originalLabel;
         webhookTestBtn.disabled = false;
       }
+    }
+
+    function initWebhookManager() {
+      if (!webhookCard) return;
+      webhookCard.removeAttribute('hidden');
+      loadWebhookConfig();
+      if (webhookCard.dataset.bound === 'true') return;
+      webhookCard.dataset.bound = 'true';
+
+      if (webhookAddBtn) {
+        webhookAddBtn.addEventListener('click', (event) => {
+          if (event) event.preventDefault();
+          addWebhook();
+        });
+      }
+      if (webhookSaveBtn) {
+        webhookSaveBtn.addEventListener('click', (event) => {
+          if (event) event.preventDefault();
+          saveWebhookConfig();
+        });
+      }
+
+      if (webhookList) {
+        webhookList.addEventListener('click', (event) => {
+          const btn = event.target.closest('[data-remove-webhook]');
+          if (!btn) return;
+          const id = btn.dataset.removeWebhook;
+          webhookConfig.webhooks = webhookConfig.webhooks.filter((w) => w.id !== id);
+          renderWebhookList();
+        });
+      }
+    }
+
+    async function loadWebhookConfig() {
+      setWebhookStatus('Loading…');
+      setWebhookFeedback('');
+      try {
+        const res = await fetch('/api/admin/webhooks');
+        const payload = await res.json();
+        if (!res.ok) {
+          throw new Error(payload.error || `Load failed (${res.status})`);
+        }
+        webhookConfig = {
+          webhooks: Array.isArray(payload.data?.webhooks) ? payload.data.webhooks : [],
+          messageTemplate: payload.data?.messageTemplate || '',
+          embedTemplate: payload.data?.embedTemplate || {},
+        };
+        if (webhookMessage) webhookMessage.value = webhookConfig.messageTemplate || '';
+        if (webhookEmbed) webhookEmbed.value = JSON.stringify(webhookConfig.embedTemplate || {}, null, 2);
+        renderWebhookList();
+        setWebhookStatus(payload.source ? `Loaded from ${payload.source}` : 'Loaded');
+      } catch (error) {
+        setWebhookStatus('Failed to load');
+        setWebhookFeedback(error.message || 'Could not load webhook config');
+      }
+    }
+
+    function renderWebhookList() {
+      if (!webhookList) return;
+      if (!webhookConfig.webhooks.length) {
+        webhookList.innerHTML = '<li>No webhooks configured</li>';
+        return;
+      }
+      webhookList.innerHTML = webhookConfig.webhooks
+        .map((hook) => {
+          const safeLabel = escapeHtml(hook.label || 'Webhook');
+          const safeUrl = escapeHtml(hook.url || '');
+          return `<li><div><strong>${safeLabel}</strong><br><small>${safeUrl}</small></div><button type="button" class="button button--ghost button--tiny" data-remove-webhook="${hook.id}">Remove</button></li>`;
+        })
+        .join('');
+    }
+
+    function addWebhook() {
+      const label = (webhookLabel?.value || '').trim();
+      const url = (webhookUrl?.value || '').trim();
+      if (!url) {
+        setWebhookFeedback('Enter a webhook URL first.');
+        return;
+      }
+      webhookConfig.webhooks.push({ id: generateId(), label: label || 'Webhook', url });
+      renderWebhookList();
+      if (webhookLabel) webhookLabel.value = '';
+      if (webhookUrl) webhookUrl.value = '';
+      setWebhookFeedback('Webhook added (remember to save).');
+    }
+
+    async function saveWebhookConfig() {
+      setWebhookStatus('Saving…');
+      setWebhookFeedback('');
+      let embedTemplate = {};
+      const embedText = webhookEmbed?.value || '';
+      if (embedText.trim()) {
+        try {
+          embedTemplate = JSON.parse(embedText);
+        } catch (error) {
+          setWebhookStatus('Save blocked');
+          setWebhookFeedback('Embed JSON is invalid.');
+          return;
+        }
+      }
+
+      const payload = {
+        webhooks: webhookConfig.webhooks,
+        messageTemplate: (webhookMessage?.value || '').trim(),
+        embedTemplate,
+      };
+
+      try {
+        const res = await fetch('/api/admin/webhooks', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        const json = await res.json();
+        if (!res.ok) {
+          throw new Error(json.error || `Save failed (${res.status})`);
+        }
+        webhookConfig.webhooks = Array.isArray(json.data?.webhooks) ? json.data.webhooks : payload.webhooks;
+        webhookConfig.messageTemplate = json.data?.messageTemplate || payload.messageTemplate;
+        webhookConfig.embedTemplate = json.data?.embedTemplate || payload.embedTemplate;
+        if (webhookMessage) webhookMessage.value = webhookConfig.messageTemplate;
+        if (webhookEmbed) webhookEmbed.value = JSON.stringify(webhookConfig.embedTemplate || {}, null, 2);
+        renderWebhookList();
+        setWebhookStatus('Saved');
+        setWebhookFeedback('Webhook settings saved.');
+      } catch (error) {
+        setWebhookStatus('Save failed');
+        setWebhookFeedback(error.message || 'Could not save webhook settings.');
+      }
+    }
+
+    function setWebhookStatus(text) {
+      if (webhookStatus) webhookStatus.textContent = text;
+    }
+
+    function setWebhookFeedback(text) {
+      if (webhookFeedback) webhookFeedback.textContent = text || '';
+    }
+
+    function generateId() {
+      return Math.random().toString(36).slice(2, 10);
     }
   })();
   </script>

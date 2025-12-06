@@ -1,6 +1,8 @@
 import { getSessionFromRequest } from '../lib/server/auth.js';
 import { fetchAllowlistFromGithub } from '../lib/server/allowlist.js';
 import { sendJson } from '../lib/server/http.js';
+import fs from 'fs/promises';
+import path from 'path';
 
 export const config = { runtime: 'nodejs' };
 
@@ -26,6 +28,7 @@ export default async function handler(req, res) {
 
   const allowlist = await fetchAllowlistFromGithub();
   const baseUrl = (process.env.SITE_BASE_URL || deriveBaseUrl(req)).replace(/\/$/, '');
+  const webhookConfigured = await hasWebhookConfigured();
   sendJson(res, 200, {
     authenticated: true,
     user: {
@@ -38,7 +41,7 @@ export default async function handler(req, res) {
     canEditAllowlist: Boolean(process.env.ALLOWLIST_GITHUB_TOKEN),
     distribution: {
       rssUrl: `${baseUrl}/blog/feed.xml`,
-      webhookConfigured: Boolean(process.env.DISCORD_WEBHOOK_URL),
+      webhookConfigured,
     },
   });
 }
@@ -50,4 +53,18 @@ function deriveBaseUrl(req) {
   const isLocalhost = /localhost|127\.0\.0\.1/.test(host);
   const proto = forwardedProto || (isLocalhost ? 'http' : 'https');
   return `${proto}://${host}`;
+}
+
+async function hasWebhookConfigured() {
+  if (process.env.DISCORD_WEBHOOK_URL) {
+    return true;
+  }
+  try {
+    const configPath = path.join(process.cwd(), 'content', 'webhooks.json');
+    const raw = await fs.readFile(configPath, 'utf8');
+    const json = JSON.parse(raw);
+    return Array.isArray(json.webhooks) && json.webhooks.length > 0;
+  } catch (error) {
+    return false;
+  }
 }
