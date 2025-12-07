@@ -109,6 +109,13 @@ async function handleDelete(req, res, token) {
   }
 }
 
+function encodeGithubPath(path) {
+  return path
+    .split('/')
+    .map((segment) => encodeURIComponent(segment))
+    .join('/');
+}
+
 async function fetchFileFromGithub(path, token, options = {}) {
   const { allow404 = false } = options;
   if (!token) {
@@ -126,7 +133,7 @@ async function fetchFileFromGithub(path, token, options = {}) {
     }
   }
 
-  const res = await fetch(`${API_BASE}/repos/${OWNER}/${REPO}/contents/${encodeURIComponent(path)}?ref=${encodeURIComponent(BRANCH)}`, {
+  const res = await fetch(`${API_BASE}/repos/${OWNER}/${REPO}/contents/${encodeGithubPath(path)}?ref=${encodeURIComponent(BRANCH)}`, {
     headers: {
       Authorization: `Bearer ${token}`,
       'User-Agent': `${OWNER}-${REPO}-admin-panel`,
@@ -161,7 +168,7 @@ async function writeFileToGithub(path, content, token, sha, message) {
     },
   };
 
-  const res = await fetch(`${API_BASE}/repos/${OWNER}/${REPO}/contents/${encodeURIComponent(path)}`, {
+  const res = await fetch(`${API_BASE}/repos/${OWNER}/${REPO}/contents/${encodeGithubPath(path)}`, {
     method: 'PUT',
     headers: {
       Authorization: `Bearer ${token}`,
@@ -193,7 +200,7 @@ async function deleteFileFromGithub(path, token, sha, message) {
     },
   };
 
-  const res = await fetch(`${API_BASE}/repos/${OWNER}/${REPO}/contents/${encodeURIComponent(path)}`, {
+  const res = await fetch(`${API_BASE}/repos/${OWNER}/${REPO}/contents/${encodeGithubPath(path)}`, {
     method: 'DELETE',
     headers: {
       Authorization: `Bearer ${token}`,

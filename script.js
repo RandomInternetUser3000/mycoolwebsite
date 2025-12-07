@@ -1,4 +1,4 @@
-const ver = "Version 1.0.15";
+const ver = "Version 1.0.16";
 const COMMENTS_API_URL = '/api/comments';
 const COMMENTS_STORAGE_KEY = 'coolman-comments';
 const DEFAULT_SITE_SETTINGS = {
@@ -54,7 +54,9 @@ async function hydrateSiteSettings() {
 		const payload = await res.json();
 		const data = payload?.data ?? payload;
 		if (data && typeof data === 'object') {
-			siteSettings = { ...DEFAULT_SITE_SETTINGS, ...data };
+			const merged = { ...DEFAULT_SITE_SETTINGS, ...data };
+			merged.countdownEnabled = data.countdownEnabled === true;
+			siteSettings = merged;
 		}
 	} catch (error) {
 		console.warn('Falling back to default site settings', error);
@@ -71,6 +73,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 	enhanceSocialButtons();
 	enableHorizontalScrollNav();
 	initNavGradient();
+	prepareTopBanner();
 	
 	// Lazy-load heavy features only if their triggers are present
 	if (document.querySelector('[data-project-open]')) {
@@ -784,7 +787,7 @@ function initReleaseCountdown() {
 		return;
 	}
 
-	const countdownEnabled = siteSettings.countdownEnabled !== false;
+	const countdownEnabled = siteSettings.countdownEnabled === true;
 	if (!countdownEnabled) {
 		container.setAttribute('hidden', 'true');
 		container.setAttribute('aria-hidden', 'true');
@@ -889,6 +892,17 @@ function applyTopBannerSettings() {
 			anchor.rel = 'noopener noreferrer';
 			banner.appendChild(anchor);
 		}
+
+		banner.removeAttribute('data-banner-pending');
+	});
+}
+
+function prepareTopBanner() {
+	const banners = document.querySelectorAll('.top-banner');
+	banners.forEach((banner) => {
+		banner.dataset.bannerPending = 'true';
+		banner.setAttribute('hidden', 'true');
+		banner.setAttribute('aria-hidden', 'true');
 	});
 }
 
