@@ -1,4 +1,4 @@
-const ver = "Version 1.0.16";
+const ver = "Version 1.0.161";
 const COMMENTS_API_URL = '/api/comments';
 const COMMENTS_STORAGE_KEY = 'coolman-comments';
 const DEFAULT_SITE_SETTINGS = {
