@@ -201,7 +201,7 @@
           <div class="admin-form__field admin-form__field--full">
             <label for="webhookEmbed">Embed template (JSON)</label>
             <textarea id="webhookEmbed" name="embedTemplate" rows="6" data-webhook-embed placeholder='{"title":"{title}","description":"{summary}\n{url}","color":5793266}'></textarea>
-            <p class="admin-help-text">Optional Discord embed payload. Strings support the same tokens.</p>
+            <p class="admin-help-text">Optional Discord embed payload. Strings support the same tokens. <code>color</code> accepts an integer (e.g., 5793266 for #5865F2). See <a href="https://discord.com/developers/docs/resources/channel#embed-object-embed-structure" target="_blank" rel="noopener">Discord embed docs</a>.</p>
           </div>
           <div class="admin-form__field">
             <label for="webhookLabel">Label</label>
