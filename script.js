@@ -1,4 +1,4 @@
-const ver = "Version 1.0.161";
+const ver = "Version 1.0.162";
 const COMMENTS_API_URL = '/api/comments';
 const COMMENTS_STORAGE_KEY = 'coolman-comments';
 const DEFAULT_SITE_SETTINGS = {
@@ -54,9 +54,7 @@ async function hydrateSiteSettings() {
 		const payload = await res.json();
 		const data = payload?.data ?? payload;
 		if (data && typeof data === 'object') {
-			const merged = { ...DEFAULT_SITE_SETTINGS, ...data };
-			merged.countdownEnabled = data.countdownEnabled === true;
-			siteSettings = merged;
+			siteSettings = { ...DEFAULT_SITE_SETTINGS, ...data };
 		}
 	} catch (error) {
 		console.warn('Falling back to default site settings', error);
@@ -787,7 +785,7 @@ function initReleaseCountdown() {
 		return;
 	}
 
-	const countdownEnabled = siteSettings.countdownEnabled === true;
+	const countdownEnabled = siteSettings.countdownEnabled !== false;
 	if (!countdownEnabled) {
 		container.setAttribute('hidden', 'true');
 		container.setAttribute('aria-hidden', 'true');
