@@ -104,6 +104,8 @@ async function fetchLatestVideo(channelId, apiKey) {
     const videoId = item?.id?.videoId;
     const snippet = item?.snippet || {};
     if (!videoId) {
+      const fallback = await fetchLatestViaFeed(channelId);
+      if (fallback) return fallback;
       return null;
     }
 
@@ -120,6 +122,37 @@ async function fetchLatestVideo(channelId, apiKey) {
       publishedAt: snippet?.publishedAt || details?.publishedAt || null,
       durationSeconds,
       viewCount,
+    };
+  } catch (error) {
+    const fallback = await fetchLatestViaFeed(channelId);
+    if (fallback) return fallback;
+    return null;
+  }
+}
+
+async function fetchLatestViaFeed(channelId) {
+  const feedUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${encodeURIComponent(channelId)}`;
+  try {
+    const res = await fetch(feedUrl, { headers: { Accept: 'application/atom+xml' } });
+    if (!res.ok) {
+      return null;
+    }
+    const text = await res.text();
+    const videoId = text.match(/<yt:videoId>([^<]+)<\/yt:videoId>/)?.[1] || '';
+    const title = text.match(/<title>([^<]+)<\/title>/)?.[1] || 'Latest upload';
+    const publishedAt = text.match(/<published>([^<]+)<\/published>/)?.[1] || null;
+    if (!videoId) {
+      return null;
+    }
+    const thumbnail = `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`;
+    return {
+      videoId,
+      title,
+      url: `https://www.youtube.com/watch?v=${videoId}`,
+      thumbnail,
+      publishedAt,
+      durationSeconds: null,
+      viewCount: null,
     };
   } catch (error) {
     return null;
