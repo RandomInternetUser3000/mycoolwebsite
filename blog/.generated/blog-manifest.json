@@ -1,15 +1,15 @@
 {
-  "generatedAt": "2025-10-19T00:00:00.000Z",
+  "generatedAt": "2025-12-18T00:00:00.000Z",
   "posts": [
     {
       "slug": "building-my-website-using-gpt5-codex",
       "title": "Building my Website using GPT-5 Codex (and some brains)",
       "tag": "Featured",
       "status": "published",
-      "datePublished": "2025-10-19T00:00:00.000Z",
-      "dateUpdated": "2025-10-24T00:00:00.000Z",
-      "readingMinutes": 7,
-      "summary": "I created this entire website with a mix of GitHub Copilot, GPT-5 Codex, and my own stubbornness. Here is how the prototypes evolved into the current release candidate."
+      "datePublished": "2025-12-18T00:00:00.000Z",
+      "dateUpdated": "2025-12-18T00:00:00.000Z",
+      "readingMinutes": 13,
+      "summary": "I created this entire website with a mix of GitHub Copilot, GPT-5 Codex, and my own stubbornness. Here is how the prototypes evolved into the current release."
     },
     {
       "slug": "lighting-makeover-checklist",
