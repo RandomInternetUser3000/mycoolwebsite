@@ -1,4 +1,4 @@
-const ver = "Version 1.0.173";
+const ver = "Version 1.0.175";
 const COMMENTS_API_URL = '/api/comments';
 const COMMENTS_STORAGE_KEY = 'coolman-comments';
 const DEFAULT_SITE_SETTINGS = {
@@ -781,19 +781,39 @@ function initReleaseCountdown() {
 	const labelTarget = container.querySelector('[data-countdown-label]');
 	const timerTarget = container.querySelector('[data-countdown-timer]');
 	const noteTarget = container.querySelector('[data-countdown-note]');
+	const countdownLinks = document.querySelectorAll('a[href$="#release-countdown"], a[href*="index.html#release-countdown"]');
 	if (!timerTarget) {
 		return;
 	}
 
+	const setCountdownHidden = () => {
+		container.hidden = true;
+		container.setAttribute('aria-hidden', 'true');
+		countdownLinks.forEach((link) => {
+			link.setAttribute('hidden', 'true');
+			link.setAttribute('aria-hidden', 'true');
+			link.setAttribute('tabindex', '-1');
+		});
+	};
+
+	const setCountdownVisible = () => {
+		container.hidden = false;
+		container.removeAttribute('hidden');
+		container.removeAttribute('aria-hidden');
+		countdownLinks.forEach((link) => {
+			link.removeAttribute('hidden');
+			link.removeAttribute('aria-hidden');
+			link.removeAttribute('tabindex');
+		});
+	};
+
 	const countdownEnabled = siteSettings.countdownEnabled === true;
 	if (!countdownEnabled) {
-		container.setAttribute('hidden', 'true');
-		container.setAttribute('aria-hidden', 'true');
+		setCountdownHidden();
 		return;
 	}
 
-	container.removeAttribute('hidden');
-	container.removeAttribute('aria-hidden');
+	setCountdownVisible();
 
 	if (labelTarget && siteSettings.countdownHeading) {
 		labelTarget.textContent = siteSettings.countdownHeading;

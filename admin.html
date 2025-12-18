@@ -160,6 +160,56 @@
         </div>
       </article>
 
+      <article class="admin-card">
+        <div class="admin-card__header">
+          <div>
+            <p class="tag-pill">Fallback</p>
+            <h2>Manual Overrides</h2>
+          </div>
+        </div>
+        <p class="admin-help-text">Use these steps if the admin panel is down or GitHub auth is failing.</p>
+
+        <details class="admin-accordion" open>
+          <summary>Blog Creation</summary>
+          <ol class="admin-steps">
+            <li>Create <code>blog/content/&lt;slug&gt;.md</code> with front matter (see README example).</li>
+            <li>Add any card/hero images under <code>images/blog/</code> or reference full URLs.</li>
+            <li>Commit and push; let hosting rebuild, or if blocked, manually extend <code>blog/.generated/blog-manifest.json</code> with a copied entry.</li>
+            <li>Mirror the new card markup in <code>blog/index.html</code> by duplicating the latest card and updating title, slug, dates, tag, and image paths.</li>
+            <li>Sanity-check links and images in a preview, then commit manifest/index edits; optionally bump <code>ver</code> in <code>script.js</code> to bust caches.</li>
+          </ol>
+        </details>
+
+        <details class="admin-accordion">
+          <summary>Blog Deletion</summary>
+          <ol class="admin-steps">
+            <li>Delete <code>blog/content/&lt;slug&gt;.md</code> and any unused images in <code>images/blog/</code>.</li>
+            <li>Remove the matching entry in <code>blog/.generated/blog-manifest.json</code> (or rely on a hosting rebuild after commit).</li>
+            <li>Remove the card/row markup in <code>blog/index.html</code> so it disappears from listings.</li>
+            <li>If there is a standalone HTML page under <code>blog/</code> for this slug, delete it.</li>
+            <li>Commit and push removals; bump <code>ver</code> in <code>script.js</code> if you want clients to refresh.</li>
+          </ol>
+        </details>
+
+        <details class="admin-accordion">
+          <summary>Webhook Setup</summary>
+          <ol class="admin-steps">
+            <li>Set <code>DISCORD_WEBHOOK_URL</code> in your hosting env (Vercel dashboard) so deploys can broadcast.</li>
+            <li>If editing files directly, add your webhook to <code>content/webhooks.json</code> (same shape as the UI list).</li>
+            <li>To pause webhooks, clear <code>DISCORD_WEBHOOK_URL</code> or remove entries from <code>content/webhooks.json</code> and commit.</li>
+          </ol>
+        </details>
+
+        <details class="admin-accordion">
+          <summary>Countdown Visibility</summary>
+          <ol class="admin-steps">
+            <li>Edit <code>content/site-settings.json</code> and set <code>"countdownEnabled": false</code> to hide it.</li>
+            <li>Optionally clear <code>releaseCountdownTarget</code>, <code>countdownHeading</code>, and <code>countdownNote</code> if they should not render.</li>
+            <li>Commit and push so the change is deployed (no local npm needed); bump <code>ver</code> in <code>script.js</code> if the cached UI lingers.</li>
+          </ol>
+        </details>
+      </article>
+
       <article class="admin-card admin-card--distribution">
         <div class="admin-card__header">
           <h2>Distribution</h2>
@@ -550,6 +600,8 @@ Body here." data-blog-editor-content></textarea>
     const webhookSaveBtn = document.querySelector('[data-webhook-save]');
     const webhookList = document.querySelector('[data-webhook-items]');
     const webhookFeedback = document.querySelector('[data-webhook-feedback]');
+    const webhookTestMessage = document.querySelector('[data-webhook-test-message]');
+    const webhookTestEmbed = document.querySelector('[data-webhook-test-embed]');
     let webhookConfig = { webhooks: [], messageTemplate: '', embedTemplate: {} };
 
     if (!form) return;
@@ -1333,6 +1385,17 @@ Body here." data-blog-editor-content></textarea>
     async function handleWebhookTest(event) {
       if (event) event.preventDefault();
       if (!webhookTestBtn) return;
+      let parsedEmbed = null;
+      const messageOverride = (webhookTestMessage?.value || '').trim();
+      const embedText = (webhookTestEmbed?.value || '').trim();
+      if (embedText) {
+        try {
+          parsedEmbed = JSON.parse(embedText);
+        } catch (error) {
+          if (distributionFeedback) distributionFeedback.textContent = 'Test embed JSON is invalid.';
+          return;
+        }
+      }
       const originalLabel = webhookTestBtn.dataset.label || webhookTestBtn.textContent || 'Send test ping';
       webhookTestBtn.disabled = true;
       webhookTestBtn.textContent = 'Sending…';
@@ -1340,7 +1403,14 @@ Body here." data-blog-editor-content></textarea>
         distributionFeedback.textContent = 'Sending webhook ping…';
       }
       try {
-        const res = await fetch('/api/admin/webhook-test', { method: 'POST' });
+        const res = await fetch('/api/admin/webhook-test', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            message: messageOverride || undefined,
+            embed: parsedEmbed || undefined,
+          }),
+        });
         const payload = await res.json().catch(() => ({}));
         if (!res.ok) {
           throw new Error(payload.error || `Webhook failed (${res.status})`);
