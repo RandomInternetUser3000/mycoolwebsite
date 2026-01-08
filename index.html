@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="COOLmanYT is a content creator and developer building Roblox experiences, coding projects, and weekly videos. Explore projects, blog posts, and the latest YouTube upload.">
+  <meta name="description" content="COOLmanYT builds games, ships code, and makes videos. Explore projects, latest uploads, and ways to connect.">
   <meta name="author" content="COOLmanYT">
   <meta name="color-scheme" content="dark light">
   <link rel="icon" type="image/png" href="images/avatar.png" />
@@ -15,7 +15,8 @@
   <link rel="alternate" type="application/rss+xml" title="COOLmanYT Blog" href="feed.xml">
   <title>COOLmanYT | Content Creator &amp; Developer</title>
 
-  <!-- Open Graph -->
+  <meta name="google-site-verification" content="jFcjKcjVm5NsFTitOmstaKsH-tkh6VfB2rypmrdZmWI">
+
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://coolmanyt.com/">
   <meta property="og:title" content="COOLmanYT | Content Creator &amp; Developer">
@@ -83,18 +84,11 @@
 
   <main id="mainContent" role="main">
     <h1 class="hero-title">COOLman's Cool Website 😎</h1>
-    <p class="hero-description">Welcome to my personal website!<br>
-      I create cool projects and love coding.<br>
-      I am a content creator as well :3<br>
-      Check out my work below! :D <br>
-      It's really good trust! <br>
-      Thanks for visiting my website! <br>
-    </p>
+    <p class="hero-description">I build Roblox experiences, ship code, and make videos. Explore my projects and get in touch.</p>
 
     <div class="hero-actions">
       <a href="projects.html" class="button">Explore Projects</a>
-      <a href="https://www.youtube.com/@COOLmanGamer?sub_confirmation=1" class="button" target="_blank" rel="noopener noreferrer">SUBSCRIBE</a>
-      <a href="contact.html" class="button">Contact Me</a>
+      <a href="contact.html" class="button button--ghost">Contact Me</a>
     </div>
 
     <section class="now-playing" data-latest-video data-channel-user="COOLmanGamer">
@@ -115,7 +109,7 @@
       </div>
     </section>
 
-    <section id="release-countdown" class="release-countdown" data-release-countdown aria-live="polite" hidden aria-hidden="true"> <!-- do "hidden aria-hidden="true"" to make it hidden-->
+    <section id="release-countdown" class="release-countdown" data-release-countdown aria-live="polite" hidden aria-hidden="true">
       <p class="release-countdown__label" data-countdown-label>Release Countdown</p>
       <p class="release-countdown__timer" data-countdown-timer>Calculating…</p>
       <p class="release-countdown__note" data-countdown-note>Counting down to 6 December 2025 at 9:00 AM AEDT. (Official releace date may differ) </p>
@@ -135,7 +129,6 @@
           height="480"
           frameborder="0"
           allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-          allowfullscreen
           loading="lazy"
         ></iframe>
       </div>
@@ -184,13 +177,7 @@
   </footer>
 
   <script src="script.js"></script>
-  <!-- Vercel Speed Insights: Automatically tracks web vitals and performance metrics (CLS, FID, LCP) -->
   <script defer src="/_vercel/insights/script.js"></script>
-  <!-- Vercel Web Analytics -->
-  <script type="module">
-    // This script ensures Vercel Web Analytics is initialized
-    // The inject() function is called via the injectAnalytics() function in script.js
-    // which loads the analytics module during idle time
-  </script>
+  <script type="module"></script>
 </body>
 </html>

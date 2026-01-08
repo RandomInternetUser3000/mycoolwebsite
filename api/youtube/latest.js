@@ -1,4 +1,107 @@
-import { sendJson, methodNotAllowed } from '../../lib/server/http.js';
+const fetchJson = async (url) => {
+  const res = await fetch(url, { headers: { Accept: 'application/json' } });
+  if (!res.ok) throw new Error(`Request failed ${res.status}`);
+  return res.json();
+};
+
+const YT_API = 'https://www.googleapis.com/youtube/v3';
+
+const respond = (res, status, payload) => {
+  res.statusCode = status;
+  res.setHeader('Content-Type', 'application/json');
+  res.end(JSON.stringify(payload));
+};
+
+const pick = (obj, keys) => keys.reduce((acc, key) => {
+  if (obj && obj[key] != null) acc[key] = obj[key];
+  return acc;
+}, {});
+
+const resolveChannelId = async ({ apiKey, handle, username, channelId }) => {
+  if (channelId) return channelId.trim();
+  if (!apiKey) throw new Error('Missing API key');
+
+  if (handle) {
+    const url = `${YT_API}/channels?part=id&forHandle=${encodeURIComponent(handle)}&key=${apiKey}`;
+    const data = await fetchJson(url);
+    const found = data?.items?.[0]?.id;
+    if (found) return found;
+  }
+
+  if (username) {
+    const url = `${YT_API}/channels?part=id&forUsername=${encodeURIComponent(username)}&key=${apiKey}`;
+    const data = await fetchJson(url);
+    const found = data?.items?.[0]?.id;
+    if (found) return found;
+  }
+
+  return '';
+};
+
+const getLatestVideo = async ({ apiKey, channelId }) => {
+  const searchUrl = `${YT_API}/search?part=snippet&channelId=${encodeURIComponent(channelId)}&maxResults=1&order=date&type=video&key=${apiKey}`;
+  const searchData = await fetchJson(searchUrl);
+  const item = searchData?.items?.[0];
+  if (!item) return null;
+
+  const videoId = item.id?.videoId;
+  const snippet = item.snippet || {};
+  const videosUrl = `${YT_API}/videos?part=contentDetails,statistics,snippet&id=${encodeURIComponent(videoId)}&key=${apiKey}`;
+  const videosData = await fetchJson(videosUrl);
+  const video = videosData?.items?.[0];
+  if (!video) return null;
+
+  const thumb = video.snippet?.thumbnails?.high?.url || video.snippet?.thumbnails?.medium?.url || video.snippet?.thumbnails?.default?.url;
+  const duration = video.contentDetails?.duration || '';
+  const viewCount = Number.parseInt(video.statistics?.viewCount ?? '0', 10);
+
+  return {
+    videoId,
+    title: video.snippet?.title || snippet.title || 'Latest upload',
+    url: `https://www.youtube.com/watch?v=${videoId}`,
+    thumbnail: thumb || '',
+    publishedAt: video.snippet?.publishedAt || snippet.publishedAt || '',
+    duration,
+    viewCount: Number.isFinite(viewCount) ? viewCount : 0,
+    channelId,
+  };
+};
+
+module.exports = async (req, res) => {
+  try {
+    if (req.method !== 'GET') {
+      respond(res, 405, { error: 'Method not allowed' });
+      return;
+    }
+
+    const apiKey = process.env.YOUTUBE_API_KEY;
+    if (!apiKey) {
+      respond(res, 500, { error: 'Missing YOUTUBE_API_KEY' });
+      return;
+    }
+
+    const url = new URL(req.url, 'http://localhost');
+    const channelId = url.searchParams.get('channelId') || '';
+    const handle = url.searchParams.get('handle') || '';
+    const username = url.searchParams.get('channelUser') || '';
+
+    const resolvedChannelId = await resolveChannelId({ apiKey, handle, username, channelId });
+    if (!resolvedChannelId) {
+      respond(res, 400, { error: 'Could not resolve channelId' });
+      return;
+    }
+
+    const video = await getLatestVideo({ apiKey, channelId: resolvedChannelId });
+    if (!video) {
+      respond(res, 404, { error: 'No video found' });
+      return;
+    }
+
+    respond(res, 200, { ...video, source: 'youtube-data-api' });
+  } catch (error) {
+    respond(res, 500, pick(error, ['message']));
+  }
+};import { sendJson, methodNotAllowed } from '../../lib/server/http.js';
 
 const cache = new Map();
 const CACHE_TTL_MS = 5 * 60 * 1000;

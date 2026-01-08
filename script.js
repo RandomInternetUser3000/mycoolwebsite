@@ -1,4 +1,4 @@
-const ver = "Version 1.0.176";
+const ver = "Version 1.0.18";
 const COMMENTS_API_URL = '/api/comments';
 const COMMENTS_STORAGE_KEY = 'coolman-comments';
 const DEFAULT_SITE_SETTINGS = {
@@ -13,8 +13,7 @@ const DEFAULT_SITE_SETTINGS = {
 };
 const SITE_SETTINGS_PATH = '/api/admin/site-settings';
 let siteSettings = { ...DEFAULT_SITE_SETTINGS };
-// Vercel Web Analytics configuration
-const ANALYTICS_MODULE_URL = 'https://cdn.vercel-analytics.com/v1/script.js';
+const ANALYTICS_MODULE_URL = 'https://v.vercel-scripts.com/v1/script.js';
 const VERCEL_ANALYTICS_MODULE_ESM = 'https://unpkg.com/@vercel/analytics@latest/dist/analytics.mjs';
 const blogViewerState = {
 	container: null,
@@ -1328,6 +1327,10 @@ async function initLatestUploadCard() {
 		return false;
 	};
 
+	if (await attemptPipedLatest()) {
+		return;
+	}
+
 	for (const candidate of candidateFeeds) {
 		const fetched = await attemptFeed(candidate);
 		if (fetched) {
@@ -1358,9 +1361,6 @@ async function initLatestUploadCard() {
 	}
 
 	if (!feedText) {
-		if (await attemptPipedLatest()) {
-			return;
-		}
 		if (lastFeedError) {
 			console.error('Failed to load latest YouTube upload', lastFeedError);
 		} else {
@@ -1418,10 +1418,6 @@ async function initLatestUploadCard() {
 		console.error('Failed to load latest YouTube upload', error);
 	}
 
-	if (await attemptPipedLatest()) {
-		return;
-	}
-
 	markError('Unable to fetch the latest video right now. Watch more on YouTube.');
 }
 
@@ -1437,6 +1433,10 @@ async function fetchFeedWithFallback(url, accept = 'application/atom+xml', valid
 		{
 			label: 'allorigins',
 			build: (target) => `https://api.allorigins.win/raw?url=${encodeURIComponent(ensureHttpsWrapped(target))}`,
+		},
+		{
+			label: 'isomorphic-cors',
+			build: (target) => `https://cors.isomorphic-git.org/${ensureHttpsWrapped(target)}`,
 		},
 		{
 			label: 'r.jina.ai',
@@ -2136,9 +2136,6 @@ function generateCommentId() {
 	return `c_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
 }
 
-/**
- * Injects Vercel Web Analytics via script tag (avoids CORS on ESM import).
- */
 function injectAnalytics() {
 	if (window.__coolmanAnalyticsLoaded || document.querySelector('[data-analytics-script]')) {
 		return;
