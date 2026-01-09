@@ -105,18 +105,24 @@
       <h2>Send a Message</h2>
       <p>Have a question or just want to say hi? Fill out the form below—no new tabs or redirects.</p>
             
-      <form class="contact-form" action="https://formspree.io/f/xldoypbj" method="post" id="contactForm">
+      <form class="contact-form" action="https://formspree.io/f/xldoypbj" method="POST" id="contactForm">
         <input type="text" name="name" placeholder="name.exe" required>
         <input type="email" name="email" placeholder="your-email@emailprovider.com" required>
         <textarea name="message" rows="5" placeholder="Hi there! I would like to talk to you, the amazing COOLmanYT, about..." required></textarea>
         <label class="checkbox-row">
-          <input type="checkbox" id="under13" name="under13">
-          <span>I am under 13 years old.</span>
+          <input type="checkbox" id="over13" name="over13">
+          <span>I am 13 or older (or have a parent/guardian submitting for me).</span>
+          <span class="help-icon" aria-label="Why we ask for your age" title="To comply with COPPA, we cannot collect info from users under 13 without a parent. Please be honest; if you're under 13, have a parent send this for you.">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <circle cx="12" cy="12" r="10" />
+              <text x="12" y="16" text-anchor="middle" font-size="12" fill="currentColor">?</text>
+            </svg>
+          </span>
         </label>
         <label class="checkbox-row">
           <input type="checkbox" id="dataConsent" name="dataConsent" required>
-          <span>I consent to this form data being used to contact me about my message.</span>
-          <span class="help-icon" aria-label="Why we ask for consent" title="We only use this info to reply to your message. Please be honest so we can respond appropriately.">
+          <span>I have read the <a href="privacy.html">Privacy Policy</a> and consent to this form data being used to contact me about my message.</span>
+          <span class="help-icon" aria-label="Why we ask for consent" title="We only use this info to reply to your message and do not sell it.">
             <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
               <circle cx="12" cy="12" r="10" />
               <text x="12" y="16" text-anchor="middle" font-size="12" fill="currentColor">?</text>
@@ -132,7 +138,7 @@
     </section>
   </main>
 
-  <p><em>*After clicking "Send Message", Formspree may show a CAPTCHA to finish sending. There is a 24h cooldown to send messages. If you're under 13, please ask a parent or guardian to help.</em></p>
+  <p><em>*After clicking "Send Message", Formspree may show a CAPTCHA to finish sending. There is a 24h cooldown to send messages. If you're under 13, please ask a parent or guardian to send this on your behalf.</em></p>
   
   <footer class="site-footer" role="contentinfo">
     <span>Made with ♥️ by <strong>COOLmanYT</strong></span>

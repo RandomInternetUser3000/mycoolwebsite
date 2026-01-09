@@ -1,4 +1,4 @@
-const ver = "Version 1.0.182";
+const ver = "Version 1.0.183";
 const COMMENTS_API_URL = '/api/comments';
 const COMMENTS_STORAGE_KEY = 'coolman-comments';
 const DEFAULT_SITE_SETTINGS = {
@@ -402,7 +402,7 @@ async function enableContactForm() {
 	const statusElement = document.getElementById('formStatus');
 	const successElement = document.getElementById('formSuccess');
 	const cooldownElement = document.getElementById('formCooldown');
-	const under13Checkbox = document.getElementById('under13');
+	const ageCheckbox = document.getElementById('over13');
 	const consentCheckbox = document.getElementById('dataConsent');
 	const submitButton = contactForm.querySelector('button[type="submit"]');
 	const endpoint = contactForm.getAttribute('action');
@@ -491,8 +491,8 @@ async function enableContactForm() {
 		event.preventDefault();
 		clearMessages();
 
-		if (under13Checkbox?.checked) {
-			window.alert('Please ask a parent or guardian to help send this message.');
+		if (!ageCheckbox?.checked) {
+			window.alert("To comply with privacy laws, I can't collect data from users under 13. Please ask a parent to send this message for you!");
 			return;
 		}
 
@@ -520,6 +520,7 @@ async function enableContactForm() {
 		}
 
 		try {
+			formData.append('_subject', 'Website contact form');
 			const response = await fetch(endpoint, {
 				method: 'POST',
 				headers: {
@@ -552,7 +553,8 @@ async function enableContactForm() {
 			}
 
 			const data = await response.json().catch(() => null);
-			const errorMessage = data?.errors?.[0]?.message || 'Something went wrong. Please try again later.';
+			const serverError = data?.errors?.[0]?.message;
+			const errorMessage = serverError || `Something went wrong (status ${response.status}). Please try again later.`;
 			if (statusElement) {
 				statusElement.textContent = errorMessage;
 				statusElement.classList.add('error');
