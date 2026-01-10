@@ -11,20 +11,20 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="../style.css">
-  <link rel="canonical" href="https://coolmanyt.com/blog/building-my-website-using-gpt5-codex.html">
+  <link rel="canonical" href="https://coolmanyt.vercel.app/blog/building-my-website-using-gpt5-codex.html">
   <title>Building my Website using GPT-5 Codex (and some brains) | COOLmanYT</title>
 
   <meta property="og:type" content="article">
-  <meta property="og:url" content="https://coolmanyt.com/blog/building-my-website-using-gpt5-codex.html">
+  <meta property="og:url" content="https://coolmanyt.vercel.app/blog/building-my-website-using-gpt5-codex.html">
   <meta property="og:title" content="Building my Website using GPT-5 Codex (and some brains)">
   <meta property="og:description" content="I created this entire website with a mix of GitHub Copilot, GPT-5 Codex, and my own stubbornness. Here is how the prototypes evolved into the current release.">
-  <meta property="og:image" content="https://coolmanyt.com/images/avatar.png">
+  <meta property="og:image" content="https://coolmanyt.vercel.app/images/avatar.png">
 
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:url" content="https://coolmanyt.com/blog/building-my-website-using-gpt5-codex.html">
+  <meta name="twitter:url" content="https://coolmanyt.vercel.app/blog/building-my-website-using-gpt5-codex.html">
   <meta name="twitter:title" content="Building my Website using GPT-5 Codex (and some brains)">
   <meta name="twitter:description" content="I created this entire website with a mix of GitHub Copilot, GPT-5 Codex, and my own stubbornness. Here is how the prototypes evolved into the current release.">
-  <meta name="twitter:image" content="https://coolmanyt.com/images/avatar.png">
+  <meta name="twitter:image" content="https://coolmanyt.vercel.app/images/avatar.png">
 
   <script type="application/ld+json">
   {
@@ -41,7 +41,7 @@
     "dateModified": "2025-12-18T00:00:00.000Z",
     "mainEntityOfPage": {
       "@type": "WebPage",
-      "@id": "https://coolmanyt.com/blog/building-my-website-using-gpt5-codex.html"
+      "@id": "https://coolmanyt.vercel.app/blog/building-my-website-using-gpt5-codex.html"
     }
   }
   </script>
@@ -51,7 +51,7 @@
   <div class="top-banner">
     <span>🛠️ <strong>Pre-Release</strong> version of the website. (RELEASE SOON!)</span>
     <a class="banner-button" href="https://github.com/RandomInternetUser3000/mycoolwebsite" target="_blank" rel="noopener noreferrer">Open Source GitHub Repository</a>
-    <a class="banner-button" href="../index.html#release-countdown" data-release-link hidden aria-hidden="true" tabindex="-1">View Countdown</a>
+    <a class="banner-button" href="../index.html#release-countdown">View Countdown</a>
   </div>
 
   <header class="site-header" role="banner">
@@ -116,9 +116,10 @@
         <p class="lead">I created this entire website with a mix of GitHub Copilot, GPT-5 Codex, and my own stubbornness. Here is how the prototypes evolved into the current release.</p>
       </header>
       <div class="blog-article-content">
-        <p>It took several months of "hard" work, but I made it. I have officially finished coding my website (for the main part). And now, here is my journey for you.</p>
+        
+                <p>It took several months of &quot;hard&quot; work, but I made it. I have officially finished coding my website (for the main part). And now, here is my journey for you.</p>
         <h2>My First Commit</h2>
-        <p>The first commit began when I saw my friend with his awesome and cool website. It was also directly connected to his discord as well, and I loved the animation when hovering over a button. I started learning some basic HTML and CSS, and made a very, <em>very</em> basic website consisting of just 1 page asking you to subscribe.</p>
+        <p>The first commit began when I saw my friend with his awesome and cool website. It was also directly connected to his discord as well, and I loved the animation when hovering over a button. I started learning some basic HTML and CSS, and made a very, <em>very</em> basic website consisting of just 1 page asking you to subscribe. </p>
         <h2>My First Pull Request</h2>
         <p>I left the website for a bit, then I came back after learning some more code. My first pull request was actually just trying to make the button using HTML instead of JS, but all it did was add a href inside of a button. Sounds stupid, right? Because it was.</p>
         <h2>Everything In Between</h2>
@@ -127,22 +128,22 @@
         <h2>Feature Mania</h2>
         <p>I wanted a contact form, so I used Formspree to hold the backend. I wanted comments on my blog, I used Commento to hold the backend for that. I wanted social link buttons to expand and say what platform they are from... that kinda broke my website for a bit. Slowly, the additions got more crazy. Then came...</p>
         <h2>The Biggest Pull Request</h2>
-        <p>I had an idea in my head. There were times where I wanted to update my website, but I didn't have my laptop with me. I didn't trust a Copilot that I can't pick the model of, so I had a bold idea.</p>
+        <p>I had an idea in my head. There were times where I wanted to update my website, but I didn&#39;t have my laptop with me. I didn&#39;t trust a Copilot that I can&#39;t pick the model of, so I had a bold idea.</p>
         <blockquote>
-          <p>I should make <strong>an admin panel</strong></p>
+        <p>I should make <strong>an admin panel</strong></p>
         </blockquote>
         <p>And so began the grueling task of making one. And a secure one it had to be. I needed to make sure it was only me and my approved members who could access the page, so I thought on how to control that. Aha! Github API! I could connect the website to a GitHub App that does OAuth and verifies my account so I can access the website. Github was also the best option here, as my website code is stored on Github. I was considering Google, Microsoft, etc., but it seemed too complicated. So with Github I went.</p>
-        <p>I also wanted to incorporate RSS into my website as well as a Discord webhook for my discord server (that I'm going to announce in my next YouTube video officially) to ping everyone when I have a new blog post. I mean, I could make a YouTube video instead, but with the admin panel, I could just post without having to make a YouTube video and go through editing and all that <em>boring</em> crap.</p>
-        <p>After a few hours of coding (and asking ChatGPT to code for me), I had done it. I had implemented everything I wanted, along with a countdown to a release. And <strong>I had done it. I had finished my website.</strong> I went ahead and created a branch, converted it into a pull request, and added it to main.</p>
+        <p>I also wanted to incorporate RSS into my website as well as a Discord webhook for my discord server (that I&#39;m going to announce in my next YouTube video officially) to ping everyone when I have a new blog post. I mean, I could make a YouTube video instead, but with the admin panel, I could just post without having to make a YouTube video and go through editing and all that <em>boring</em> crap.</p>
+        <p>After a few hours of coding (and asking ChatGPT to code for me), I had done it. I had implemented everything I wanted, along with a countdown to a release. And <strong>I had done it. I had finished my website.</strong> I went ahead and created a branch, converted it into a pull request, and added it to main. </p>
         <p>My website still had a few issues, but they were resolved later.</p>
         <h2>What Now?</h2>
-        <p>I won't give up on this website. There will be things I want to add and some of those are impossible on this static website. Maybe one day, I'll change this website from Vercel to another. Maybe I'll buy the domain coolmanyt.com to make it official. Who knows? But right now, it's just going to get better from here.</p>
+        <p>I won&#39;t give up on this website. There will be things I want to add and some of those are impossible on this static website. Maybe one day, I&#39;ll change this website from Vercel to another. Maybe I&#39;ll buy the domain coolmanyt.com to make it official. Who knows? But right now, it&#39;s just going to get better from here.</p>
       </div>
       <footer class="blog-article-footer">
         <span>Updated Dec 18, 2025</span>
         <div class="article-actions">
-          <button type="button" data-article-share data-share-slug="building-my-website-using-gpt5-codex" data-share-url="https://coolmanyt.com/blog/building-my-website-using-gpt5-codex.html" data-share-success="Link copied!">Share</button>
-          <a href="https://github.com/RandomInternetUser3000/mycoolwebsite" target="_blank" rel="noopener noreferrer">View Source</a>
+          <button type="button" data-article-share data-share-slug="building-my-website-using-gpt5-codex" data-share-url="https://coolmanyt.vercel.app/blog/building-my-website-using-gpt5-codex.html" data-share-success="Link copied!">Share</button>
+          <a href="../blog/index.html">Back to Blog</a>
         </div>
       </footer>
     </article>
@@ -157,5 +158,9 @@
 
   <script defer src="https://cdn.commento.io/js/commento.js"></script>
   <script src="../script.js"></script>
+  <script>
+    window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
+  </script>
+  <script defer src="/_vercel/speed-insights/script.js"></script>
 </body>
 </html>
