@@ -1,4 +1,4 @@
-const ver = "Version 1.0.183.1";
+const ver = "Version 1.0.184";
 const COMMENTS_API_URL = '/api/comments';
 const COMMENTS_STORAGE_KEY = 'coolman-comments';
 const DEFAULT_SITE_SETTINGS = {
@@ -59,6 +59,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 	initNavGradient();
 	initSubscribeGlow();
 	prepareTopBanner();
+	initLazySections();
+	initLatestBlogCard();
 
 	if (document.querySelector('[data-project-open]')) {
 		initProjectViewer();
@@ -70,10 +72,65 @@ document.addEventListener('DOMContentLoaded', async () => {
 	await hydrateSiteSettings();
 	applyTopBannerSettings();
 	initReleaseCountdown();
-	initLatestUploadCard();
+	// Latest video loads when its section is visible.
 	initShareButtons();
 	injectAnalytics();
 });
+
+function initLazySections() {
+	const observer = new IntersectionObserver((entries, obs) => {
+		entries.forEach((entry) => {
+			if (!entry.isIntersecting) return;
+			const target = entry.target;
+			if ('lazySpotify' in target.dataset) {
+				mountSpotifyEmbed(target);
+				obs.unobserve(target);
+			}
+			if ('latestVideo' in target.dataset) {
+				initLatestUploadCard();
+				obs.unobserve(target);
+			}
+		});
+	}, { rootMargin: '150px 0px 150px 0px', threshold: 0.1 });
+
+	const spotifyHost = document.querySelector('[data-lazy-spotify]');
+	if (spotifyHost) {
+		observer.observe(spotifyHost);
+		const button = spotifyHost.querySelector('[data-spotify-load]');
+		if (button) {
+			button.addEventListener('click', () => {
+				mountSpotifyEmbed(spotifyHost);
+				observer.unobserve(spotifyHost);
+			});
+		}
+	}
+
+	const latestVideoSection = document.querySelector('[data-latest-video]');
+	if (latestVideoSection) {
+		observer.observe(latestVideoSection);
+	}
+}
+
+function mountSpotifyEmbed(container) {
+	if (!container || container.dataset.spotifyMounted === 'true') {
+		return;
+	}
+	const src = container.getAttribute('data-spotify-src');
+	if (!src) {
+		return;
+	}
+	const iframe = document.createElement('iframe');
+	iframe.title = 'Spotify playlist: Deep Focus by COOLmanYT';
+	iframe.style.borderRadius = '12px';
+	iframe.src = src;
+	iframe.width = '100%';
+	iframe.height = '480';
+	iframe.frameBorder = '0';
+	iframe.allow = 'autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture';
+	iframe.loading = 'lazy';
+	container.replaceChildren(iframe);
+	container.dataset.spotifyMounted = 'true';
+}
 
 function applyInitialTheme() {
 	const storedTheme = getStoredTheme();
@@ -1077,6 +1134,77 @@ function prepareTopBanner() {
 		banner.setAttribute('hidden', 'true');
 		banner.setAttribute('aria-hidden', 'true');
 	});
+}
+
+async function initLatestBlogCard() {
+	const card = document.querySelector('[data-latest-blog]');
+	if (!card) {
+		return;
+	}
+
+	const titleEl = card.querySelector('[data-blog-title]');
+	const summaryEl = card.querySelector('[data-blog-summary]');
+	const dateEl = card.querySelector('[data-blog-date]');
+	const readingEl = card.querySelector('[data-blog-reading]');
+	const linkEl = card.querySelector('[data-blog-link]');
+
+	const setFallback = (message) => {
+		if (titleEl) titleEl.textContent = message;
+		if (summaryEl) summaryEl.textContent = 'See all posts on the blog page.';
+		if (dateEl) {
+			dateEl.textContent = '';
+			dateEl.hidden = true;
+		}
+		if (readingEl) {
+			readingEl.textContent = '';
+			readingEl.hidden = true;
+		}
+		if (linkEl) linkEl.href = 'blog/index.html';
+	};
+
+	const formatDate = (input) => {
+		const parsed = new Date(input || '');
+		if (Number.isNaN(parsed.getTime())) return '';
+		return parsed.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+	};
+
+	try {
+		const res = await fetch(`blog/.generated/blog-manifest.json?ts=${Date.now()}`);
+		if (!res.ok) {
+			throw new Error(`Manifest request failed (${res.status})`);
+		}
+		const payload = await res.json();
+		const posts = Array.isArray(payload.posts) ? payload.posts : Array.isArray(payload) ? payload : [];
+		const published = posts
+			.filter((post) => (post.status || 'published').toLowerCase() === 'published')
+			.sort((a, b) => new Date(b.datePublished || b.date || 0) - new Date(a.datePublished || a.date || 0));
+
+		const latest = published[0];
+		if (!latest) {
+			throw new Error('No published posts found');
+		}
+
+		const slug = latest.slug || '';
+		const summary = latest.summary || 'New story on the blog.';
+		const reading = latest.readingMinutes ? `${latest.readingMinutes} min read` : '';
+		const dateText = formatDate(latest.datePublished || latest.date);
+		const href = slug ? `blog/${slug}.html` : 'blog/index.html';
+
+		if (titleEl) titleEl.textContent = latest.title || slug || 'Latest blog post';
+		if (summaryEl) summaryEl.textContent = summary;
+		if (dateEl) {
+			dateEl.textContent = dateText;
+			dateEl.hidden = !dateText;
+		}
+		if (readingEl) {
+			readingEl.textContent = reading;
+			readingEl.hidden = !reading;
+		}
+		if (linkEl) linkEl.href = href;
+	} catch (error) {
+		console.warn('Latest blog card failed', error);
+		setFallback('Could not load latest post');
+	}
 }
 
 async function initLatestUploadCard() {

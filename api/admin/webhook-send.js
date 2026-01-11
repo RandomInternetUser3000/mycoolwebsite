@@ -30,20 +30,24 @@ export default async function handler(req, res) {
 
     const configPayload = await fetchWebhooksConfig();
     const available = Array.isArray(configPayload.webhooks) ? configPayload.webhooks : [];
-    const targets = ids.length ? available.filter((w) => ids.includes(String(w.id))) : available;
-    const uniqueTargets = dedupeUrls(targets);
+    const requested = ids.length ? available.filter((w) => ids.includes(String(w.id))) : available;
+    const targets = resolveWebhookTargets(requested);
 
-    if (!uniqueTargets.length) {
-      throw Object.assign(new Error('No saved webhooks available. Add a webhook first.'), { statusCode: 400 });
+    if (!targets.length && process.env.DISCORD_WEBHOOK_URL) {
+      targets.push({ id: 'DISCORD_WEBHOOK_URL', envVar: 'DISCORD_WEBHOOK_URL', url: process.env.DISCORD_WEBHOOK_URL });
+    }
+
+    if (!targets.length) {
+      throw Object.assign(new Error('No webhook environment variables resolved to URLs. Check your env vars and try again.'), { statusCode: 400 });
     }
 
     const results = await Promise.all(
-      uniqueTargets.map(async (hook) => {
+      targets.map(async (hook) => {
         try {
           await sendWebhook(hook.url, message, embed);
-          return { id: hook.id, url: hook.url, ok: true };
+          return { id: hook.id, url: hook.url, envVar: hook.envVar, ok: true };
         } catch (error) {
-          return { id: hook.id, url: hook.url, ok: false, error: error.message };
+          return { id: hook.id, url: hook.url, envVar: hook.envVar, ok: false, error: error.message };
         }
       }),
     );
@@ -58,14 +62,16 @@ export default async function handler(req, res) {
   }
 }
 
-function dedupeUrls(list) {
+function resolveWebhookTargets(list) {
   const seen = new Set();
   const out = [];
   list.forEach((hook) => {
-    const url = (hook.url || '').trim();
+    const envVar = (hook.envVar || hook.env || '').toString().trim();
+    if (!envVar) return;
+    const url = process.env[envVar];
     if (!url || seen.has(url)) return;
     seen.add(url);
-    out.push({ id: hook.id?.toString?.() || url, url, label: hook.label || 'Webhook' });
+    out.push({ id: hook.id?.toString?.() || envVar, envVar, url });
   });
   return out;
 }

@@ -11,7 +11,7 @@ const BLOG_HTML_PATH = path.join(BLOG_DIR, 'index.html');
 const BLOG_OUTPUT_DIR = BLOG_DIR;
 const GENERATED_DIR = path.join(BLOG_DIR, '.generated');
 const FEED_PATH = path.join(BLOG_DIR, 'feed.xml');
-const SITE_ORIGIN = process.env.SITE_ORIGIN || process.env.SITE_BASE_URL || 'https://coolmanyt.vercel.app';
+const SITE_ORIGIN = process.env.SITE_ORIGIN || process.env.SITE_BASE_URL || 'https://coolmanyt.com';
 const DEFAULT_OG_IMAGE = `${SITE_ORIGIN}/images/avatar.png`;
 const WEBHOOK_CONFIG_PATH = path.join(ROOT, 'content', 'webhooks.json');
 
@@ -359,8 +359,12 @@ ${items}
 async function maybeSendWebhooks(post) {
 	if (!post) return;
 	const config = await loadWebhookConfig();
-	const hooks = Array.isArray(config.webhooks) && config.webhooks.length ? config.webhooks : (process.env.DISCORD_WEBHOOK_URL ? [{ id: 'env', label: 'Env webhook', url: process.env.DISCORD_WEBHOOK_URL }] : []);
-	if (!hooks.length) return;
+	const hooks = Array.isArray(config.webhooks) ? config.webhooks : [];
+	const resolved = resolveWebhookTargets(hooks);
+	if (!resolved.length && process.env.DISCORD_WEBHOOK_URL) {
+		resolved.push({ id: 'DISCORD_WEBHOOK_URL', envVar: 'DISCORD_WEBHOOK_URL', url: process.env.DISCORD_WEBHOOK_URL });
+	}
+	if (!resolved.length) return;
 	if (typeof fetch !== 'function') {
 		console.warn('Webhooks skipped: fetch is not available in this Node runtime.');
 		return;
@@ -373,16 +377,16 @@ async function maybeSendWebhooks(post) {
 	const payload = embed ? { content: message, embeds: [embed] } : { content: message };
 
 	await Promise.allSettled(
-		hooks.map(async (hook) => {
+		resolved.map(async (hook) => {
 			try {
 				await fetch(hook.url, {
 					method: 'POST',
 					headers: { 'Content-Type': 'application/json' },
 					body: JSON.stringify(payload),
 				});
-				console.log(`Webhook sent: ${hook.label || hook.id}`);
+				console.log(`Webhook sent: ${hook.envVar || hook.id}`);
 			} catch (error) {
-				console.warn(`Webhook failed for ${hook.label || hook.id}:`, error.message);
+				console.warn(`Webhook failed for ${hook.envVar || hook.id}:`, error.message);
 			}
 		}),
 	);
@@ -395,6 +399,20 @@ async function loadWebhookConfig() {
 	} catch (error) {
 		return {};
 	}
+}
+
+function resolveWebhookTargets(list) {
+	const seen = new Set();
+	const out = [];
+	list.forEach((hook) => {
+		const envVar = (hook.envVar || hook.env || '').toString().trim();
+		if (!envVar) return;
+		const url = process.env[envVar];
+		if (!url || seen.has(url)) return;
+		seen.add(url);
+		out.push({ id: hook.id || envVar, envVar, url });
+	});
+	return out;
 }
 
 function buildWebhookTokens(post) {

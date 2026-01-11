@@ -92,7 +92,7 @@
       <a href="contact.html" class="button button--ghost">Contact Me</a>
     </div>
 
-    <section class="now-playing" data-latest-video data-channel-user="COOLmanGamer">
+    <section class="now-playing" data-latest-video data-channel-user="COOLmanGamer" data-channel-id="UCJr64JsgfMr8SHeUhLA3lKw">
       <div class="now-playing__media" data-video-thumb>
         <span class="now-playing__badge">Latest Upload</span>
         <div class="now-playing__thumb now-playing__thumb--skeleton" data-video-thumb-slot></div>
@@ -110,6 +110,19 @@
       </div>
     </section>
 
+    <section class="latest-blog" data-latest-blog>
+      <div class="latest-blog__meta">
+        <span class="tag-pill">Blog</span>
+        <span class="latest-blog__date" data-blog-date>—</span>
+      </div>
+      <h3 class="latest-blog__title" data-blog-title>Loading latest post…</h3>
+      <p class="latest-blog__summary" data-blog-summary>Fetching the newest blog entry.</p>
+      <div class="latest-blog__footer">
+        <span class="latest-blog__reading" data-blog-reading>—</span>
+        <a class="button" data-blog-link href="blog/index.html">Read post</a>
+      </div>
+    </section>
+
   <section id="release-countdown" class="release-countdown" data-release-countdown aria-live="polite" hidden aria-hidden="true">
       <p class="release-countdown__label" data-countdown-label>Release Countdown</p>
       <p class="release-countdown__timer" data-countdown-timer>Calculating…</p>
@@ -121,17 +134,11 @@
         <h2 id="playlistHeading">My Favourite Songs</h2>
         <p>These tracks are what keeps me on track, as these are my all time favourite songs EVER. From Toby Fox beats ("It's Raining Somewhere Else") to Minecraft jams ("otherside"). Check those songs out!</p>
       </div>
-      <div class="playlist-section__embed">
-        <iframe
-          title="Spotify playlist: Deep Focus by COOLmanYT"
-          style="border-radius:12px"
-          src="https://open.spotify.com/embed/playlist/5kXpcKZ6q5YogBkwym9GuY?utm_source=generator&amp;theme=0"
-          width="100%"
-          height="480"
-          frameborder="0"
-          allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-          loading="lazy"
-        ></iframe>
+      <div class="playlist-section__embed" data-lazy-spotify data-spotify-src="https://open.spotify.com/embed/playlist/5kXpcKZ6q5YogBkwym9GuY?utm_source=generator&amp;theme=0">
+        <div class="playlist-placeholder">
+          <p>Load the Spotify playlist to play songs. This pulls content from spotifycdn.com.</p>
+          <button type="button" class="button" data-spotify-load>Load playlist</button>
+        </div>
       </div>
     <p><em>If you cannot see the Spotify playlist embed, please disable any privacy extensions (e.g., Privacy Badger) for this page.</em></p>
     </section>
@@ -140,31 +147,31 @@
 
     <div class="social-links hero-socials">
       <a href="https://github.com/RandomInternetUser3000" target="_blank" rel="noopener noreferrer" class="social-button" data-label="GitHub">
-        <img src="images/github.png" alt="GitHub">
+        <img src="images/github.png" alt="GitHub" width="64" height="64" loading="lazy">
         <span class="social-label">GitHub</span>
       </a>
       <a href="https://www.youtube.com/@COOLmanGamer" target="_blank" rel="noopener noreferrer" class="social-button" data-label="YouTube">
-        <img src="images/youtube.png" alt="YouTube">
+        <img src="images/youtube.png" alt="YouTube" width="64" height="64" loading="lazy">
         <span class="social-label">YouTube</span>
       </a>
       <a href="https://discord.gg/SzHksR3QFj" target="_blank" rel="noopener noreferrer" class="social-button" data-label="Discord">
-        <img src="images/discord.png" alt="Discord">
+        <img src="images/discord.png" alt="Discord" width="64" height="64" loading="lazy">
         <span class="social-label">Discord</span>
       </a>
       <a href="https://www.roblox.com/users/2873599962/profile" target="_blank" rel="noopener noreferrer" class="social-button" data-label="Roblox">
-        <img src="images/roblox2.png" alt="Roblox">
+        <img src="images/roblox2.png" alt="Roblox" width="64" height="64" loading="lazy">
         <span class="social-label">Roblox</span>
       </a>
       <a href="https://open.spotify.com/user/31px5awkcyikvgrfiiqkxem6oxni?si=fd36097626ff454f" target="_blank" rel="noopener noreferrer" class="social-button" data-label="Spotify">
-        <img src="images/spotify.png" alt="Spotify">
+        <img src="images/spotify.png" alt="Spotify" width="64" height="64" loading="lazy">
         <span class="social-label">Spotify</span>
       </a>
       <a href="https://steamcommunity.com/id/coolmanyt1" target="_blank" rel="noopener noreferrer" class="social-button" data-label="Steam">
-        <img src="images/steam.png" alt="Steam">
+        <img src="images/steam.png" alt="Steam" width="64" height="64" loading="lazy">
         <span class="social-label">Steam</span>
       </a>
       <a href="https://www.reddit.com/user/COOLman_YT/" target="_blank" rel="noopener noreferrer" class="social-button" data-label="Reddit">
-        <img src="images/reddit.png" alt="Reddit">
+        <img src="images/reddit.png" alt="Reddit" width="64" height="64" loading="lazy">
         <span class="social-label">Reddit</span>
       </a>
     </div>

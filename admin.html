@@ -228,7 +228,7 @@
             <p class="admin-label">Discord Webhook</p>
             <p class="admin-help-text" data-webhook-status>Not configured</p>
             <button type="button" class="button button--small" data-webhook-test data-label="Send test ping" disabled>Send test ping</button>
-            <p class="admin-help-text">Set <code>DISCORD_WEBHOOK_URL</code> so builds broadcast automatically.</p>
+            <p class="admin-help-text">Set <code>DISCORD_WEBHOOK_URL</code> or add more env vars in the Webhook Manager.</p>
           </div>
         </div>
         <p class="admin-help-text" data-distribution-feedback></p>
@@ -254,12 +254,9 @@
             <p class="admin-help-text">Optional Discord embed payload. Strings support the same tokens. <code>color</code> accepts an integer (e.g., 5793266 for #5865F2). See <a href="https://discord.com/developers/docs/resources/channel#embed-object-embed-structure" target="_blank" rel="noopener">Discord embed docs</a>.</p>
           </div>
           <div class="admin-form__field">
-            <label for="webhookLabel">Label</label>
-            <input type="text" id="webhookLabel" data-webhook-label placeholder="Announcements" />
-          </div>
-          <div class="admin-form__field">
-            <label for="webhookUrl">Webhook URL</label>
-            <input type="url" id="webhookUrl" data-webhook-url placeholder="https://discord.com/api/webhooks/..." />
+            <label for="webhookEnv">Env variable name</label>
+            <input type="text" id="webhookEnv" data-webhook-env placeholder="DISCORD_WEBHOOK_URL" />
+            <p class="admin-help-text">Store your webhook URLs in environment variables; only the variable names are saved here.</p>
           </div>
           <div class="admin-form__actions">
             <button type="button" class="button button--ghost" data-webhook-add>Add webhook</button>
@@ -611,8 +608,7 @@ Body here." data-blog-editor-content></textarea>
     const webhookStatus = document.querySelector('[data-webhook-config-status]');
     const webhookMessage = document.querySelector('[data-webhook-message]');
     const webhookEmbed = document.querySelector('[data-webhook-embed]');
-    const webhookLabel = document.querySelector('[data-webhook-label]');
-    const webhookUrl = document.querySelector('[data-webhook-url]');
+    const webhookEnv = document.querySelector('[data-webhook-env]');
     const webhookAddBtn = document.querySelector('[data-webhook-add]');
     const webhookSaveBtn = document.querySelector('[data-webhook-save]');
     const webhookList = document.querySelector('[data-webhook-items]');
@@ -1484,7 +1480,7 @@ Body here." data-blog-editor-content></textarea>
           if (!btn) return;
           const id = btn.dataset.removeWebhook;
           const hook = webhookConfig.webhooks.find((w) => w.id === id);
-          if (window.confirm(`Remove webhook${hook?.label ? ` “${hook.label}”` : ''}?`)) {
+          if (window.confirm(`Remove webhook${hook?.envVar ? ` “${hook.envVar}”` : ''}?`)) {
             webhookConfig.webhooks = webhookConfig.webhooks.filter((w) => w.id !== id);
             renderWebhookList();
           }
@@ -1525,9 +1521,8 @@ Body here." data-blog-editor-content></textarea>
       }
       webhookList.innerHTML = webhookConfig.webhooks
         .map((hook) => {
-          const safeLabel = escapeHtml(hook.label || 'Webhook');
-          const safeUrl = escapeHtml(hook.url || '');
-          return `<li><div><strong>${safeLabel}</strong><br><small>${safeUrl}</small></div><button type="button" class="button button--ghost button--tiny" data-remove-webhook="${hook.id}">Remove</button></li>`;
+          const envVar = escapeHtml(hook.envVar || 'Env var');
+          return `<li><div><strong>${envVar}</strong><br><small>Stored in environment</small></div><button type="button" class="button button--ghost button--tiny" data-remove-webhook="${hook.id}">Remove</button></li>`;
         })
         .join('');
       refreshSendTargets();
@@ -1546,23 +1541,21 @@ Body here." data-blog-editor-content></textarea>
       webhookConfig.webhooks.forEach((hook) => {
         const opt = document.createElement('option');
         opt.value = hook.id;
-        opt.textContent = hook.label ? `${hook.label} — ${hook.url}` : hook.url;
+        opt.textContent = hook.envVar || hook.id;
         webhookSendSelect.appendChild(opt);
       });
     }
 
     function addWebhook() {
-      const label = (webhookLabel?.value || '').trim();
-      const url = (webhookUrl?.value || '').trim();
-      if (!url) {
-        setWebhookFeedback('Enter a webhook URL first.');
+      const envVar = (webhookEnv?.value || '').trim();
+      if (!envVar) {
+        setWebhookFeedback('Enter an environment variable name first.');
         return;
       }
-      webhookConfig.webhooks.push({ id: generateId(), label: label || 'Webhook', url });
+      webhookConfig.webhooks.push({ id: generateId(), envVar });
       renderWebhookList();
-      if (webhookLabel) webhookLabel.value = '';
-      if (webhookUrl) webhookUrl.value = '';
-      setWebhookFeedback('Webhook added (remember to save).');
+      if (webhookEnv) webhookEnv.value = '';
+      setWebhookFeedback('Env variable added (remember to save).');
     }
 
     async function saveWebhookConfig() {

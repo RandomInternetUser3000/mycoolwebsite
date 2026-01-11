@@ -63,7 +63,13 @@ async function hasWebhookConfigured() {
     const configPath = path.join(process.cwd(), 'content', 'webhooks.json');
     const raw = await fs.readFile(configPath, 'utf8');
     const json = JSON.parse(raw);
-    return Array.isArray(json.webhooks) && json.webhooks.length > 0;
+    const envBacked = Array.isArray(json.webhooks)
+      ? json.webhooks.some((hook) => {
+          const envVar = (hook.envVar || hook.env || '').toString().trim();
+          return envVar && process.env[envVar];
+        })
+      : false;
+    return envBacked;
   } catch (error) {
     return false;
   }

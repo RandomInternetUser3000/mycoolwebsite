@@ -34,7 +34,8 @@ export default async function handler(req, res) {
 async function handleGet(res, token) {
   try {
     const payload = await fetchFileFromGithub(FILE_PATH, token, { allow404: true });
-    const data = payload.data || defaultConfig();
+    const cleaned = sanitizeConfig(payload.data || {});
+    const data = { ...defaultConfig(), ...(payload.data || {}), ...cleaned };
     sendJson(res, 200, { data, source: payload.source || 'file' });
   } catch (error) {
     console.error('Webhooks fetch failed', error);
@@ -72,11 +73,10 @@ function sanitizeConfig(input) {
   if (Array.isArray(input.webhooks)) {
     out.webhooks = input.webhooks
       .map((hook) => {
-        const url = typeof hook.url === 'string' ? hook.url.trim() : '';
-        const label = typeof hook.label === 'string' ? hook.label.trim() : '';
-        if (!url) return null;
+        const envVar = typeof hook.envVar === 'string' ? hook.envVar.trim() : '';
+        if (!envVar) return null;
         const id = (hook.id || generateId()).toString();
-        return { id, label: label || 'Webhook', url };
+        return { id, envVar };
       })
       .filter(Boolean);
   }

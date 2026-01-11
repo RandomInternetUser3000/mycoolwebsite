@@ -24,7 +24,7 @@ export default async function handler(req, res) {
   }
 
   const config = await loadWebhookConfig();
-  const targetWebhook = pickWebhook(config);
+  const targetWebhook = resolveWebhookFromEnv(config);
   const webhookUrl = targetWebhook?.url || process.env.DISCORD_WEBHOOK_URL;
   if (!webhookUrl) {
     sendJson(res, 501, { error: 'No webhook configured. Add one in the admin panel or set DISCORD_WEBHOOK_URL.' });
@@ -120,7 +120,15 @@ async function loadWebhookConfig() {
   }
 }
 
-function pickWebhook(config = {}) {
+function resolveWebhookFromEnv(config = {}) {
   const list = Array.isArray(config.webhooks) ? config.webhooks : [];
-  return list[0];
+  for (const hook of list) {
+    const envVar = (hook.envVar || hook.env || '').toString().trim();
+    if (!envVar) continue;
+    const url = process.env[envVar];
+    if (url) {
+      return { envVar, url };
+    }
+  }
+  return null;
 }
