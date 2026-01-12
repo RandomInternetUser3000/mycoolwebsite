@@ -1,6 +1,6 @@
 # My Personal Website
 
-This repo powers COOLmanYT's public site: a static, no-build playground for project write-ups, devlogs, embeds, and ways to get in touch. Everything ships as plain HTML, modern CSS, and one JavaScript file so deploys stay instant and debugging stays human.
+This repo powers my public site: a static, no-build playground for project write-ups, devlogs, embeds, and ways to get in touch. Everything ships as plain HTML, modern CSS, and one JavaScript file so deploys stay instant and debugging stays human.
 
 ## Highlights
 - Accessible navigation with skip links, scrollable pill menus, strong focus outlines, and reduced-motion safeguards.
@@ -9,6 +9,7 @@ This repo powers COOLmanYT's public site: a static, no-build playground for proj
 - Lazy-loaded heavy modules in `script.js`, so project/blog viewers, share buttons, and analytics logic only run when the relevant DOM exists.
 - Formspree-powered contact form with inline status messaging plus an automatic fallback when CORS blocks AJAX submissions.
 - Structured metadata (Open Graph, Twitter, JSON-LD) across every page to keep previews and SEO tidy.
+- Fully functioning `admin.html` with GitHub OAuth and lots of powerful powers.
 
 ## Repository Layout
 
@@ -21,7 +22,7 @@ mycoolwebsite/
 ├── contact.html                 # Contact channels + Formspree form
 ├── gallery.html                 # Screenshot grid + light narrative
 ├── style.css                    # Global styles + component systems
-├── script.js                    # Theme toggle, countdown, lazy initializers, forms
+├── script.js                    # Theme toggle, countdown, lazy initialisers, forms
 ├── about.css                    # Extra styles for /about
 ├── contact.css                  # Extra styles for /contact
 ├── blog/                        # Everything blog-related lives here
@@ -54,9 +55,9 @@ mycoolwebsite/
    - VS Code Live Server
    - `npx serve`
    - `python -m http.server`
-3. Visit `http://localhost:PORT/index.html`, edit, refresh. No build pipeline required.
+3. Visit `http://localhost:PORT/index.html`, edit, and refresh. No build pipeline required.
 
-> Tip: When testing the contact form locally, Formspree may require a CAPTCHA redirect. The script flashes a "Redirecting to Formspree..." message and then posts the fallback form automatically.
+> Tip: When testing the contact form locally, Formspree will require a CAPTCHA redirect. The script flashes a "Redirecting to Formspree..." message and then posts the fallback form automatically.
 
 ## Updating Content
 
@@ -64,7 +65,7 @@ mycoolwebsite/
 - Blog posts — write markdown with front matter inside `blog/content/*.md`, then run `npm run build:blog` to regenerate `blog/index.html`, `blog/feed.xml`, `blog/.generated/blog-manifest.json`, and every standalone page derived from `blog/templates/blog-standalone.html`.
 - Projects — extend `projects.html` with new cards + `<template>` blocks, and drop long-form write-ups into `projects/your-page.html` so you can share direct URLs.
 - Social buttons — edit the `.social-links` clusters on each page (plus the hero footer). Icons live under `images/`; remember alt text.
-- Images — drop optimized assets into `images/` and reference them relatively (`images/avatar.png`).
+- Images — drop optimised assets into `images/` and reference them relatively (`images/avatar.png`).
 
 ## Blog Workflow
 
@@ -78,7 +79,7 @@ mycoolwebsite/
 
 - **RSS feed** — lives at `/blog/feed.xml`. Readers and aggregators can subscribe directly, and the admin panel surfaces a copy/open shortcut under the “Distribution” card.
 - **Discord webhook** — set `DISCORD_WEBHOOK_URL` in your hosting environment to broadcast freshly built blog posts and to power the admin “Send test ping” button. The serverless handler lives at `/api/admin/webhook-test` and validates auth before sending a structured embed so you can confirm delivery without pushing a full build.
-- **Fail-safes** — if the webhook isn’t configured, the admin UI disables the test button and the build script silently skips Discord notifications so local runs stay quiet.
+- **Fail-safes** — if the webhook isn’t configured, the admin UI disables the test button, and the build script silently skips Discord notifications so local runs stay quiet.
 
 ## Admin Authentication & Access Control
 
@@ -87,20 +88,20 @@ The admin dashboard at `/admin.html` now requires GitHub OAuth plus an allow lis
 1. **Create a GitHub OAuth app** pointing to `https://your-domain.example/api/auth/callback`. Copy the `Client ID` and `Client Secret`.
 2. **Set the required environment variables** in Vercel (or `.env` when running locally):
    - `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET`
-   - `SESSION_SECRET` — any long random string for cookie signing
+   - `SESSION_SECRET` — any long random string for cookie signing (the website uses a randomly generated string made by Bitwarden)
    - `SITE_BASE_URL` — e.g. `https://coolmanyt.com`
    - `GITHUB_OWNER` / `GITHUB_REPO` (defaults already match this repo)
    - `ALLOWLIST_BRANCH` if your default branch isn’t `main`
-   - `DISCORD_WEBHOOK_URL` (optional) — lets blog builds broadcast to Discord and powers the admin “Send test ping” button
+   - `DISCORD_WEBHOOK_URL` (optional) — lets blog builds broadcast to Discord and powers the admin “Send test ping” button, plus send whatever they want to Discord, *including* `@everyone`s.
    - `YOUTUBE_API_KEY` (optional) — speeds up the homepage “Latest Upload” card by calling the YouTube Data API (`search.list` + `videos.list`), with feed/piped fallbacks when absent
 3. **Seed the allow list** inside `content/admin-allowlist.json`. Only usernames in this file can finish the OAuth flow.
 4. *(Optional but recommended)* **Enable in-dashboard allow list edits** by setting `ALLOWLIST_GITHUB_TOKEN` to a GitHub Personal Access Token with `repo` scope. Pair it with `ALLOWLIST_COMMIT_NAME` / `ALLOWLIST_COMMIT_EMAIL` if you want custom commit metadata. The admin panel uses these values to update `content/admin-allowlist.json`, so you can add/remove users without touching the repo manually.
 
-Once these env vars are in place, visiting `/admin.html` prompts for GitHub sign-in. Approved accounts can copy build commands, create blog front matter, and adjust the allow list from the UI. Everyone else sees the locked screen.
+Once these env vars are in place, visiting `/admin.html` prompts for GitHub sign-in. Approved accounts can copy build commands, create blog front matter, manage webhooks and adjust the allow list from the UI. Everyone else sees the locked screen.
 
 ## Deploying
 
-The site loves static hosts: Vercel, Netlify, Cloudflare Pages, GitHub Pages—pick your favorite. Deploy the repo root as-is. After shipping notable changes, bump the `ver` constant in `script.js` so the footer badge (and CDN caches) reflect the new release.
+The site loves static hosts: Vercel, Netlify, Cloudflare Pages, GitHub Pages—pick your favourite. Deploy the repo root as-is. After shipping notable changes, bump the `ver` constant in `script.js`, so the footer badge (and CDN caches) reflect the new release.
 
 ## Versioning
 
@@ -108,7 +109,7 @@ The site loves static hosts: Vercel, Netlify, Cloudflare Pages, GitHub Pages—p
 
 ## Contributing
 
-Ideas, bug reports, nitpicks? Open an issue or PR. Please keep new features accessible, resist dropping frameworks into the stack, and make sure interactive pieces degrade gracefully without JavaScript. If you know me IRL, bribe me with a slushie and I will probably merge even faster. XD :3
+Ideas, bug reports, nitpicks? Open an issue or PR. Please keep new features accessible, resist dropping frameworks into the stack, and make sure interactive pieces degrade gracefully without JavaScript. If you know me IRL, bribe me with a slushie, and I will probably merge even faster. XD :3
 
 ---
 
