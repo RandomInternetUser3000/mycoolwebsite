@@ -1,4 +1,4 @@
-const ver = "Version 1.0.186";
+const ver = "Version 1.0.191";
 const COMMENTS_API_URL = '/api/comments';
 const COMMENTS_STORAGE_KEY = 'coolman-comments';
 const DEFAULT_SITE_SETTINGS = {
@@ -135,6 +135,14 @@ function renderHeaderAuthIndicator(state) {
 		return;
 	}
 
+	if (!state?.authenticated) {
+		const existing = headerBar.querySelector('[data-auth-indicator]');
+		if (existing) {
+			existing.remove();
+		}
+		return;
+	}
+
 	let indicator = headerBar.querySelector('[data-auth-indicator]');
 	if (!indicator) {
 		indicator = document.createElement('div');
@@ -178,18 +186,19 @@ function renderContactAuthBadge(state) {
 	if (!heading) {
 		return;
 	}
+	const shouldShow = Boolean(state?.authenticated && state?.allowlisted);
 	let badge = heading.querySelector('[data-contact-auth-badge]');
+	if (!shouldShow) {
+		if (badge) {
+			badge.remove();
+		}
+		return;
+	}
 	if (!badge) {
 		badge = document.createElement('img');
 		badge.setAttribute('data-contact-auth-badge', 'true');
 		badge.className = 'contact-auth-badge';
 		heading.appendChild(badge);
-	}
-
-	const shouldShow = Boolean(state?.authenticated && state?.allowlisted);
-	if (!shouldShow) {
-		badge.hidden = true;
-		return;
 	}
 	const icon = resolveAuthIcon({ authenticated: true, allowlisted: true });
 	badge.src = icon.src;
@@ -1330,8 +1339,13 @@ function initReleaseCountdown() {
 
 function applyTopBannerSettings() {
 	const banners = document.querySelectorAll('.top-banner');
+	const bannerDisabled = siteSettings.bannerEnabled === false;
+	if (document.body) {
+		document.body.classList.toggle('banner-disabled', bannerDisabled);
+	}
+
 	banners.forEach((banner) => {
-		if (siteSettings.bannerEnabled === false) {
+		if (bannerDisabled) {
 			banner.setAttribute('hidden', 'true');
 			banner.setAttribute('aria-hidden', 'true');
 			return;
@@ -1645,7 +1659,7 @@ async function initLatestUploadCard() {
 	};
 
 	const attemptApiLatest = async () => {
-		const API_TIMEOUT_MS = 5000;
+		const API_TIMEOUT_MS = 3500;
 		const params = new URLSearchParams();
 		if (resolvedChannelId) {
 			params.set('channelId', resolvedChannelId);
@@ -1733,7 +1747,7 @@ async function initLatestUploadCard() {
 		}
 	};
 
-	const attemptPipedLatest = async () => {
+async function attemptPipedLatest() {
 		const identifierPool = [];
 		if (resolvedChannelId) {
 			identifierPool.push(resolvedChannelId);

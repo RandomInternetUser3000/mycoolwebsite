@@ -201,6 +201,10 @@ img {
   font-size: 0.96rem;
 }
 
+body.banner-disabled .top-banner {
+  display: none !important;
+}
+
 .top-banner strong {
   letter-spacing: 0.01em;
 }
@@ -254,6 +258,10 @@ img {
   height: 28px;
   display: block;
   flex-shrink: 0;
+}
+
+body:not(.theme-light) .auth-indicator img {
+  filter: brightness(0) invert(1);
 }
 
 .auth-indicator .auth-signout {
@@ -1633,27 +1641,80 @@ body.theme-light .latest-blog {
   margin: 1.25rem 0 0.5rem;
 }
 
+body.contact-page .social-links {
+  display: none;
+}
+
+body.contact-page .site-header {
+  margin: 1.25rem auto 0;
+}
+
+body.contact-page .header-bar {
+  justify-content: space-between;
+}
+
+body.contact-page .site-logo {
+  margin-left: 0;
+}
+
 /* Make the GitHub logo white in dark mode (keeps other icons unchanged) */
 body:not(.theme-light) .social-button img[src*="github"] {
+  filter: brightness(0) invert(1);
+}
+
+.contact-section h2 {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.contact-auth-badge {
+  width: 26px;
+  height: 26px;
+  object-fit: contain;
+  vertical-align: middle;
+}
+
+body:not(.theme-light) .contact-auth-badge {
   filter: brightness(0) invert(1);
 }
 
 .contact-links {
   display: flex;
   justify-content: center;
+  align-items: stretch;
   flex-wrap: wrap;
-  gap: 2rem;
-  margin: 2rem 0;
+  gap: 1rem;
+  margin: 1.5rem auto 1rem;
+  max-width: 960px;
 }
 
 .contact-links .social-button {
   justify-content: flex-start;
-  width: auto;
-  min-width: clamp(180px, 40vw, 220px);
-  min-height: 56px;
-  padding: 0.75rem 1.2rem;
-  border-radius: 16px;
+  width: calc(50% - 0.5rem);
+  min-width: 0;
+  min-height: 0;
+  padding: 0.85rem 1rem;
+  border-radius: 12px;
   gap: 0.75rem;
+}
+
+.theme-light .contact-links .social-button {
+  background: #f8f9ff;
+  border-color: #e4e8f5;
+  box-shadow: 0 12px 26px rgba(31, 34, 53, 0.12);
+  color: #10162a;
+}
+
+.contact-links .social-button.email-card {
+  width: 100%;
+}
+
+@media (max-width: 720px) {
+  .contact-links .social-button {
+    width: 100%;
+  }
 }
 
 .contact-help {
@@ -1680,6 +1741,18 @@ body:not(.theme-light) .social-button img[src*="github"] {
   font-size: clamp(0.9rem, 2vw, 1rem);
   font-weight: 600;
   color: inherit;
+}
+
+.theme-light .contact-links .social-button .social-label {
+  color: #0f1527;
+}
+
+.contact-email-note {
+  text-align: center;
+  color: var(--text-muted);
+  max-width: 900px;
+  margin: 0 auto 1.5rem;
+  font-size: 0.95rem;
 }
 
 .site-footer {
@@ -1740,6 +1813,14 @@ body:not(.theme-light) .social-button img[src*="github"] {
   flex-direction: column;
   gap: 1rem;
   margin-top: 1rem;
+}
+
+.contact-form .button--with-icon {
+  justify-content: center;
+}
+
+.contact-form .button__icon {
+  margin-left: 0;
 }
 
 .contact-form .message-note {
