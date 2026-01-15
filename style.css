@@ -581,18 +581,18 @@ p {
 
 ul {
   text-align: left;
-  max-width: 500px;
+  max-width: 720px;
   margin: 1rem auto;
-  line-height: 1.8;
-  font-size: clamp(1rem, 2.1vw, 1.2rem);
+  line-height: 1.85;
+  font-size: clamp(1.05rem, 2.3vw, 1.28rem);
 }
 
 ol {
   text-align: left;
-  max-width: 500px;
+  max-width: 720px;
   margin: 1rem auto;
-  line-height: 1.8;
-  font-size: clamp(1rem, 2.1vw, 1.2rem);
+  line-height: 1.85;
+  font-size: clamp(1.05rem, 2.3vw, 1.28rem);
 }
 
 .github-repo {
@@ -830,10 +830,10 @@ button:focus-visible {
   margin: clamp(2.5rem, 6vw, 4rem) auto;
   padding: clamp(1.5rem, 4vw, 2rem);
   border-radius: 24px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--outline);
   background: linear-gradient(135deg, rgba(15, 18, 36, 0.92), rgba(43, 19, 57, 0.72));
-  box-shadow: 0 18px 30px rgba(6, 8, 18, 0.45);
-  color: #fff;
+  box-shadow: var(--shadow-soft);
+  color: var(--text-primary);
   display: grid;
   gap: clamp(1.25rem, 3vw, 1.75rem);
 }
@@ -852,7 +852,7 @@ button:focus-visible {
 
 .playlist-section__intro p {
   margin: 0;
-  color: rgba(255, 255, 255, 0.78);
+  color: var(--text-secondary);
   max-width: min(60ch, 100%);
 }
 
@@ -861,6 +861,16 @@ button:focus-visible {
   min-height: 320px;
   border: 0;
   box-shadow: var(--shadow-soft);
+}
+
+body.theme-light .playlist-section {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(237, 243, 255, 0.94));
+  border-color: rgba(16, 22, 38, 0.1);
+  box-shadow: 0 18px 32px rgba(31, 34, 53, 0.12);
+}
+
+body.theme-light .playlist-section__intro p {
+  color: var(--text-secondary);
 }
 
 .project-card__actions {
@@ -1195,9 +1205,9 @@ button:focus-visible {
   margin: 0 auto 2.5rem;
   padding: clamp(1.5rem, 4vw, 2.25rem);
   border-radius: 24px;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--outline);
   background: linear-gradient(135deg, rgba(21, 28, 45, 0.78), rgba(15, 19, 34, 0.92));
-  box-shadow: 0 20px 35px rgba(12, 16, 32, 0.28);
+  box-shadow: var(--shadow-soft);
   display: grid;
   grid-template-columns: minmax(360px, 460px) minmax(0, 1fr);
   gap: clamp(1.5rem, 3.5vw, 2.5rem);
@@ -1268,7 +1278,7 @@ button:focus-visible {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-  color: #f5f7ff;
+  color: var(--text-primary);
 }
 
 .now-playing__details h2 {
@@ -1279,7 +1289,7 @@ button:focus-visible {
 .now-playing__title {
   margin: 0;
   font-size: clamp(1rem, 2.4vw, 1.1rem);
-  color: rgba(245, 247, 255, 0.82);
+  color: var(--text-secondary);
 }
 
 .now-playing__meta {
@@ -1290,7 +1300,7 @@ button:focus-visible {
   gap: 0.4rem;
   text-align: center;
   font-size: 0.9rem;
-  color: rgba(245, 247, 255, 0.72);
+  color: var(--text-muted);
 }
 
 .now-playing__stats {
@@ -1303,7 +1313,7 @@ button:focus-visible {
   padding: 0.2rem 0.6rem;
   border-radius: 999px;
   background: rgba(245, 247, 255, 0.12);
-  color: rgba(245, 247, 255, 0.75);
+  color: var(--text-secondary);
 }
 
 .now-playing__actions {
@@ -1336,6 +1346,29 @@ button:focus-visible {
 .now-playing--error .now-playing__thumb {
   background: linear-gradient(135deg, rgba(71, 93, 255, 0.12), rgba(255, 89, 167, 0.14));
   animation: none;
+}
+
+body.theme-light .now-playing {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(240, 245, 255, 0.92));
+  border-color: rgba(16, 22, 38, 0.1);
+  box-shadow: 0 20px 32px rgba(31, 34, 53, 0.12);
+}
+
+body.theme-light .now-playing__badge {
+  background: rgba(16, 22, 38, 0.85);
+  color: #fff;
+}
+
+body.theme-light .now-playing__actions .button {
+  background: var(--accent);
+  color: #fff;
+  border-color: transparent;
+  box-shadow: var(--shadow-soft);
+}
+
+body.theme-light .now-playing__duration {
+  background: rgba(16, 22, 38, 0.08);
+  color: var(--text-primary);
 }
 
 .latest-blog {
@@ -1398,6 +1431,68 @@ body.theme-light .latest-blog {
 .latest-blog .button {
   margin: 0;
   padding: 10px 18px;
+}
+
+.newsletter {
+  width: min(960px, 100%);
+  margin: 0 auto 2.5rem;
+  padding: clamp(1.35rem, 3.8vw, 2rem);
+  border-radius: 22px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: linear-gradient(135deg, rgba(16, 22, 38, 0.92), rgba(23, 29, 52, 0.78));
+  box-shadow: 0 18px 32px rgba(8, 12, 24, 0.38);
+  display: grid;
+  gap: 0.75rem;
+  text-align: left;
+}
+
+body.theme-light .newsletter {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.96), rgba(241, 244, 255, 0.9));
+  border-color: rgba(16, 22, 38, 0.08);
+  box-shadow: 0 18px 32px rgba(31, 34, 53, 0.16);
+}
+
+.newsletter__meta {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  flex-wrap: wrap;
+}
+
+.newsletter__tagline {
+  font-size: 0.98rem;
+}
+
+.newsletter h3 {
+  margin: 0;
+  font-size: clamp(1.3rem, 3vw, 1.65rem);
+  color: var(--text-primary);
+}
+
+.newsletter__copy {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: clamp(1rem, 2.3vw, 1.12rem);
+  line-height: 1.65;
+}
+
+.newsletter__embed {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px dashed var(--outline);
+  border-radius: 14px;
+  padding: clamp(1rem, 2vw, 1.35rem);
+}
+
+body.theme-light .newsletter__embed {
+  background: rgba(16, 22, 38, 0.02);
+}
+
+.newsletter__hint {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.95rem;
 }
 
 @media (max-width: 680px) {
@@ -1629,10 +1724,12 @@ body.theme-light .latest-blog {
 }
 
 .social-links {
-  margin: 1.5rem 0;
+  width: min(760px, 100%);
+  margin: 1.5rem auto;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
+  align-items: center;
   gap: 1rem;
 }
 
@@ -1641,13 +1738,16 @@ body.theme-light .latest-blog {
   height: 64px;
   object-fit: contain;
   margin: 0 auto 0.5rem;
+  display: block;
 }
 
 .social-links img[src*="github"] {
-  background: #fff;
-  border-radius: 16px;
-  padding: 6px;
-  box-shadow: 0 0 0 1px var(--outline);
+  background: transparent;
+  border-radius: 14px;
+  padding: 0;
+  box-shadow: none;
+  filter: none;
+  transition: filter 0.2s ease;
 }
 
 .site-header .social-links {
@@ -1671,8 +1771,14 @@ body.contact-page .site-logo {
 }
 
 /* Make the GitHub logo white in dark mode (keeps other icons unchanged) */
-body:not(.theme-light) .social-button img[src*="github"] {
-  filter: brightness(0) invert(1);
+body:not(.theme-light) .social-button img[src*="github"],
+body:not(.theme-light) .social-links img[src*="github"] {
+  filter: invert(1);
+}
+
+body.theme-light .social-button img[src*="github"],
+body.theme-light .social-links img[src*="github"] {
+  filter: none;
 }
 
 .contact-section h2 {

@@ -31,7 +31,7 @@
   <a class="skip-link" href="#mainContent">Skip to main content</a>
   <div class="top-banner">
     <span>🎉 Website Release!</span>
-    <a class="banner-button" href="https://github.com/RandomInternetUser3000/mycoolwebsite" target="_blank" rel="noopener noreferrer">Open Source GitHub Repository</a>
+    <a class="banner-button" href="https://github.com/COOLmanYT/mycoolwebsite" target="_blank" rel="noopener noreferrer">Open Source GitHub Repository</a>
     <a class="banner-button" href="index.html#release-countdown" data-release-link hidden aria-hidden="true" tabindex="-1">View Countdown</a>
   </div>
 
@@ -54,7 +54,7 @@
       </button>
     </div>
     <div class="social-links">
-      <a href="https://github.com/RandomInternetUser3000" target="_blank" rel="noopener noreferrer" class="social-button" data-label="GitHub">
+      <a href="https://github.com/COOLmanYT" target="_blank" rel="noopener noreferrer" class="social-button" data-label="GitHub">
         <img src="images/github.png" alt="GitHub">
         <span class="social-label">GitHub</span>
       </a>
@@ -161,7 +161,7 @@
           <li>Deploy, then bump <code>ver</code> in <code>script.js</code> if needed.</li>
         </ol>
         <div class="admin-quick-links">
-          <a href="https://github.com/RandomInternetUser3000/mycoolwebsite/tree/main/blog/content" class="button button--small" target="_blank" rel="noopener noreferrer">Open content folder</a>
+          <a href="https://github.com/COOLmanYT/mycoolwebsite/tree/main/blog/content" class="button button--small" target="_blank" rel="noopener noreferrer">Open content folder</a>
           <a href="README.md" class="button button--ghost button--small">Read workflow docs</a>
         </div>
       </article>
@@ -481,7 +481,7 @@ Body here." data-blog-editor-content></textarea>
         </div>
         <div class="admin-form__field">
           <label for="bannerLink">Banner button link</label>
-          <input type="url" id="bannerLink" name="bannerLink" placeholder="https://github.com/RandomInternetUser3000/mycoolwebsite">
+          <input type="url" id="bannerLink" name="bannerLink" placeholder="https://github.com/COOLmanYT/mycoolwebsite">
         </div>
         <div class="admin-form__field">
           <label for="bannerButtonText">Banner button text</label>
@@ -539,7 +539,7 @@ Body here." data-blog-editor-content></textarea>
         <form class="admin-allowlist__form" data-allowlist-form>
           <label for="allowlistUsername">GitHub username</label>
           <div class="admin-allowlist__form-row">
-            <input type="text" id="allowlistUsername" name="username" placeholder="randominternetuser3000" autocomplete="off" required>
+            <input type="text" id="allowlistUsername" name="username" placeholder="coolmanyt" autocomplete="off" required>
             <button type="submit" class="button button--small" data-allowlist-add>Add user</button>
           </div>
         </form>
@@ -553,7 +553,7 @@ Body here." data-blog-editor-content></textarea>
 
   <footer class="site-footer" role="contentinfo">
     <span>Made with ♥️ by <strong>COOLmanYT</strong></span>
-    <span>Website <a data-site-version-link href="https://github.com/RandomInternetUser3000/mycoolwebsite">Version<span data-site-version-number></span><span data-site-version-type></span></a></span>
+    <span>Website <a data-site-version-link href="https://github.com/COOLmanYT/mycoolwebsite">Version<span data-site-version-number></span><span data-site-version-type></span></a></span>
     <span>Credits to <a href="https://zinheere.vercel.app">Zinheere</a></span>
     <span><a href="/privacy.html">Privacy Policy</a> • <a href="/terms.html">Terms of Service</a></span>
   </footer>
@@ -1021,8 +1021,10 @@ Body here." data-blog-editor-content></textarea>
         const state = deriveAuthState(payload);
         publishAdminAuthState(state);
         renderLockIcon(state);
-        if (payload.authenticated) {
+        if (payload.authenticated && state.allowlisted) {
           unlockAdmin(payload, state);
+        } else if (payload.authenticated && !state.allowlisted) {
+          lockAdmin('Your GitHub account is not on the allow list.', state);
         } else {
           lockAdmin('Sign in with GitHub to continue.', state);
         }
@@ -1060,6 +1062,10 @@ Body here." data-blog-editor-content></textarea>
     }
 
     function unlockAdmin(payload, state) {
+      if (!state?.allowlisted) {
+        lockAdmin('Your GitHub account is not on the allow list.', state);
+        return;
+      }
       if (authGuard) authGuard.setAttribute('hidden', 'true');
       if (shell) shell.removeAttribute('hidden');
       if (authMeta) authMeta.removeAttribute('hidden');

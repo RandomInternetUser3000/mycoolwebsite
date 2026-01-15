@@ -5,21 +5,18 @@ import { readJsonBody, sendJson, methodNotAllowed } from '../../lib/server/http.
 export const config = { runtime: 'nodejs' };
 
 export default async function handler(req, res) {
-  const session = getSessionFromRequest(req);
-  if (!session) {
-    sendJson(res, 401, { error: 'Unauthorized' });
-    return;
-  }
+  const context = await requireAllowlistedSession(req, res);
+  if (!context) return;
 
   switch (req.method) {
     case 'GET':
       await handleGet(res);
       break;
     case 'POST':
-      await handleAdd(req, res, session);
+      await handleAdd(req, res, context.session);
       break;
     case 'DELETE':
-      await handleRemove(req, res, session);
+      await handleRemove(req, res, context.session);
       break;
     default:
       methodNotAllowed(res, ['GET', 'POST', 'DELETE']);
@@ -95,4 +92,23 @@ async function handleRemove(req, res, session) {
 
 function sanitizeUsername(value = '') {
   return value.trim().replace(/^@/, '');
+}
+
+async function requireAllowlistedSession(req, res) {
+  const session = getSessionFromRequest(req);
+  if (!session) {
+    sendJson(res, 401, { error: 'Unauthorized' });
+    return null;
+  }
+
+  const allowlist = await fetchAllowlistFromGithub();
+  const normalized = allowlist.users.map((user) => user.toLowerCase());
+  const allowed = normalized.includes((session.login || '').toLowerCase());
+
+  if (!allowed) {
+    sendJson(res, 403, { error: 'Forbidden' });
+    return null;
+  }
+
+  return { session, allowlist };
 }

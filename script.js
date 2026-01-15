@@ -1,11 +1,11 @@
-const ver = "Version 1.0.195";
+const ver = "Version 1.0.20";
 const COMMENTS_API_URL = '/api/comments';
 const COMMENTS_STORAGE_KEY = 'coolman-comments';
 const DEFAULT_SITE_SETTINGS = {
 	releaseCountdownTarget: '2025-12-05T22:00:00Z',
 	bannerEnabled: false,
 	bannerText: '🎉 Website Release!',
-	bannerLink: 'https://github.com/RandomInternetUser3000/mycoolwebsite',
+	bannerLink: 'https://github.com/COOLmanYT/mycoolwebsite',
 	bannerButtonText: 'Open Source Repo',
 	countdownEnabled: false, //you can make the countdown a comment if this fails
 	countdownHeading: 'Release Countdown',
@@ -1747,16 +1747,11 @@ async function initLatestUploadCard() {
 		return;
 	}
 
-	const skipFeedFallback = typeof window !== 'undefined' && !/^(localhost|127\.0\.0\.1)$/i.test(window.location.hostname || '');
 	if (await attemptApiLatest()) {
 		return;
 	}
 
-	if (skipFeedFallback) {
-		if (await attemptPipedLatest()) {
-			return;
-		}
-		markError('Unable to fetch the latest video right now. Watch more on YouTube.');
+	if (await attemptPipedLatest()) {
 		return;
 	}
 

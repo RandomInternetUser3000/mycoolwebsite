@@ -19,7 +19,7 @@ You can find the current website version in:
 
 ### In scope
 - The production website hosted on **Vercel** (served from this repository)
-- The source code in this repository (`RandomInternetUser3000/mycoolwebsite`)
+- The source code in this repository (`COOLmanYT/mycoolwebsite`)
 - Site endpoints implemented by this repo (for example, any `/api/*` routes included here)
 
 ### Out of scope

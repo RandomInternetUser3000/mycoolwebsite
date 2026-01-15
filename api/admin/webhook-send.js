@@ -1,6 +1,8 @@
+import { getSessionFromRequest } from '../../lib/server/auth.js';
+import { fetchAllowlistFromGithub } from '../../lib/server/allowlist.js';
 import { readJsonBody, sendJson, methodNotAllowed } from '../../lib/server/http.js';
 
-const OWNER = process.env.GITHUB_OWNER || 'RandomInternetUser3000';
+const OWNER = process.env.GITHUB_OWNER || 'COOLmanYT';
 const REPO = process.env.GITHUB_REPO || 'mycoolwebsite';
 const BRANCH = process.env.ALLOWLIST_BRANCH || 'main';
 const FILE_PATH = 'content/webhooks.json';
@@ -18,6 +20,9 @@ export default async function handler(req, res) {
     methodNotAllowed(res, ['POST', 'OPTIONS']);
     return;
   }
+
+  const auth = await requireAllowlistedSession(req, res);
+  if (!auth) return;
 
   try {
     const body = await readJsonBody(req);
@@ -128,4 +133,24 @@ async function sendWebhook(url, message, embed) {
     err.statusCode = res.status;
     throw err;
   }
+}
+
+async function requireAllowlistedSession(req, res) {
+  const session = getSessionFromRequest(req);
+  if (!session) {
+    sendJson(res, 401, { error: 'Unauthorized' });
+    return null;
+  }
+
+  const allowlist = await fetchAllowlistFromGithub();
+  const allowed = allowlist.users
+    .map((user) => user.toLowerCase())
+    .includes((session.login || '').toLowerCase());
+
+  if (!allowed) {
+    sendJson(res, 403, { error: 'Forbidden' });
+    return null;
+  }
+
+  return { session, allowlist };
 }

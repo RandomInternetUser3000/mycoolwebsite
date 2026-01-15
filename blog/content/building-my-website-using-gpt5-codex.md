@@ -16,7 +16,7 @@ featured: true
 standalone: true
 shareBase: blog/index.html
 secondaryActionLabel: View Source
-secondaryActionUrl: https://github.com/RandomInternetUser3000/mycoolwebsite
+secondaryActionUrl: https://github.com/COOLmanYT/mycoolwebsite
 ---
 It took several months of "hard" work, but I made it. I have officially finished coding my website (for the main part). And now, here is my journey for you.
 

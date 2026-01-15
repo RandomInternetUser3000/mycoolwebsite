@@ -1,4 +1,5 @@
 import { getSessionFromRequest } from '../../lib/server/auth.js';
+import { fetchAllowlistFromGithub } from '../../lib/server/allowlist.js';
 import { sendJson, methodNotAllowed } from '../../lib/server/http.js';
 import fs from 'fs/promises';
 import path from 'path';
@@ -17,11 +18,8 @@ export default async function handler(req, res) {
     return;
   }
 
-  const session = getSessionFromRequest(req);
-  if (!session) {
-    sendJson(res, 401, { error: 'Unauthorized' });
-    return;
-  }
+  const session = await requireAllowlistedSession(req, res);
+  if (!session) return;
 
   const config = await loadWebhookConfig();
   const targetWebhook = resolveWebhookFromEnv(config);
@@ -131,4 +129,21 @@ function resolveWebhookFromEnv(config = {}) {
     }
   }
   return null;
+}
+
+async function requireAllowlistedSession(req, res) {
+  const session = getSessionFromRequest(req);
+  if (!session) {
+    sendJson(res, 401, { error: 'Unauthorized' });
+    return null;
+  }
+  const allowlist = await fetchAllowlistFromGithub();
+  const allowed = allowlist.users
+    .map((user) => user.toLowerCase())
+    .includes((session.login || '').toLowerCase());
+  if (!allowed) {
+    sendJson(res, 403, { error: 'Forbidden' });
+    return null;
+  }
+  return session;
 }

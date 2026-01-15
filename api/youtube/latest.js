@@ -2,6 +2,10 @@ import { sendJson, methodNotAllowed } from '../../lib/server/http.js';
 
 const cache = new Map();
 const CACHE_TTL_MS = 5 * 60 * 1000;
+const PIPED_BASES = [
+	'https://piped.video/api/v1/channel/',
+	'https://piped.mha.fi/api/v1/channel/',
+];
 
 export const config = { runtime: 'nodejs' };
 
@@ -18,10 +22,6 @@ export default async function handler(req, res) {
 	}
 
 	const apiKey = process.env.YOUTUBE_API_KEY;
-	if (!apiKey) {
-		sendJson(res, 500, { error: 'YOUTUBE_API_KEY is not configured' });
-		return;
-	}
 
 	const { searchParams } = new URL(req.url, 'http://localhost');
 	const rawChannelId = (searchParams.get('channelId') || '').trim();
@@ -50,7 +50,7 @@ export default async function handler(req, res) {
 		return;
 	}
 
-	const latestVideo = await fetchLatestVideo(channelId, apiKey);
+	const latestVideo = await getLatestVideo({ channelId, handle: rawHandle, apiKey });
 	if (!latestVideo) {
 		sendJson(res, 404, { error: 'No videos found for this channel' });
 		return;
@@ -65,6 +65,12 @@ export default async function handler(req, res) {
 async function resolveChannelId(handle, apiKey) {
 	if (!handle) return '';
 	const normalized = handle.startsWith('@') ? handle : `@${handle}`;
+
+	if (!apiKey) {
+		const fallbackId = await resolveChannelIdFromPiped(normalized);
+		return fallbackId || '';
+	}
+
 	const url = new URL('https://www.googleapis.com/youtube/v3/search');
 	url.searchParams.set('part', 'id');
 	url.searchParams.set('type', 'channel');
@@ -75,13 +81,13 @@ async function resolveChannelId(handle, apiKey) {
 	try {
 		const response = await fetch(url);
 		if (!response.ok) {
-			return '';
+			return await resolveChannelIdFromPiped(normalized);
 		}
 		const json = await response.json();
 		const channelId = json?.items?.[0]?.id?.channelId || '';
-		return channelId || '';
+		return channelId || (await resolveChannelIdFromPiped(normalized)) || '';
 	} catch (error) {
-		return '';
+		return await resolveChannelIdFromPiped(normalized);
 	}
 }
 
@@ -124,6 +130,89 @@ async function fetchLatestVideo(channelId, apiKey) {
 	} catch (error) {
 		return await fetchLatestViaFeed(channelId);
 	}
+}
+
+async function fetchLatestFromPiped(identifier) {
+	const cleaned = (identifier || '').trim();
+	if (!cleaned) return null;
+	for (const base of PIPED_BASES) {
+		const sanitizedBase = base.endsWith('/') ? base : `${base}/`;
+		const url = `${sanitizedBase}${encodeURIComponent(cleaned)}`;
+		try {
+			const response = await fetch(url, { headers: { Accept: 'application/json' } });
+			if (!response.ok) continue;
+			const payload = await response.json().catch(() => null);
+			if (!payload) continue;
+			const streams = Array.isArray(payload.latestStreams)
+				? payload.latestStreams
+				: Array.isArray(payload.relatedStreams)
+					? payload.relatedStreams
+					: Array.isArray(payload.streams)
+						? payload.streams
+						: Array.isArray(payload.videos)
+							? payload.videos
+							: [];
+			const best = streams
+				.map((entry) => {
+					if (!entry?.title) return null;
+					const published = entry.uploaded ?? entry.uploadedDate ?? entry.published ?? entry.publishedDate ?? entry.createdAt;
+					const publishedAt = published ? new Date(published).toISOString() : null;
+					const videoId = entry.url || entry.videoId || entry.id;
+					const thumbnail = entry.thumbnail || entry.thumbnailUrl || (videoId ? `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg` : null);
+					return {
+						title: entry.title,
+						videoId,
+						thumbnail,
+						publishedAt,
+						url: videoId ? (String(videoId).startsWith('http') ? videoId : `https://www.youtube.com/watch?v=${videoId}`) : null,
+						viewCount: entry.views ?? entry.viewCount ?? null,
+						durationSeconds: entry.duration ?? entry.lengthSeconds ?? null,
+					};
+				})
+				.filter(Boolean)
+				.sort((a, b) => (Date.parse(b.publishedAt || 0) || 0) - (Date.parse(a.publishedAt || 0) || 0))[0];
+			if (best) {
+				return {
+					channelId: payload.id || payload.channelId || payload.channel_id || null,
+					...best,
+				};
+			}
+		} catch (error) {
+			// ignore and try next base
+		}
+	}
+	return null;
+}
+
+async function resolveChannelIdFromPiped(handle) {
+	const result = await fetchLatestFromPiped(handle);
+	return result?.channelId || null;
+}
+
+async function getLatestVideo({ channelId, handle, apiKey }) {
+	const apiEnabled = Boolean(apiKey);
+	if (apiEnabled) {
+		const viaApi = await fetchLatestVideo(channelId, apiKey);
+		if (viaApi) {
+			return viaApi;
+		}
+	}
+
+	const viaPiped = await fetchLatestFromPiped(channelId || handle);
+	if (viaPiped?.videoId) {
+		return {
+			videoId: viaPiped.videoId,
+			title: viaPiped.title,
+			url: viaPiped.url,
+			thumbnail: viaPiped.thumbnail,
+			publishedAt: viaPiped.publishedAt,
+			durationSeconds: viaPiped.durationSeconds,
+			viewCount: viaPiped.viewCount,
+		};
+	}
+
+	const viaFeed = await fetchLatestViaFeed(channelId);
+	return viaFeed;
 }
 
 async function fetchLatestViaFeed(channelId) {
