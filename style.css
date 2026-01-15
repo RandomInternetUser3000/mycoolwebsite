@@ -134,6 +134,21 @@ body.theme-light {
   --status-error-text: #c1213b;
 }
 
+@media (max-width: 768px) {
+  body {
+    background-attachment: scroll;
+    background-size: cover;
+    background-position: center top;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body {
+    background-attachment: scroll;
+    transition: none;
+  }
+}
+
 a {
   color: inherit;
 }
@@ -1841,9 +1856,9 @@ body:not(.theme-light) .contact-auth-badge {
 }
 
 .contact-links .social-button {
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
-  text-align: center;
+  text-align: left;
   width: calc(50% - 0.5rem);
   min-width: 0;
   min-height: 0;
@@ -1893,6 +1908,7 @@ body:not(.theme-light) .contact-auth-badge {
   font-size: clamp(0.9rem, 2vw, 1rem);
   font-weight: 600;
   color: inherit;
+  text-align: left;
 }
 
 .theme-light .contact-links .social-button .social-label {

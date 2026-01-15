@@ -15,6 +15,8 @@ const SITE_SETTINGS_PATH = '/api/admin/site-settings';
 let siteSettings = { ...DEFAULT_SITE_SETTINGS };
 const ANALYTICS_MODULE_URL = 'https://v.vercel-scripts.com/v1/script.js';
 const VERCEL_ANALYTICS_MODULE_ESM = 'https://unpkg.com/@vercel/analytics@latest/dist/analytics.mjs';
+const MAILERLITE_ACCOUNT_ID = '2039610';
+let mailerLiteQueued = false;
 const blogViewerState = {
 	container: null,
 	closeButton: null,
@@ -255,6 +257,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 	initSubscribeGlow();
 	prepareTopBanner();
 	initLazySections();
+	initLazyMailerLite();
 	initLatestBlogCard();
 
 	if (document.querySelector('[data-project-open]')) {
@@ -304,6 +307,50 @@ function initLazySections() {
 	if (latestVideoSection) {
 		observer.observe(latestVideoSection);
 	}
+}
+
+function queueMailerLite() {
+	if (mailerLiteQueued) {
+		return;
+	}
+	mailerLiteQueued = true;
+	(function (w, d, e, u, f, l, n) {
+		w[f] = w[f] || function () {
+			(w[f].q = w[f].q || []).push(arguments);
+		};
+		l = d.createElement(e);
+		l.async = 1;
+		l.src = u;
+		n = d.getElementsByTagName(e)[0];
+		n.parentNode.insertBefore(l, n);
+	})(window, document, 'script', 'https://assets.mailerlite.com/js/universal.js', 'ml');
+
+	if (typeof window.ml === 'function') {
+		window.ml('account', MAILERLITE_ACCOUNT_ID);
+	}
+}
+
+function initLazyMailerLite() {
+	const embeds = document.querySelectorAll('.ml-embedded');
+	if (!embeds.length) {
+		return;
+	}
+
+	const loadMailerLite = () => queueMailerLite();
+
+	if ('IntersectionObserver' in window) {
+		const observer = new IntersectionObserver((entries) => {
+			entries.forEach((entry) => {
+				if (!entry.isIntersecting) return;
+				loadMailerLite();
+				observer.disconnect();
+			});
+		}, { rootMargin: '200px 0px' });
+		embeds.forEach((embed) => observer.observe(embed));
+		return;
+	}
+
+	loadMailerLite();
 }
 
 function mountSpotifyEmbed(container) {
