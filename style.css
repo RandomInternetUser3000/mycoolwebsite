@@ -659,6 +659,7 @@ button:focus-visible {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  text-align: center;
   width: 52px;
   height: 52px;
   border-radius: 999px;
@@ -677,6 +678,8 @@ button:focus-visible {
   transition: transform 0.2s ease, filter 0.2s ease;
   filter: none;
   flex-shrink: 0;
+  margin: auto;
+  display: block;
 }
 
 .social-button::after {
@@ -1493,6 +1496,33 @@ body.theme-light .newsletter__embed {
   margin: 0;
   color: var(--text-muted);
   font-size: 0.95rem;
+}
+
+@media (max-width: 640px) {
+  .newsletter {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    padding: 0;
+    width: 100%;
+    margin: 0 auto 2rem;
+  }
+
+  body.theme-light .newsletter {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+  }
+
+  .newsletter__embed {
+    background: transparent;
+    border: none;
+    padding: 0;
+  }
+
+  .newsletter__meta {
+    gap: 0.4rem;
+  }
 }
 
 @media (max-width: 680px) {
