@@ -1271,11 +1271,23 @@ body.theme-light .playlist-section__intro p {
 }
 
 .now-playing__thumb {
+  position: relative;
   width: 100%;
   height: 100%;
   background-size: cover;
   background-position: center;
   transition: transform 0.35s ease, filter 0.35s ease;
+}
+
+.now-playing__thumb--embedded {
+  background: #000;
+}
+
+.now-playing__thumb iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
 }
 
 .now-playing__thumb--skeleton {
@@ -1358,6 +1370,11 @@ body.theme-light .playlist-section__intro p {
 .now-playing:hover .now-playing__thumb {
   transform: scale(1.04);
   filter: saturate(1.1);
+}
+
+.now-playing--embedded:hover .now-playing__thumb {
+  transform: none;
+  filter: none;
 }
 
 .now-playing--error .now-playing__title {

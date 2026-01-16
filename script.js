@@ -1618,16 +1618,92 @@ async function initLatestUploadCard() {
 		return '';
 	};
 
+	const extractVideoId = (input) => {
+		const raw = input?.toString().trim();
+		if (!raw) {
+			return '';
+		}
+		if (/^[\w-]{11}$/.test(raw)) {
+			return raw;
+		}
+		try {
+			const url = raw.startsWith('http')
+				? new URL(raw)
+				: new URL(`https://www.youtube.com/${raw.replace(/^\/+/, '')}`);
+			if (url.hostname.includes('youtu.be')) {
+				return url.pathname.replace('/', '').trim();
+			}
+			if (url.pathname.startsWith('/embed/')) {
+				return url.pathname.split('/embed/')[1]?.split(/[?&#/]/)[0] ?? '';
+			}
+			if (url.pathname.startsWith('/shorts/')) {
+				return url.pathname.split('/shorts/')[1]?.split(/[?&#/]/)[0] ?? '';
+			}
+			const v = url.searchParams.get('v');
+			return v ? v.trim() : '';
+		} catch (error) {
+			return '';
+		}
+	};
+
+	const buildUploadsPlaylistId = (channelId) => (
+		channelId?.startsWith('UC') ? `UU${channelId.slice(2)}` : ''
+	);
+
+	const mountEmbed = (embedUrl, title) => {
+		if (!thumbEl || !embedUrl) {
+			return false;
+		}
+		const iframe = document.createElement('iframe');
+		iframe.className = 'now-playing__iframe';
+		iframe.src = embedUrl;
+		iframe.title = title || 'YouTube video player';
+		iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+		iframe.allowFullscreen = true;
+
+		thumbEl.classList.add('now-playing__thumb--embedded');
+		thumbEl.classList.remove('now-playing__thumb--skeleton');
+		thumbEl.style.removeProperty('background-image');
+		thumbEl.style.removeProperty('background-size');
+		thumbEl.style.removeProperty('background-position');
+		thumbEl.replaceChildren(iframe);
+
+		card.classList.add('now-playing--embedded');
+		return true;
+	};
+
+	const mountVideoEmbed = (videoId, title) => {
+		if (!videoId) {
+			return false;
+		}
+		const embedUrl = `https://www.youtube-nocookie.com/embed/${encodeURIComponent(videoId)}?rel=0&modestbranding=1&playsinline=1`;
+		return mountEmbed(embedUrl, title || 'Latest YouTube video');
+	};
+
+	const mountUploadsEmbed = () => {
+		const playlistId = buildUploadsPlaylistId(resolvedChannelId);
+		if (!playlistId) {
+			return false;
+		}
+		const embedUrl = `https://www.youtube-nocookie.com/embed/videoseries?list=${encodeURIComponent(playlistId)}&rel=0&modestbranding=1&playsinline=1`;
+		return mountEmbed(embedUrl, 'Latest uploads');
+	};
+
 	const markError = (message) => {
 		card.classList.add('now-playing--error');
-		thumbEl?.classList.remove('now-playing__thumb--skeleton');
-		if (thumbEl) {
-			thumbEl.style.removeProperty('background-image');
-			thumbEl.style.removeProperty('background-size');
-			thumbEl.style.removeProperty('background-position');
+		const embedded = mountUploadsEmbed();
+		if (!embedded) {
+			thumbEl?.classList.remove('now-playing__thumb--skeleton');
+			if (thumbEl) {
+				thumbEl.style.removeProperty('background-image');
+				thumbEl.style.removeProperty('background-size');
+				thumbEl.style.removeProperty('background-position');
+			}
 		}
 		if (titleEl) {
-			titleEl.textContent = message;
+			titleEl.textContent = embedded
+				? 'Latest upload is unavailable right now — here’s the channel playlist.'
+				: message;
 		}
 		if (statsEl) {
 			statsEl.hidden = true;
@@ -1651,6 +1727,7 @@ async function initLatestUploadCard() {
 			publishedAt,
 			durationSeconds,
 			viewCount,
+			videoId,
 		} = videoPayload;
 		const safeTitle = title?.toString().trim() || 'Latest upload from COOLmanYT';
 		const resolvedLink = (() => {
@@ -1682,6 +1759,13 @@ async function initLatestUploadCard() {
 		}
 		if (linkEl) {
 			linkEl.href = resolvedLink;
+		}
+
+		const derivedVideoId = videoId || extractVideoId(resolvedLink);
+		if (derivedVideoId) {
+			mountVideoEmbed(derivedVideoId, safeTitle);
+		} else {
+			mountUploadsEmbed();
 		}
 
 		const publishedIso = normaliseToIsoString(publishedAt);
@@ -1780,6 +1864,7 @@ async function initLatestUploadCard() {
 				publishedAt: payload.publishedAt,
 				durationSeconds: payload.durationSeconds,
 				viewCount: payload.viewCount,
+				videoId: payload.videoId,
 			});
 			return true;
 		} catch (error) {
@@ -1945,12 +2030,15 @@ async function attemptPipedLatest() {
 								}
 							}
 
+							const candidateVideoId = entry.videoId || entry.id || extractVideoId(videoUrl);
+
 							return {
 								entry,
 								title: entry.title,
 								publishedIso,
 								publishedTimestamp,
 								videoUrl,
+								videoId: candidateVideoId,
 								thumbnail: candidateThumbnail,
 								durationSeconds: candidateDuration,
 								viewCount: candidateViews,
@@ -1975,6 +2063,7 @@ async function attemptPipedLatest() {
 						publishedAt: best.publishedIso || best.publishedTimestamp || '',
 						durationSeconds: best.durationSeconds,
 						viewCount: best.viewCount,
+						videoId: best.videoId,
 					});
 					return true;
 				} catch (error) {
@@ -2071,6 +2160,7 @@ async function attemptPipedLatest() {
 			publishedAt: published,
 			durationSeconds,
 			viewCount,
+			videoId,
 		});
 		return;
 	} catch (error) {
