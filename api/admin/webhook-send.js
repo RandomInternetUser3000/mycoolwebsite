@@ -1,5 +1,4 @@
-import { getSessionFromRequest } from '../../lib/server/auth.js';
-import { fetchAllowlistFromGithub } from '../../lib/server/allowlist.js';
+import { requireAllowlistedSession } from '../../lib/server/auth.js';
 import { readJsonBody, sendJson, methodNotAllowed } from '../../lib/server/http.js';
 
 const OWNER = process.env.GITHUB_OWNER || 'COOLmanYT';
@@ -50,9 +49,9 @@ export default async function handler(req, res) {
       targets.map(async (hook) => {
         try {
           await sendWebhook(hook.url, message, embed);
-          return { id: hook.id, url: hook.url, envVar: hook.envVar, ok: true };
+          return { id: hook.id, envVar: hook.envVar, ok: true };
         } catch (error) {
-          return { id: hook.id, url: hook.url, envVar: hook.envVar, ok: false, error: error.message };
+          return { id: hook.id, envVar: hook.envVar, ok: false, error: error.message };
         }
       }),
     );
@@ -133,24 +132,4 @@ async function sendWebhook(url, message, embed) {
     err.statusCode = res.status;
     throw err;
   }
-}
-
-async function requireAllowlistedSession(req, res) {
-  const session = getSessionFromRequest(req);
-  if (!session) {
-    sendJson(res, 401, { error: 'Unauthorized' });
-    return null;
-  }
-
-  const allowlist = await fetchAllowlistFromGithub();
-  const allowed = allowlist.users
-    .map((user) => user.toLowerCase())
-    .includes((session.login || '').toLowerCase());
-
-  if (!allowed) {
-    sendJson(res, 403, { error: 'Forbidden' });
-    return null;
-  }
-
-  return { session, allowlist };
 }

@@ -1,4 +1,4 @@
-import { getSessionFromRequest } from '../../lib/server/auth.js';
+import { requireAllowlistedSession } from '../../lib/server/auth.js';
 import { fetchAllowlistFromGithub, persistAllowlist } from '../../lib/server/allowlist.js';
 import { readJsonBody, sendJson, methodNotAllowed } from '../../lib/server/http.js';
 
@@ -92,23 +92,4 @@ async function handleRemove(req, res, session) {
 
 function sanitizeUsername(value = '') {
   return value.trim().replace(/^@/, '');
-}
-
-async function requireAllowlistedSession(req, res) {
-  const session = getSessionFromRequest(req);
-  if (!session) {
-    sendJson(res, 401, { error: 'Unauthorized' });
-    return null;
-  }
-
-  const allowlist = await fetchAllowlistFromGithub();
-  const normalized = allowlist.users.map((user) => user.toLowerCase());
-  const allowed = normalized.includes((session.login || '').toLowerCase());
-
-  if (!allowed) {
-    sendJson(res, 403, { error: 'Forbidden' });
-    return null;
-  }
-
-  return { session, allowlist };
 }

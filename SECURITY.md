@@ -63,3 +63,28 @@ I’ll respond using the same contact method you used (unless you request otherw
 ## Safe Harbour
 
 If you act in good faith and avoid privacy violations, service disruption, and data destruction, I will not pursue action against you for responsible disclosure. Usage of the website and searching for vulnerabilities must follow the website Terms of Service, available right in the repo or at https://coolmanyt.com/terms.html.
+
+## Security Measures
+
+This project implements several security measures to protect admin functionality and sensitive data:
+
+### Authentication & Authorization
+- **GitHub OAuth**: All admin endpoints require authenticated GitHub users
+- **Allow list**: Only users listed in `content/admin-allowlist.json` can access admin features
+- **Session management**: Signed, tamper-proof session cookies with expiration
+- **Shared authentication guard**: Centralized `requireAllowlistedSession` helper prevents bypass vulnerabilities
+
+### Data Protection
+- **No credential leakage**: Webhook URLs and environment variable values are never exposed in API responses
+- **Secure cookies**: Production deployments use `HttpOnly` and `Secure` flags; local development supports HTTP for testing
+- **Signed sessions**: HMAC-SHA256 signatures prevent session tampering
+
+### API Security
+- **Method validation**: Endpoints validate HTTP methods and return appropriate status codes
+- **Input sanitization**: User inputs are validated and sanitized before processing
+- **Error handling**: Generic error messages prevent information disclosure
+
+### Best Practices
+- **Minimal privilege**: Admin operations require both authentication and allow list membership
+- **Defense in depth**: Multiple layers of validation on sensitive operations
+- **Fail secure**: Missing credentials or invalid sessions result in access denial

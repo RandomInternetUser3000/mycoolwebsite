@@ -64,7 +64,6 @@ mycoolwebsite/
 - Latest YouTube upload — update the `data-channel-user` (or optional `data-channel-id`) on the `[data-latest-video]` block in `index.html`. The script resolves handles, IDs, or legacy usernames automatically.
 - Blog posts — write markdown with front matter inside `blog/content/*.md`, then run `npm run build:blog` to regenerate `blog/index.html`, `blog/feed.xml`, `blog/.generated/blog-manifest.json`, and every standalone page derived from `blog/templates/blog-standalone.html`.
 - Projects — extend `projects.html` with new cards + `<template>` blocks, and drop long-form write-ups into `projects/your-page.html` so you can share direct URLs.
-<<<<<<< HEAD
 - Social buttons — edit the `.social-links` clusters on each page (plus the hero footer). Icons live under `images/`; remember alt text. External links automatically get Material Symbols for “open in new” vs “external” based on target/protocol.
 - Images — drop optimized assets into `images/` and reference them relatively (`images/avatar.png`).
 

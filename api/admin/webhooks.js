@@ -1,5 +1,4 @@
-import { getSessionFromRequest } from '../../lib/server/auth.js';
-import { fetchAllowlistFromGithub } from '../../lib/server/allowlist.js';
+import { requireAllowlistedSession } from '../../lib/server/auth.js';
 import { readJsonBody, sendJson, methodNotAllowed } from '../../lib/server/http.js';
 
 const OWNER = process.env.GITHUB_OWNER || 'COOLmanYT';
@@ -175,24 +174,4 @@ async function writeFileToGithub(path, data, token, sha, message) {
 
 function generateId() {
   return Math.random().toString(36).slice(2, 10);
-}
-
-async function requireAllowlistedSession(req, res) {
-  const session = getSessionFromRequest(req);
-  if (!session) {
-    sendJson(res, 401, { error: 'Unauthorized' });
-    return null;
-  }
-
-  const allowlist = await fetchAllowlistFromGithub();
-  const allowed = allowlist.users
-    .map((user) => user.toLowerCase())
-    .includes((session.login || '').toLowerCase());
-
-  if (!allowed) {
-    sendJson(res, 403, { error: 'Forbidden' });
-    return null;
-  }
-
-  return { session, allowlist };
 }
