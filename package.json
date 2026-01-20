@@ -7,6 +7,7 @@
     "build:blog": "node blog/scripts/build-blog.js"
   },
   "dependencies": {
+    "@vercel/speed-insights": "^1.2.0",
     "gray-matter": "4.0.3",
     "marked": "9.1.2"
   }
