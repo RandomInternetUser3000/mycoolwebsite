@@ -103,6 +103,16 @@ export default async function handler(req, res) {
 		return;
 	}
 
+	if (latestVideo.viewCount == null && latestVideo.videoId) {
+		const enriched = await fetchStreamFromPiped(latestVideo.videoId);
+		if (enriched) {
+			latestVideo.viewCount = normalizeViewCount(enriched.viewCount);
+			latestVideo.durationSeconds = latestVideo.durationSeconds ?? enriched.durationSeconds ?? null;
+			latestVideo.thumbnail = latestVideo.thumbnail || enriched.thumbnail || null;
+			latestVideo.publishedAt = latestVideo.publishedAt || enriched.publishedAt || null;
+		}
+	}
+
 	const payload = { channelId, ...latestVideo };
 	cache.set(cacheKey, { expiresAt: now + CACHE_TTL_MS, payload });
 	res.setHeader('Cache-Control', 'public, max-age=120, stale-while-revalidate=60');
@@ -285,6 +295,31 @@ async function getLatestVideo({ channelId, handle, apiKey }) {
 	}
 
 	return viaFeed;
+}
+
+async function fetchStreamFromPiped(videoId) {
+	const bases = [
+		'https://piped.video/api/v1/streams/',
+		'https://piped.mha.fi/api/v1/streams/',
+	];
+	for (const base of bases) {
+		const url = `${base}${encodeURIComponent(videoId)}`;
+		try {
+			const res = await fetchWithTimeout(url, { headers: { Accept: 'application/json' }, timeout: PIPED_FETCH_TIMEOUT_MS });
+			if (!res.ok) continue;
+			const json = await res.json().catch(() => null);
+			if (!json) continue;
+			return {
+				viewCount: normalizeViewCount(json.views ?? json.viewCount ?? json.watchCount ?? json.watchers ?? json.view_count),
+				durationSeconds: json.duration ?? json.lengthSeconds ?? json.length_seconds ?? null,
+				thumbnail: json.thumbnailUrl || json.thumbnailURL || json.thumbnail || null,
+				publishedAt: json.uploaded ?? json.published ?? json.publishedDate ?? json.uploadedDate ?? null,
+			};
+		} catch (error) {
+			continue;
+		}
+	}
+	return null;
 }
 
 async function fetchLatestViaFeed(channelId) {

@@ -805,6 +805,7 @@ async function enableContactForm(initialAuthState) {
 	const consentCheckbox = document.getElementById('dataConsent');
 	const submitButton = contactForm.querySelector('button[type="submit"]');
 	const redirectInput = contactForm.querySelector('input[name="_redirect"]');
+	const redirectUrl = redirectInput?.value?.trim() || `${window.location.origin}/contact-thanks.html`;
 	const endpoint = contactForm.getAttribute('action');
 
 	if (statusElement) {
@@ -918,6 +919,9 @@ async function enableContactForm(initialAuthState) {
 			submitButton.disabled = false;
 			submitButton.textContent = 'Send Message';
 			contactForm.removeEventListener('submit', handleSubmit);
+			const redirectParam = endpoint.includes('?') ? '&' : '?';
+			contactForm.setAttribute('action', `${endpoint}${redirectParam}redirect=${encodeURIComponent(redirectUrl)}`);
+			contactForm.setAttribute('target', '_self');
 			if (!allowlistBypass) {
 				setCooldown();
 			}
@@ -963,15 +967,12 @@ async function enableContactForm(initialAuthState) {
 			});
 
 			if (response.ok) {
-				const redirectUrl = redirectInput?.value?.trim() || '';
 				let expiresAt = null;
 				if (!allowlistBypass) {
 					expiresAt = setCooldown();
 				}
-				if (redirectUrl) {
-					window.location.assign(redirectUrl);
-					return;
-				}
+				window.location.assign(redirectUrl);
+				return;
 				if (successElement) {
 					successElement.hidden = false;
 					if (allowlistBypass) {
