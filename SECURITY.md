@@ -43,8 +43,10 @@ Please include:
 ### Alternative contact
 You may also contact me via: https://coolmanyt.com/contact.html
 
+You can also report using: https://github.com/COOLmanYT/mycoolwebsite/security/advisories/new
+
 ### When is a GitHub Issue OK?
-Please **do not** open a public GitHub issue for vulnerabilities that could be exploited (ex: auth bypass, XSS, injection, account/session issues, sensitive data exposure).
+Please **do not** open a public GitHub issue for vulnerabilities that could be exploited (e.g: auth bypass, XSS, injection, account/session issues, sensitive data exposure).
 
 A GitHub issue is OK for:
 - Non-sensitive security hardening suggestions
@@ -63,5 +65,3 @@ I’ll respond using the same contact method you used (unless you request otherw
 ## Safe Harbour
 
 If you act in good faith and avoid privacy violations, service disruption, and data destruction, I will not pursue action against you for responsible disclosure. Usage of the website and searching for vulnerabilities must follow the website Terms of Service, available right in the repo or at https://coolmanyt.com/terms.html.
-
-l
