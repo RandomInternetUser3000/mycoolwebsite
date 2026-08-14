@@ -30,8 +30,8 @@
     .pm-status { text-align: center; padding: 3rem 1rem; opacity: 0.7; }
     .pm-empty { text-align: center; padding: 3rem 1rem; opacity: 0.6; }
     .pm-card {
-      background: var(--card-bg, #1a1a2e);
-      border: 1px solid var(--border, #2a2a3e);
+      background: var(--surface-strong, #120000);
+      border: 1px solid var(--outline, rgba(255,255,255,0.12));
       border-radius: 12px;
       padding: 1.5rem;
       display: flex;
@@ -39,7 +39,7 @@
       gap: 0.75rem;
       transition: border-color 0.15s;
     }
-    .pm-card:hover { border-color: var(--accent, #4f46e5); }
+    .pm-card:hover { border-color: var(--accent, #ff0000); }
     .pm-card h3 { margin: 0; font-size: 1.1rem; }
     .pm-card p { margin: 0; font-size: 0.9rem; opacity: 0.8; line-height: 1.55; }
     .pm-card__meta { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: auto; }
@@ -47,15 +47,15 @@
       font-size: 0.75rem;
       padding: 0.2rem 0.5rem;
       border-radius: 6px;
-      background: rgba(79,70,229,0.12);
-      border: 1px solid rgba(79,70,229,0.25);
+      background: rgba(255,0,0,0.12);
+      border: 1px solid rgba(255,0,0,0.25);
     }
     .pm-status-badge {
       font-size: 0.78rem;
       padding: 0.2rem 0.5rem;
       border-radius: 6px;
-      background: rgba(34,197,94,0.1);
-      border: 1px solid rgba(34,197,94,0.3);
+      background: rgba(128,0,0,0.28);
+      border: 1px solid rgba(255,0,0,0.45);
     }
     .pm-card__actions { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.5rem; }
     .pm-featured-badge {
@@ -64,7 +64,7 @@
       font-weight: 600;
       letter-spacing: 0.05em;
       text-transform: uppercase;
-      color: var(--accent, #4f46e5);
+      color: var(--accent, #ff0000);
       border: 1px solid currentColor;
       border-radius: 6px;
       padding: 0.15rem 0.5rem;
@@ -181,6 +181,15 @@
       return String(str ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     }
 
+    function safeUrl(value) {
+      try {
+        const url = new URL(value);
+        return url.protocol === 'https:' || url.protocol === 'http:' ? url.href : '';
+      } catch (_) {
+        return '';
+      }
+    }
+
     async function loadProjects() {
       try {
         const res = await fetch('/api/projects/list');
@@ -208,8 +217,11 @@
             ? '<span class="pm-featured-badge">Featured</span>'
             : '';
           const actions = [];
-          if (p.url) actions.push('<a href="' + escapeHtml(p.url) + '" class="button button--small" rel="noopener noreferrer">View project</a>');
-          if (p.repo_url) actions.push('<a href="' + escapeHtml(p.repo_url) + '" class="button button--ghost button--small" target="_blank" rel="noopener noreferrer">Repository</a>');
+          if (p.slug) actions.push('<a href="/projects/view/' + encodeURIComponent(p.slug) + '" class="button button--small">View details</a>');
+          const projectUrl = safeUrl(p.url);
+          const repoUrl = safeUrl(p.repo_url);
+          if (projectUrl) actions.push('<a href="' + escapeHtml(projectUrl) + '" class="button button--ghost button--small" target="_blank" rel="noopener noreferrer">Visit project</a>');
+          if (repoUrl) actions.push('<a href="' + escapeHtml(repoUrl) + '" class="button button--ghost button--small" target="_blank" rel="noopener noreferrer">Repository</a>');
           const actionsHtml = actions.length ? '<div class="pm-card__actions">' + actions.join('') + '</div>' : '';
           return '<article class="pm-card">' +
             featured +

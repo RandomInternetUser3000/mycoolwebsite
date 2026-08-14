@@ -2,6 +2,7 @@ import { requireAllowlistedSession } from '../lib/server/auth.js';
 import { readJsonBody, sendJson, methodNotAllowed } from '../lib/server/http.js';
 import { fetchAllowlistFromGithub, persistAllowlist } from '../lib/server/allowlist.js';
 import { getSupabaseAdmin } from '../lib/server/supabase.js';
+import { renderMarkdown } from '../lib/server/markdown.js';
 import fs from 'fs/promises';
 import path from 'path';
 
@@ -182,9 +183,36 @@ export default async function handler(req, res) {
       return routeWebhooks(req, res);
     case 'projects':
       return routeProjects(req, res);
+    case 'preview':
+      return routePreview(req, res);
     default:
       res.statusCode = 404;
       res.end('Not Found');
+  }
+}
+
+// ===========================================================================
+// PREVIEW  (/api/admin/preview) — safe Markdown rendering for the editor
+// ===========================================================================
+
+async function routePreview(req, res) {
+  const auth = await requireAllowlistedSession(req, res);
+  if (!auth) return;
+  if (req.method !== 'POST') {
+    return methodNotAllowed(res, ['POST', 'OPTIONS']);
+  }
+
+  try {
+    const body = await readJsonBody(req);
+    const markdown = String(body.content_markdown ?? '');
+    if (markdown.length > 200_000) {
+      return sendJson(res, 413, { error: 'Preview content is too large.' });
+    }
+    const contentHtml = await renderMarkdown(markdown);
+    sendJson(res, 200, { contentHtml });
+  } catch (error) {
+    console.error('Preview rendering failed', error);
+    sendJson(res, 500, { error: 'Could not render preview.' });
   }
 }
 
@@ -900,7 +928,15 @@ async function handleWebhooksUpdate(req, res, token) {
 function sanitizeProject(input) {
   const p = {};
   if (typeof input.title === 'string') p.title = input.title.trim();
+  if (typeof input.slug === 'string') {
+    const slug = input.slug.trim().toLowerCase();
+    if (slug && !/^[a-z0-9-]+$/.test(slug)) {
+      throw Object.assign(new Error('Project slug must use lowercase letters, numbers, and hyphens only.'), { statusCode: 400 });
+    }
+    p.slug = slug || null;
+  }
   if (typeof input.description === 'string') p.description = input.description.trim();
+  if (typeof input.content_markdown === 'string') p.content_markdown = input.content_markdown.trim();
   if (typeof input.url === 'string') p.url = input.url.trim();
   if (typeof input.repo_url === 'string') p.repo_url = input.repo_url.trim();
   // Support legacy camelCase field from admin form
@@ -909,6 +945,12 @@ function sanitizeProject(input) {
   if (typeof input.featured === 'boolean') p.featured = input.featured;
   if (Array.isArray(input.tags)) {
     p.tags = input.tags.map((t) => String(t).trim()).filter(Boolean);
+  }
+  if (Array.isArray(input.image_urls)) {
+    p.image_urls = input.image_urls
+      .map((url) => String(url).trim())
+      .filter((url) => /^https?:\/\//i.test(url))
+      .slice(0, 12);
   }
   return p;
 }
@@ -953,8 +995,8 @@ async function handleProjectsGet(res) {
 async function handleProjectsCreate(req, res) {
   try {
     const body = await readJsonBody(req);
-    if (!body.title || !String(body.title).trim()) {
-      return sendJson(res, 400, { error: 'title is required' });
+    if (!body.title || !String(body.title).trim() || !body.slug || !String(body.slug).trim()) {
+      return sendJson(res, 400, { error: 'title and slug are required' });
     }
     const project = sanitizeProject(body);
     // getSupabaseAdmin is already imported at the top of this module

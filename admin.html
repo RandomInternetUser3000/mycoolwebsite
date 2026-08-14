@@ -360,11 +360,19 @@ document.getElementById("envCheck").textContent =
           </div>
           <div class="admin-form__actions">
             <button type="submit" class="button" id="sbSaveBtn">Save post</button>
+            <button type="button" class="button button--ghost" id="sbPreviewBtn">Preview post</button>
             <button type="button" class="button button--ghost" id="sbDeleteBtn" hidden>Delete post</button>
             <button type="reset" class="button button--ghost">Reset</button>
             <p class="admin-help-text" id="sbFeedback" aria-live="polite"></p>
           </div>
         </form>
+        <section class="admin-preview" id="sbPreview" hidden aria-live="polite">
+          <div class="admin-card__header">
+            <div><p class="tag-pill">Preview</p><h3 id="sbPreviewTitle">Untitled post</h3></div>
+            <button type="button" class="button button--ghost button--small" data-preview-close="sbPreview">Close</button>
+          </div>
+          <article class="blog-article-content" id="sbPreviewBody"></article>
+        </section>
       </div>
     </section>
 
@@ -401,9 +409,22 @@ document.getElementById("envCheck").textContent =
             <label for="pmTitle">Title *</label>
             <input type="text" id="pmTitle" name="title" placeholder="Aurora Arena" required>
           </div>
+          <div class="admin-form__field">
+            <label for="pmSlug">Detail page slug *</label>
+            <input type="text" id="pmSlug" name="slug" placeholder="aurora-arena" pattern="[a-z0-9\-]+" required>
+            <p class="admin-help-text">Creates the public URL <code>/projects/your-slug</code>.</p>
+          </div>
           <div class="admin-form__field admin-form__field--full">
             <label for="pmDescription">Description</label>
             <textarea id="pmDescription" name="description" rows="3" placeholder="A short description of the project."></textarea>
+          </div>
+          <div class="admin-form__field admin-form__field--full">
+            <label for="pmContent">Extended description</label>
+            <textarea id="pmContent" name="content_markdown" rows="10" placeholder="## What it does&#10;&#10;Add the full project story in Markdown."></textarea>
+          </div>
+          <div class="admin-form__field admin-form__field--full">
+            <label for="pmImages">Image URLs (one per line)</label>
+            <textarea id="pmImages" name="image_urls" rows="3" placeholder="https://example.com/screenshot.png"></textarea>
           </div>
           <div class="admin-form__field">
             <label for="pmUrl">Project URL</label>
@@ -426,11 +447,20 @@ document.getElementById("envCheck").textContent =
           </div>
           <div class="admin-form__actions">
             <button type="submit" class="button" id="pmSaveBtn">Save project</button>
+            <button type="button" class="button button--ghost" id="pmPreviewBtn">Preview project</button>
             <button type="button" class="button button--ghost" id="pmDeleteBtn" hidden>Delete project</button>
             <button type="reset" class="button button--ghost">Reset</button>
             <p class="admin-help-text" id="pmFeedback" aria-live="polite"></p>
           </div>
         </form>
+        <section class="admin-preview" id="pmPreview" hidden aria-live="polite">
+          <div class="admin-card__header">
+            <div><p class="tag-pill">Preview</p><h3 id="pmPreviewTitle">Untitled project</h3></div>
+            <button type="button" class="button button--ghost button--small" data-preview-close="pmPreview">Close</button>
+          </div>
+          <p class="project-preview__summary" id="pmPreviewSummary"></p>
+          <article class="blog-article-content" id="pmPreviewBody"></article>
+        </section>
       </div>
     </section>
   </main>
@@ -1284,6 +1314,10 @@ document.getElementById("envCheck").textContent =
     const sbContent = document.getElementById('sbContent');
     const sbPublished = document.getElementById('sbPublished');
     const sbRefreshBtn = document.getElementById('sbRefreshBtn');
+    const sbPreviewBtn = document.getElementById('sbPreviewBtn');
+    const sbPreview = document.getElementById('sbPreview');
+    const sbPreviewTitle = document.getElementById('sbPreviewTitle');
+    const sbPreviewBody = document.getElementById('sbPreviewBody');
 
     let sbPosts = [];
 
@@ -1298,11 +1332,30 @@ document.getElementById("envCheck").textContent =
     function setFeedback(msg, isError) {
       if (!sbFeedback) return;
       sbFeedback.textContent = msg;
-      sbFeedback.style.color = isError ? 'var(--error,#f87171)' : '';
+      sbFeedback.style.color = isError ? 'var(--accent,#ff0000)' : '';
     }
 
     function formatDate(iso) {
       try { return new Date(iso).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }); } catch (_) { return iso; }
+    }
+
+    async function renderPreview() {
+      if (!sbPreview || !sbPreviewBody) return;
+      sbPreview.hidden = false;
+      sbPreviewTitle.textContent = sbTitle.value.trim() || 'Untitled post';
+      sbPreviewBody.textContent = 'Rendering preview…';
+      try {
+        const res = await fetch('/api/admin/preview', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ content_markdown: sbContent.value }),
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+        sbPreviewBody.innerHTML = data.contentHtml || '<p>Nothing to preview yet.</p>';
+      } catch (error) {
+        sbPreviewBody.textContent = error.message || 'Preview failed.';
+      }
     }
 
     async function loadPosts() {
@@ -1316,7 +1369,7 @@ document.getElementById("envCheck").textContent =
         renderTable(sbPosts);
         setStatus(`${sbPosts.length} post(s) — updated ${new Date().toLocaleTimeString()}`);
       } catch (err) {
-        sbTable.innerHTML = `<p style="color:var(--error,#f87171)">Failed to load posts: ${escHtml(err.message)}</p>`;
+        sbTable.innerHTML = `<p style="color:var(--accent,#ff0000)">Failed to load posts: ${escHtml(err.message)}</p>`;
         setStatus('Error');
       }
     }
@@ -1344,6 +1397,7 @@ document.getElementById("envCheck").textContent =
 
     function resetForm() {
       sbForm.reset();
+      if (sbPreview) sbPreview.hidden = true;
       sbPostId.value = '';
       sbFormTitle.textContent = 'Create new post';
       sbDeleteBtn.hidden = true;
@@ -1408,6 +1462,8 @@ document.getElementById("envCheck").textContent =
     });
 
     sbNewBtn.addEventListener('click', resetForm);
+    sbPreviewBtn.addEventListener('click', renderPreview);
+    sbPreview?.querySelector('[data-preview-close]')?.addEventListener('click', () => { sbPreview.hidden = true; });
 
     sbForm.addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -1495,12 +1551,20 @@ document.getElementById("envCheck").textContent =
     const pmRefreshBtn = document.getElementById('pmRefreshBtn');
     const pmProjectId = document.getElementById('pmProjectId');
     const pmTitle = document.getElementById('pmTitle');
+    const pmSlug = document.getElementById('pmSlug');
     const pmDescription = document.getElementById('pmDescription');
+    const pmContent = document.getElementById('pmContent');
+    const pmImages = document.getElementById('pmImages');
     const pmUrl = document.getElementById('pmUrl');
     const pmRepoUrl = document.getElementById('pmRepoUrl');
     const pmStatusInput = document.getElementById('pmStatusField');
     const pmTags = document.getElementById('pmTags');
     const pmFeatured = document.getElementById('pmFeatured');
+    const pmPreviewBtn = document.getElementById('pmPreviewBtn');
+    const pmPreview = document.getElementById('pmPreview');
+    const pmPreviewTitle = document.getElementById('pmPreviewTitle');
+    const pmPreviewSummary = document.getElementById('pmPreviewSummary');
+    const pmPreviewBody = document.getElementById('pmPreviewBody');
 
     let pmProjects = [];
 
@@ -1512,7 +1576,35 @@ document.getElementById("envCheck").textContent =
     function setFeedback(msg, isError) {
       if (!pmFeedback) return;
       pmFeedback.textContent = msg;
-      pmFeedback.style.color = isError ? 'var(--error,#f87171)' : '';
+      pmFeedback.style.color = isError ? 'var(--accent,#ff0000)' : '';
+    }
+
+    function slugify(value) {
+      return String(value || '')
+        .toLowerCase()
+        .trim()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '');
+    }
+
+    async function renderPreview() {
+      if (!pmPreview || !pmPreviewBody) return;
+      pmPreview.hidden = false;
+      pmPreviewTitle.textContent = pmTitle.value.trim() || 'Untitled project';
+      pmPreviewSummary.textContent = pmDescription.value.trim();
+      pmPreviewBody.textContent = 'Rendering preview…';
+      try {
+        const res = await fetch('/api/admin/preview', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ content_markdown: pmContent.value }),
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+        pmPreviewBody.innerHTML = data.contentHtml || '<p>Add an extended description to preview it here.</p>';
+      } catch (error) {
+        pmPreviewBody.textContent = error.message || 'Preview failed.';
+      }
     }
 
     async function loadProjects() {
@@ -1526,7 +1618,7 @@ document.getElementById("envCheck").textContent =
         renderTable(pmProjects);
         setStatus(`${pmProjects.length} project(s) — updated ${new Date().toLocaleTimeString()}`);
       } catch (err) {
-        pmTable.innerHTML = `<p style="color:var(--error,#f87171)">Failed to load projects: ${escPm(err.message)}</p>`;
+        pmTable.innerHTML = `<p style="color:var(--accent,#ff0000)">Failed to load projects: ${escPm(err.message)}</p>`;
         setStatus('Error');
       }
     }
@@ -1552,6 +1644,7 @@ document.getElementById("envCheck").textContent =
 
     function resetForm() {
       pmForm.reset();
+      if (pmPreview) pmPreview.hidden = true;
       pmProjectId.value = '';
       pmFormTitle.textContent = 'Add new project';
       pmDeleteBtn.hidden = true;
@@ -1562,7 +1655,10 @@ document.getElementById("envCheck").textContent =
     function populateForm(project) {
       pmProjectId.value = project.id;
       pmTitle.value = project.title || '';
+      pmSlug.value = project.slug || '';
       pmDescription.value = project.description || '';
+      pmContent.value = project.content_markdown || '';
+      pmImages.value = Array.isArray(project.image_urls) ? project.image_urls.join('\n') : '';
       pmUrl.value = project.url || '';
       pmRepoUrl.value = project.repo_url || '';
       pmStatusInput.value = project.status || '';
@@ -1585,6 +1681,11 @@ document.getElementById("envCheck").textContent =
     });
 
     pmNewBtn.addEventListener('click', resetForm);
+    pmPreviewBtn.addEventListener('click', renderPreview);
+    pmPreview?.querySelector('[data-preview-close]')?.addEventListener('click', () => { pmPreview.hidden = true; });
+    pmTitle.addEventListener('input', () => {
+      if (!pmSlug.value.trim()) pmSlug.value = slugify(pmTitle.value);
+    });
     if (pmRefreshBtn) pmRefreshBtn.addEventListener('click', loadProjects);
 
     pmForm.addEventListener('submit', async (e) => {
@@ -1596,7 +1697,10 @@ document.getElementById("envCheck").textContent =
       const tags = pmTags.value.split(',').map((t) => t.trim()).filter(Boolean);
       const payload = {
         title: pmTitle.value.trim(),
+        slug: pmSlug.value.trim(),
         description: pmDescription.value.trim(),
+        content_markdown: pmContent.value,
+        image_urls: pmImages.value.split('\n').map((url) => url.trim()).filter(Boolean),
         url: pmUrl.value.trim(),
         repo_url: pmRepoUrl.value.trim(),
         status: pmStatusInput.value.trim(),

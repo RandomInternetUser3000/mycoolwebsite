@@ -286,10 +286,11 @@ document.addEventListener('coolmanyt:auth-state', (event) => {
 
 
 const CHANNEL_ID_CACHE = new Map();
+const THEME_STORAGE_KEY = 'coolman-theme';
 
 document.addEventListener('DOMContentLoaded', async () => {
 	updateSlowConnectionFlag();
-	applyDarkTheme();
+	applyInitialTheme();
 	setupThemeToggle();
 	fadeInPage();
 	applySiteVersion();
@@ -460,25 +461,37 @@ function mountSpotifyEmbed(container) {
 	container.dataset.spotifyMounted = 'true';
 }
 
-function applyDarkTheme() {
-	// The site deliberately uses one red-and-black visual system, overriding
-	// any light preference saved by older releases.
+function applyInitialTheme() {
+	const storedTheme = getStoredTheme();
+	const prefersLight = window.matchMedia?.('(prefers-color-scheme: light)')?.matches ?? false;
+	applyTheme(storedTheme ?? (prefersLight ? 'light' : 'dark'), { persist: false });
+
+	if (!storedTheme && window.matchMedia) {
+		const mediaQuery = window.matchMedia('(prefers-color-scheme: light)');
+		const applySystemTheme = (event) => applyTheme(event.matches ? 'light' : 'dark', { persist: false });
+		if (mediaQuery.addEventListener) {
+			mediaQuery.addEventListener('change', applySystemTheme);
+		} else if (mediaQuery.addListener) {
+			mediaQuery.addListener(applySystemTheme);
+		}
+	}
+}
+
+function applyTheme(theme, options = { persist: true }) {
 	const body = document.body;
 	if (!body) {
 		return;
 	}
-	body.classList.remove('theme-light');
-	body.dataset.theme = 'dark';
-	updateGiscusTheme('dark');
 
-	let motionReduced = false;
-	try {
-		motionReduced = localStorage.getItem('coolman-motion-reduced') === 'true';
-	} catch (error) {
-		// Ignore persistence errors in private browsing.
+	const isLight = theme === 'light';
+	body.classList.toggle('theme-light', isLight);
+	body.dataset.theme = isLight ? 'light' : 'dark';
+	updateGiscusTheme(isLight ? 'light' : 'dark');
+	updateToggleState(isLight);
+
+	if (options.persist) {
+		setStoredTheme(isLight ? 'light' : 'dark');
 	}
-	body.classList.toggle('motion-reduced', motionReduced);
-	updateToggleState(motionReduced);
 }
 
 function setupThemeToggle() {
@@ -488,17 +501,12 @@ function setupThemeToggle() {
 	}
 
 	toggle.addEventListener('click', () => {
-		const isReduced = document.body.classList.toggle('motion-reduced');
-		updateToggleState(isReduced);
-		try {
-			localStorage.setItem('coolman-motion-reduced', String(isReduced));
-		} catch (error) {
-			// Ignore persistence errors in private browsing.
-		}
+		const nextTheme = document.body.classList.contains('theme-light') ? 'dark' : 'light';
+		applyTheme(nextTheme);
 	});
 }
 
-function updateToggleState(isMotionReduced) {
+function updateToggleState(isLight) {
 	const toggle = document.querySelector('.theme-toggle');
 	if (!toggle) {
 		return;
@@ -506,18 +514,18 @@ function updateToggleState(isMotionReduced) {
 
 	const icon = toggle.querySelector('.toggle-icon');
 	const label = toggle.querySelector('.toggle-text');
-	const labelText = isMotionReduced ? 'Motion reduced' : 'Reduce motion';
+	const labelText = isLight ? 'Dark mode' : 'Light mode';
 
 	if (icon) {
-		icon.textContent = isMotionReduced ? '◼' : '◉';
+		icon.textContent = isLight ? '☀️' : '🌙';
 	}
 
 	if (label) {
 		label.textContent = labelText;
 	}
 
-	toggle.setAttribute('aria-label', isMotionReduced ? 'Enable motion' : 'Reduce motion');
-	toggle.setAttribute('aria-pressed', String(isMotionReduced));
+	toggle.setAttribute('aria-label', `Switch to ${labelText.toLowerCase()}`);
+	toggle.setAttribute('aria-pressed', String(isLight));
 }
 
 function updateGiscusTheme(theme) {
@@ -543,6 +551,23 @@ function updateGiscusTheme(theme) {
 			send(retryFrame);
 		}
 	}, 600);
+}
+
+function getStoredTheme() {
+	try {
+		const stored = localStorage.getItem(THEME_STORAGE_KEY);
+		return stored === 'light' || stored === 'dark' ? stored : null;
+	} catch (error) {
+		return null;
+	}
+}
+
+function setStoredTheme(theme) {
+	try {
+		localStorage.setItem(THEME_STORAGE_KEY, theme);
+	} catch (error) {
+		// Ignore persistence errors in private browsing.
+	}
 }
 
 function sanitizeRedirectUrl(url) {
@@ -1430,7 +1455,10 @@ async function initTopProjects() {
 				? `<div class="project-card__tags">${p.tags.map((t) => `<span class="tag-pill tag-pill--small">${escHtml(t)}</span>`).join('')}</div>`
 				: '';
 			const safeUrl = sanitizeUrl(p.url);
-			const link = safeUrl ? `<a class="button" href="${escHtml(safeUrl)}">View project</a>` : '';
+			const detailUrl = p.slug ? `/projects/view/${encodeURIComponent(p.slug)}` : '';
+			const link = detailUrl
+				? `<a class="button" href="${escHtml(detailUrl)}">View details</a>`
+				: safeUrl ? `<a class="button" href="${escHtml(safeUrl)}" target="_blank" rel="noopener noreferrer">View project</a>` : '';
 			return `<article class="project-card">
 				${p.featured ? '<span class="tag-pill">Featured</span>' : ''}
 				<h3 class="project-card__title">${escHtml(p.title || 'Untitled')}</h3>

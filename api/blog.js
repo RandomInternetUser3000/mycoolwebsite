@@ -36,6 +36,7 @@ function generateExcerpt(markdown) {
  *   GET /api/supabase-blog/posts      → list all published blog posts
  *   GET /api/supabase-blog/post       → single published post by slug (rendered HTML)
  *   GET /api/projects/list            → list all projects
+ *   GET /api/projects/detail?slug=…   → one project with optional repository docs
  */
 export default async function handler(req, res) {
   const url = new URL(req.url, 'http://localhost');
@@ -46,6 +47,9 @@ export default async function handler(req, res) {
   }
   if (pathname.endsWith('/post')) {
     return handlePost(req, res, url);
+  }
+  if (pathname.endsWith('/detail')) {
+    return handleProjectDetail(req, res, url);
   }
   if (pathname.endsWith('/list') || pathname.includes('/projects')) {
     return handleProjectsList(req, res);
@@ -158,7 +162,7 @@ async function handleProjectsList(req, res) {
     const supabase = getSupabasePublic();
     const { data, error } = await supabase
       .from('projects')
-      .select('id, title, description, url, repo_url, status, tags, featured, created_at, updated_at')
+      .select('id, title, slug, description, url, repo_url, status, tags, featured, created_at, updated_at')
       .order('featured', { ascending: false })
       .order('created_at', { ascending: false });
 
@@ -172,4 +176,80 @@ async function handleProjectsList(req, res) {
     console.error('Unexpected error in handleProjectsList', err);
     sendJson(res, 500, { error: 'Internal server error' });
   }
+}
+
+async function handleProjectDetail(req, res, url) {
+  if (req.method !== 'GET') {
+    return methodNotAllowed(res, ['GET']);
+  }
+
+  const slug = (url.searchParams.get('slug') || '').trim().toLowerCase();
+  if (!/^[a-z0-9-]+$/.test(slug)) {
+    return sendJson(res, 400, { error: 'A valid project slug is required.' });
+  }
+
+  try {
+    const supabase = getSupabasePublic();
+    const { data, error } = await supabase.from('projects').select('*').eq('slug', slug).single();
+    if (error || !data) {
+      return sendJson(res, 404, { error: 'Project not found.' });
+    }
+
+    const [contentHtml, repository] = await Promise.all([
+      renderMarkdown(data.content_markdown || ''),
+      fetchRepositoryDocuments(data.repo_url),
+    ]);
+
+    res.setHeader('Cache-Control', 'public, max-age=300, s-maxage=3600');
+    sendJson(res, 200, {
+      project: {
+        ...data,
+        image_urls: Array.isArray(data.image_urls) ? data.image_urls : [],
+        contentHtml,
+      },
+      repository,
+    });
+  } catch (err) {
+    console.error('Unexpected error fetching project detail', err);
+    sendJson(res, 500, { error: 'Internal server error' });
+  }
+}
+
+function parseGithubRepository(repoUrl) {
+  try {
+    const parsed = new URL(repoUrl);
+    if (parsed.hostname !== 'github.com') return null;
+    const [owner, repository] = parsed.pathname.split('/').filter(Boolean);
+    if (!owner || !repository) return null;
+    return { owner, repository: repository.replace(/\.git$/i, '') };
+  } catch {
+    return null;
+  }
+}
+
+async function fetchRepositoryDocuments(repoUrl) {
+  const repository = parseGithubRepository(repoUrl);
+  if (!repository) return null;
+
+  const baseUrl = `https://github.com/${repository.owner}/${repository.repository}`;
+  const requestDocument = async (path) => {
+    try {
+      const response = await fetch(`https://api.github.com/repos/${repository.owner}/${repository.repository}/${path}`, {
+        headers: {
+          Accept: 'application/vnd.github.raw+json',
+          'User-Agent': 'COOLmanYT-project-details',
+        },
+        signal: AbortSignal.timeout(5000),
+      });
+      if (!response.ok) return null;
+      const markdown = await response.text();
+      if (!markdown || markdown.length > 250_000) return null;
+      return { markdown, html: await renderMarkdown(markdown) };
+    } catch {
+      return null;
+    }
+  };
+
+  const [readme, licence] = await Promise.all([requestDocument('readme'), requestDocument('license')]);
+  return { baseUrl, readme, licence };
 }

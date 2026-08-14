@@ -13,7 +13,10 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE TABLE IF NOT EXISTS projects (
   id              uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
   title           text NOT NULL,
+  slug            text NOT NULL UNIQUE,
   description     text,
+  content_markdown text NOT NULL DEFAULT '',
+  image_urls      text[] NOT NULL DEFAULT ARRAY[]::text[],
   url             text,
   repo_url        text,
   status          text,

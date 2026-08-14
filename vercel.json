@@ -8,6 +8,7 @@
     { "source": "/api/projects/:path*", "destination": "/api/blog" },
     { "source": "/api/youtube/latest", "destination": "/api/youtube" },
     { "source": "/api/youtube/latest/:path*", "destination": "/api/youtube" },
-    { "source": "/blog/post/:slug", "destination": "/blog/post" }
+    { "source": "/blog/post/:slug", "destination": "/blog/post" },
+    { "source": "/projects/view/:slug", "destination": "/projects/view" }
   ]
 }

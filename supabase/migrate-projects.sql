@@ -9,9 +9,10 @@
 
 -- Template — uncomment and fill in for each project:
 --
--- INSERT INTO projects (title, description, url, repo_url, status, tags, featured)
+-- INSERT INTO projects (title, slug, description, url, repo_url, status, tags, featured)
 -- VALUES (
 --   'My Project Title',
+--   'my-project-title',
 --   'Short description of the project.',
 --   'https://example.com',               -- live URL (or NULL)
 --   'https://github.com/COOLmanYT/...', -- repo URL (or NULL)
@@ -22,8 +23,9 @@
 -- ON CONFLICT DO NOTHING;
 
 -- Example — mycoolwebsite itself:
-INSERT INTO projects (title, description, url, repo_url, status, tags, featured)
+INSERT INTO projects (title, slug, description, url, repo_url, status, tags, featured)
 VALUES (
+  'mycoolwebsite',
   'mycoolwebsite',
   'My personal website built with plain HTML/CSS/JS, Vercel serverless functions, and Supabase.',
   'https://coolmanyt.com',

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Project details from COOLmanYT.">
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="stylesheet" href="/style.css">
+  <title>Project | COOLmanYT</title>
+</head>
+<body class="projects-page">
+  <a class="skip-link" href="#mainContent">Skip to main content</a>
+  <header class="site-header" role="banner">
+    <div class="header-bar">
+      <div class="nav-wrapper"><nav class="nav-links" aria-label="Primary">
+        <a href="/" class="nav-pill">Home</a><a href="/about" class="nav-pill">About</a><a href="/projects" class="nav-pill active">Projects</a><a href="/contact" class="nav-pill">Contact</a><a href="/blog" class="nav-pill">Blog</a>
+      </nav></div>
+      <span class="site-logo">COOLmanYT</span>
+      <button type="button" class="theme-toggle" aria-label="Switch to light mode" aria-pressed="true"><span class="toggle-icon">🌙</span><span class="toggle-text">Light mode</span></button>
+    </div>
+  </header>
+
+  <main id="mainContent" role="main">
+    <p class="project-page__status" id="projectLoading" aria-live="polite">Loading project…</p>
+    <p class="project-page__status project-page__status--error" id="projectError" hidden></p>
+    <article class="project-detail" id="projectDetail" hidden>
+      <header class="project-detail__header">
+        <p class="project-detail__eyebrow" id="projectStatus"></p>
+        <h1 id="projectTitle"></h1>
+        <p class="lead" id="projectDescription"></p>
+        <div class="project-detail__actions" id="projectActions"></div>
+        <div class="project-detail__meta" id="projectTags" hidden></div>
+      </header>
+      <div class="project-detail__gallery" id="projectGallery" hidden></div>
+      <section class="project-detail__content blog-article-content" id="projectContent" hidden></section>
+      <section class="project-documents" id="projectDocuments" hidden>
+        <h2>Repository documents</h2>
+        <details id="projectReadme" hidden><summary>README.md</summary><div class="blog-article-content project-documents__content"></div></details>
+        <details id="projectLicence" hidden><summary>LICENCE</summary><div class="blog-article-content project-documents__content"></div></details>
+      </section>
+    </article>
+  </main>
+
+  <footer class="site-footer" role="contentinfo"><span>Made with ♥️ by <strong>COOLmanYT</strong></span><span><a href="/privacy">Privacy Policy</a> • <a href="/terms">Terms of Service</a></span></footer>
+  <script src="/script.js"></script>
+  <script>
+  (() => {
+    const byId = (id) => document.getElementById(id);
+    const escapeHtml = (value) => String(value ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    const isSafeUrl = (value) => { try { const url = new URL(value); return url.protocol === 'https:' || url.protocol === 'http:' ? url.href : ''; } catch { return ''; } };
+    const slug = window.location.pathname.split('/').filter(Boolean).at(-1);
+    const loading = byId('projectLoading'); const error = byId('projectError'); const detail = byId('projectDetail');
+
+    const render = (project, repository) => {
+      document.title = `${project.title} | COOLmanYT`;
+      byId('projectTitle').textContent = project.title || 'Untitled project';
+      byId('projectStatus').textContent = project.status || '';
+      byId('projectStatus').hidden = !project.status;
+      byId('projectDescription').textContent = project.description || '';
+      const actions = [];
+      const siteUrl = isSafeUrl(project.url); const repoUrl = isSafeUrl(project.repo_url);
+      if (siteUrl) actions.push(`<a class="button" href="${escapeHtml(siteUrl)}" target="_blank" rel="noopener noreferrer">Visit project</a>`);
+      if (repoUrl) actions.push(`<a class="button button--ghost" href="${escapeHtml(repoUrl)}" target="_blank" rel="noopener noreferrer">View repository</a>`);
+      actions.push('<a class="button button--ghost" href="/projects">Back to projects</a>');
+      byId('projectActions').innerHTML = actions.join('');
+      const tags = Array.isArray(project.tags) ? project.tags : [];
+      if (tags.length) { const target = byId('projectTags'); target.innerHTML = tags.map((tag) => `<span class="tag-pill">${escapeHtml(tag)}</span>`).join(''); target.hidden = false; }
+      const images = Array.isArray(project.image_urls) ? project.image_urls.map(isSafeUrl).filter(Boolean) : [];
+      if (images.length) { const gallery = byId('projectGallery'); gallery.innerHTML = images.map((url) => `<img src="${escapeHtml(url)}" alt="${escapeHtml(project.title)} project screenshot" loading="lazy">`).join(''); gallery.hidden = false; }
+      if (project.contentHtml) { const content = byId('projectContent'); content.innerHTML = project.contentHtml; content.hidden = false; }
+      if (repository) {
+        const documents = byId('projectDocuments'); let available = false;
+        [['projectReadme', repository.readme], ['projectLicence', repository.licence]].forEach(([id, document]) => { if (!document) return; const section = byId(id); section.querySelector('.project-documents__content').innerHTML = document.html; section.hidden = false; available = true; });
+        documents.hidden = !available;
+      }
+      loading.hidden = true; detail.hidden = false;
+    };
+
+    if (!/^[a-z0-9-]+$/.test(slug || '')) { error.textContent = 'Project not found.'; error.hidden = false; loading.hidden = true; return; }
+    fetch(`/api/projects/detail?slug=${encodeURIComponent(slug)}`, { headers: { Accept: 'application/json' } })
+      .then(async (response) => { const data = await response.json().catch(() => ({})); if (!response.ok) throw new Error(data.error || `Request failed (${response.status})`); return data; })
+      .then(({ project, repository }) => render(project, repository))
+      .catch((cause) => { error.textContent = cause.message || 'Could not load this project.'; error.hidden = false; loading.hidden = true; });
+  })();
+  </script>
+</body>
+</html>
