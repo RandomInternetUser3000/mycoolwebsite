@@ -287,20 +287,21 @@ document.addEventListener('coolmanyt:auth-state', (event) => {
 
 const CHANNEL_ID_CACHE = new Map();
 
-const THEME_STORAGE_KEY = 'coolman-theme';
-
 document.addEventListener('DOMContentLoaded', async () => {
 	updateSlowConnectionFlag();
-	applyInitialTheme();
+	applyDarkTheme();
 	setupThemeToggle();
 	fadeInPage();
 	applySiteVersion();
-	const authState = await getAuthState().catch((error) => {
+	// Keep the first paint and deferred content independent of an optional session
+	// request. A slow auth endpoint should never hold up the rest of the page.
+	void getAuthState().then((authState) => {
+		initAuthIndicators(authState);
+		return enableContactForm(authState);
+	}).catch((error) => {
 		console.warn('Auth state unavailable', error);
-		return cachedAuthState;
+		return enableContactForm(cachedAuthState);
 	});
-	initAuthIndicators(authState);
-	enableContactForm(authState);
 	enhanceSocialButtons();
 	decorateExternalLinks();
 	enableHorizontalScrollNav();
@@ -325,9 +326,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 function initLazySections() {
 	const slowConnection = shouldDeferHeavyContent();
-	const observer = slowConnection
-		? null
-		: new IntersectionObserver((entries, obs) => {
+	const supportsIntersectionObserver = 'IntersectionObserver' in window;
+	const observer = !slowConnection && supportsIntersectionObserver
+		? new IntersectionObserver((entries, obs) => {
 			entries.forEach((entry) => {
 				if (!entry.isIntersecting) return;
 				const target = entry.target;
@@ -340,7 +341,8 @@ function initLazySections() {
 					obs.unobserve(target);
 				}
 			});
-		}, { rootMargin: '150px 0px 150px 0px', threshold: 0.1 });
+		}, { rootMargin: '150px 0px 150px 0px', threshold: 0.1 })
+		: null;
 
 	const spotifyHost = document.querySelector('[data-lazy-spotify]');
 	if (spotifyHost) {
@@ -355,6 +357,10 @@ function initLazySections() {
 
 		if (!slowConnection && observer) {
 			observer.observe(spotifyHost);
+		} else if (!slowConnection) {
+			// Older browsers still receive usable content rather than a permanent
+			// placeholder when IntersectionObserver is unavailable.
+			mountSpotifyEmbed(spotifyHost);
 		}
 	}
 
@@ -374,6 +380,8 @@ function initLazySections() {
 			attachHeavyLoadButton(latestVideoSection.querySelector('.now-playing__actions') || latestVideoSection, loadLatest, 'Load latest video');
 		} else if (observer) {
 			observer.observe(latestVideoSection);
+		} else {
+			loadLatest();
 		}
 	}
 }
@@ -452,27 +460,25 @@ function mountSpotifyEmbed(container) {
 	container.dataset.spotifyMounted = 'true';
 }
 
-function applyInitialTheme() {
-	const storedTheme = getStoredTheme();
-	const prefersLight = window.matchMedia?.('(prefers-color-scheme: light)')?.matches ?? false;
-	const initialTheme = storedTheme ?? (prefersLight ? 'light' : 'dark');
-
-	applyTheme(initialTheme, { persist: Boolean(storedTheme) });
-
-	if (!storedTheme && window.matchMedia) {
-		const mediaQuery = window.matchMedia('(prefers-color-scheme: light)');
-		const handleChange = (event) => {
-			if (!getStoredTheme()) {
-				applyTheme(event.matches ? 'light' : 'dark', { persist: false });
-			}
-		};
-
-		if (mediaQuery.addEventListener) {
-			mediaQuery.addEventListener('change', handleChange);
-		} else if (mediaQuery.addListener) {
-			mediaQuery.addListener(handleChange);
-		}
+function applyDarkTheme() {
+	// The site deliberately uses one red-and-black visual system, overriding
+	// any light preference saved by older releases.
+	const body = document.body;
+	if (!body) {
+		return;
 	}
+	body.classList.remove('theme-light');
+	body.dataset.theme = 'dark';
+	updateGiscusTheme('dark');
+
+	let motionReduced = false;
+	try {
+		motionReduced = localStorage.getItem('coolman-motion-reduced') === 'true';
+	} catch (error) {
+		// Ignore persistence errors in private browsing.
+	}
+	body.classList.toggle('motion-reduced', motionReduced);
+	updateToggleState(motionReduced);
 }
 
 function setupThemeToggle() {
@@ -482,30 +488,17 @@ function setupThemeToggle() {
 	}
 
 	toggle.addEventListener('click', () => {
-		const nextTheme = document.body.classList.contains('theme-light') ? 'dark' : 'light';
-		applyTheme(nextTheme);
+		const isReduced = document.body.classList.toggle('motion-reduced');
+		updateToggleState(isReduced);
+		try {
+			localStorage.setItem('coolman-motion-reduced', String(isReduced));
+		} catch (error) {
+			// Ignore persistence errors in private browsing.
+		}
 	});
 }
 
-function applyTheme(theme, options = { persist: true }) {
-	const body = document.body;
-	if (!body) {
-		return;
-	}
-
-	const isLight = theme === 'light';
-	body.classList.toggle('theme-light', isLight);
-	body.dataset.theme = theme;
-	updateGiscusTheme(theme);
-
-	updateToggleState(theme);
-
-	if (options.persist) {
-		setStoredTheme(theme);
-	}
-}
-
-function updateToggleState(theme) {
+function updateToggleState(isMotionReduced) {
 	const toggle = document.querySelector('.theme-toggle');
 	if (!toggle) {
 		return;
@@ -513,19 +506,18 @@ function updateToggleState(theme) {
 
 	const icon = toggle.querySelector('.toggle-icon');
 	const label = toggle.querySelector('.toggle-text');
-	const isLight = theme === 'light';
-	const nextThemeName = isLight ? 'Dark mode' : 'Light mode';
+	const labelText = isMotionReduced ? 'Motion reduced' : 'Reduce motion';
 
 	if (icon) {
-		icon.textContent = isLight ? '☀️' : '🌙';
+		icon.textContent = isMotionReduced ? '◼' : '◉';
 	}
 
 	if (label) {
-		label.textContent = nextThemeName;
+		label.textContent = labelText;
 	}
 
-	toggle.setAttribute('aria-label', `Switch to ${nextThemeName.toLowerCase()}`);
-	toggle.setAttribute('aria-pressed', isLight ? 'false' : 'true');
+	toggle.setAttribute('aria-label', isMotionReduced ? 'Enable motion' : 'Reduce motion');
+	toggle.setAttribute('aria-pressed', String(isMotionReduced));
 }
 
 function updateGiscusTheme(theme) {
@@ -551,23 +543,6 @@ function updateGiscusTheme(theme) {
 			send(retryFrame);
 		}
 	}, 600);
-}
-
-function getStoredTheme() {
-	try {
-		const stored = localStorage.getItem(THEME_STORAGE_KEY);
-		return stored === 'light' || stored === 'dark' ? stored : null;
-	} catch (error) {
-		return null;
-	}
-}
-
-function setStoredTheme(theme) {
-	try {
-		localStorage.setItem(THEME_STORAGE_KEY, theme);
-	} catch (error) {
-		// Ignore storage errors (private mode, etc.)
-	}
 }
 
 function sanitizeRedirectUrl(url) {
@@ -703,8 +678,8 @@ function initNavGradient() {
 		navLinks.style.setProperty('--nav-glow-y', '50%');
 		navLinks.style.setProperty('--nav-glow-strength', '42%');
 		navLinks.style.setProperty('--nav-glow-opacity', prefersReducedMotion ? '0.12' : '0.28');
-		navLinks.style.setProperty('--nav-glow-color-1', 'hsla(330, 88%, 60%, 0.36)');
-		navLinks.style.setProperty('--nav-glow-color-2', 'hsla(250, 84%, 58%, 0.24)');
+		navLinks.style.setProperty('--nav-glow-color-1', 'rgba(255, 0, 0, 0.36)');
+		navLinks.style.setProperty('--nav-glow-color-2', 'rgba(118, 0, 0, 0.24)');
 	};
 
 	setStaticNavGlow();
@@ -732,10 +707,7 @@ function initNavGradient() {
 		const relativeY = (point.clientY - rect.top) / rect.height;
 		const clampedX = Math.min(Math.max(relativeX, 0), 1);
 		const clampedY = Math.min(Math.max(relativeY, 0), 1);
-		const globalXRatio = point.clientX / window.innerWidth;
 		const globalYRatio = point.clientY / window.innerHeight;
-		const hue = 260 + globalXRatio * 140;
-		const secondaryHue = (hue + 60) % 360;
 		const distanceFromCenter = Math.min(Math.hypot(clampedX - 0.5, clampedY - 0.5) * 2, 1);
 		const strength = 32 + (1 - distanceFromCenter) * 48;
 		const opacity = 0.22 + (1 - globalYRatio) * 0.5;
@@ -746,11 +718,11 @@ function initNavGradient() {
 		navLinks.style.setProperty('--nav-glow-opacity', Math.min(opacity, 0.85).toFixed(2));
 		navLinks.style.setProperty(
 			'--nav-glow-color-1',
-			`hsla(${hue.toFixed(1)}, 88%, ${58 + (1 - globalYRatio) * 12}%, ${Math.min(opacity + 0.12, 0.9).toFixed(2)})`,
+			`rgba(255, 0, 0, ${Math.min(opacity + 0.12, 0.9).toFixed(2)})`,
 		);
 		navLinks.style.setProperty(
 			'--nav-glow-color-2',
-			`hsla(${secondaryHue.toFixed(1)}, 82%, ${52 + clampedY * 14}%, ${Math.min(opacity * 0.7 + 0.08, 0.78).toFixed(2)})`,
+			`rgba(115, 0, 0, ${Math.min(opacity * 0.7 + 0.08, 0.78).toFixed(2)})`,
 		);
 	};
 

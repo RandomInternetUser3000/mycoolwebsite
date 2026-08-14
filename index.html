@@ -11,7 +11,7 @@
   <link rel="apple-touch-icon" href="/images/avatar.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=2.0.1">
   <link rel="canonical" href="https://coolmanyt.com/">
   <link rel="alternate" type="application/rss+xml" title="COOLmanYT Blog" href="feed.xml">
   <title>COOLmanYT | Content Creator &amp; Developer</title>
@@ -73,15 +73,26 @@
         </nav>
       </div>
       <span class="site-logo">COOLmanYT</span>
-      <button type="button" class="theme-toggle" aria-label="Switch to light mode" aria-pressed="true">
-        <span class="toggle-icon">🌙</span>
-        <span class="toggle-text">Light mode</span>
+      <button type="button" class="theme-toggle" aria-label="Reduce motion" aria-pressed="false">
+        <span class="toggle-icon">◉</span>
+        <span class="toggle-text">Reduce motion</span>
       </button>
     </div>
   </header>
 
   <main id="mainContent" role="main">
-    <div class="social-links hero-socials">
+    <section class="hero-intro" aria-labelledby="homeHeading">
+      <h1 id="homeHeading" class="hero-title">COOLman's COOL Website! :D</h1>
+      <p class="hero-description">I create cool projects and love coding. I am a content creator as well :3 Check out my work below! :D It's really good, trust! Thanks for visiting my website!</p>
+
+      <div class="hero-actions">
+        <a href="/projects" class="button">Explore Projects</a>
+        <a href="https://www.youtube.com/@COOLmanGamer?sub_confirmation=1" class="button button--subscribe" target="_blank" rel="noopener noreferrer">Subscribe</a>
+        <a href="/contact" class="button button--ghost">Contact Me</a>
+      </div>
+    </section>
+
+    <div class="social-links hero-socials" aria-label="Find COOLmanYT online">
       <a href="https://github.com/COOLmanYT" target="_blank" rel="noopener noreferrer" class="social-button" data-label="GitHub">
         <img src="images/github.png" alt="GitHub" width="64" height="64" loading="lazy">
         <span class="social-label">GitHub</span>
@@ -110,15 +121,18 @@
         <img src="images/reddit.png" alt="Reddit" width="64" height="64" loading="lazy">
         <span class="social-label">Reddit</span>
       </a>
-    </div>
-
-    <h1 class="hero-title">COOLman's COOL Website! :D</h1>
-    <p class="hero-description">I create cool projects and love coding. I am a content creator as well :3 Check out my work below! :D It's really good, trust! Thanks for visiting my website!</p>
-
-    <div class="hero-actions">
-      <a href="/projects" class="button">Explore Projects</a>
-      <a href="https://www.youtube.com/@COOLmanGamer?sub_confirmation=1" class="button button--subscribe" target="_blank" rel="noopener noreferrer">Subscribe</a>
-      <a href="/contact" class="button button--ghost">Contact Me</a>
+      <a href="https://x.com/coolman_yt1" target="_blank" rel="noopener noreferrer" class="social-button social-button--brand-icon social-button--x" data-label="X">
+        <img src="https://cdn.simpleicons.org/x/ffffff?viewbox=auto" alt="X" width="64" height="64" loading="lazy">
+        <span class="social-label">X</span>
+      </a>
+      <a href="https://www.twitch.tv/coolman_yt1" target="_blank" rel="noopener noreferrer" class="social-button social-button--brand-icon social-button--twitch" data-label="Twitch">
+        <img src="https://cdn.simpleicons.org/twitch/9146FF?viewbox=auto" alt="Twitch" width="64" height="64" loading="lazy">
+        <span class="social-label">Twitch</span>
+      </a>
+      <a href="https://buymeacoffee.com/coolmanyt" target="_blank" rel="noopener noreferrer" class="social-button social-button--brand-icon social-button--bmac" data-label="Buy Me a Coffee">
+        <img src="https://cdn.simpleicons.org/buymeacoffee/FFDD00?viewbox=auto" alt="Buy Me a Coffee" width="64" height="64" loading="lazy">
+        <span class="social-label">Buy Me a Coffee</span>
+      </a>
     </div>
 
     <section class="now-playing" data-latest-video data-channel-user="COOLmanGamer" data-channel-id="UCJr64JsgfMr8SHeUhLA3lKw">
