@@ -600,6 +600,33 @@ h1 {
   box-shadow: 0 20px 44px rgba(0, 0, 0, 0.5);
 }
 
+body.theme-light .hero-intro {
+  background: linear-gradient(135deg, #ffffff 0%, #ffffff 72%, #f2f2f2 72%, #f2f2f2 100%);
+  border: 1px solid #111111;
+  border-top: 4px solid #ff0000;
+  box-shadow: 0 18px 30px rgba(0, 0, 0, 0.18);
+}
+
+body.theme-light .hero-intro .hero-title {
+  color: #000000;
+}
+
+body.theme-light .hero-intro .hero-description {
+  color: #333333;
+}
+
+body.theme-light .hero-intro .button--ghost {
+  border-color: #111111;
+  background: #ffffff;
+  color: #111111;
+}
+
+body.theme-light .hero-intro .button--ghost:hover,
+body.theme-light .hero-intro .button--ghost:focus-visible {
+  background: #000000;
+  color: #ffffff;
+}
+
 .hero-title {
   margin: 0;
 }
@@ -1488,47 +1515,21 @@ body.theme-light .playlist-section__intro p {
 }
 
 body.theme-light .now-playing {
-  background: linear-gradient(135deg, #ffffff 0%, #ffffff 68%, #f2f2f2 68%, #f2f2f2 100%);
-  border: 1px solid #111111;
-  border-top: 4px solid #ff0000;
-  box-shadow: 0 18px 30px rgba(0, 0, 0, 0.18);
-}
-
-body.theme-light .now-playing::after {
-  display: none;
-}
-
-body.theme-light .now-playing__media {
-  border: 2px solid #111111;
-  background: #000000;
-}
-
-body.theme-light .now-playing__details {
-  align-self: center;
-  padding-left: clamp(0rem, 2vw, 1rem);
-  border-left: 3px solid #ff0000;
-}
-
-body.theme-light .now-playing__title {
-  color: #111111;
+  background: rgba(255, 255, 255, 0.98);
+  border-color: rgba(0, 0, 0, 0.1);
+  box-shadow: 0 20px 32px rgba(0, 0, 0, 0.12);
 }
 
 body.theme-light .now-playing__badge {
-  background: #ff0000;
+  background: rgba(16, 16, 16, 0.85);
   color: #fff;
 }
 
 body.theme-light .now-playing__actions .button {
-  background: #000000;
+  background: var(--accent);
   color: #fff;
-  border-color: #000000;
+  border-color: transparent;
   box-shadow: var(--shadow-soft);
-}
-
-body.theme-light .now-playing__actions .button:hover,
-body.theme-light .now-playing__actions .button:focus-visible {
-  background: #ff0000;
-  border-color: #ff0000;
 }
 
 body.theme-light .now-playing__duration {
@@ -1881,13 +1882,6 @@ body.theme-light .newsletter__embed {
 @media (max-width: 900px) {
   .now-playing {
     grid-template-columns: 1fr;
-  }
-
-  body.theme-light .now-playing__details {
-    padding-top: 1rem;
-    padding-left: 0;
-    border-top: 3px solid #ff0000;
-    border-left: 0;
   }
 }
 
