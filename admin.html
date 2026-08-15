@@ -12,6 +12,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="admin.css">
   <link rel="canonical" href="https://coolmanyt.com/admin">
   <title>Admin Panel - COOLmanYT</title>
 
@@ -92,12 +93,6 @@
         </div>
       </div>
     </section>
-
-<p id="envCheck"></p>
-<script>
-document.getElementById("envCheck").textContent = 
-    typeof window === "undefined" ? "Server-side" : "Client-side";
-</script>
 
     <section class="admin-grid" aria-label="Quick controls">
       <article class="admin-card admin-card--distribution">
@@ -330,7 +325,7 @@ document.getElementById("envCheck").textContent =
       </div>
 
       <!-- Create / Edit form -->
-      <div style="margin-top:1.5rem;">
+      <div class="admin-editor">
         <div class="admin-card__header">
           <h3 id="sbFormTitle">Create new post</h3>
           <button type="button" class="button button--ghost button--small" id="sbNewBtn">+ New post</button>
@@ -398,7 +393,7 @@ document.getElementById("envCheck").textContent =
       </div>
 
       <!-- Create / Edit form -->
-      <div style="margin-top:1.5rem;">
+      <div class="admin-editor">
         <div class="admin-card__header">
           <h3 id="pmFormTitle">Add new project</h3>
           <button type="button" class="button button--ghost button--small" id="pmNewBtn">+ New project</button>
